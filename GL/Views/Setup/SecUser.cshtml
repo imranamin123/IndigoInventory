@@ -1,0 +1,221 @@
+﻿@model GL.ViewModels.Setup.SecUserViewModel
+@{
+    ViewBag.Title = "SecUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .error {
+        color: red;
+        border-color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">User Form</h3>
+                </div>
+
+                <input type="hidden" value="@Model.SecUser.CreatedBy" id="hdCreatedBy" />
+
+                <div class="box-body">
+
+
+                    <div class="form-group col-sm-8">
+                        <label for="SecUserID" class="control-label col-sm-1 PaddingTop-5">ID</label>
+                        <div class="col-sm-3">
+                            <input type="text" readonly id="SecUserID" value="@Model.SecUser.UsersID" class="form-control" />
+                        </div>
+                        <label for="CompanyID" class="col-sm-1 control-label input-sm">Company</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(m => m.SecUser.CompanyID, new SelectList(ViewBag.CompanyList, "CompanyID", "Name"), "- Select Company -", new { @id = "CompanyID", @class = "form-control" })
+                            <span id="spnCompanyIDError" class="error" style="display:none;">Please select Company</span>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group col-sm-8">
+                        <div class="form-group">
+                            <label for="Name" class="control-label col-sm-1 PaddingTop-5">Name</label>
+                            <div class="col-sm-7">
+                                <input type="text" autocomplete="off" id="Name" value="@Model.SecUser.Name" class="form-control showError" />
+                                <span id="spnNameError" class="error" style="display:none;">Please enter name</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-sm-8">
+                        <label for="Username" class="control-label col-sm-1 PaddingTop-5">Userame</label>
+                        <div class="col-sm-3">
+                            <input type="text" autocomplete="off" id="Username" value="@Model.SecUser.username" class="form-control showError" />
+                            <span id="spnUsernameError" class="error" style="display:none;">Please enter username</span>
+                        </div>
+
+                        <label for="Password" class="control-label col-sm-1 PaddingTop-5">Password</label>
+                        <div class="col-sm-3">
+                            <input type="password" autocomplete="off" id="Password" value="@Model.SecUser.password" class="form-control showError" />
+                            <span id="spnPasswordError" class="error" style="display:none;">Please enter password</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-sm-8">
+                        <label for="StatusTypeID" class="control-label col-sm-1 PaddingTop-5">Status</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.SecUser.StatusTypeID, new SelectList(ViewBag.StatusTypes, "StatusTypeID", "Name"), new { @class = "form-control showError", @id = "StatusTypeID" })
+                            <span id="spnStatusTypeIDError" class="error" style="display:none;">Please select status</span>
+                        </div>
+
+                        <label for="RollID" class="control-label col-sm-1 PaddingTop-5">Roll</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.SecUser.RoleID, new SelectList(ViewBag.Rolls, "RoleID", "RoleName"), new { @class = "form-control showError", @id = "RoleID" })
+                            <span id="spnRoleIDError" class="error" style="display:none;">Please select Roll</span>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group col-sm-8">
+                        <label for="CreateAt" class="control-label col-sm-1 PaddingTop-5">Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" autocomplete="off" id="CreatedAt" value="@Model.SecUser.CreatedAt.Value.ToString("dd-MMM-yyyy")" class="form-control showError" />
+                            </div>
+                            <span id="spnCreatedAtError" class="error" style="display:none;">Please enter date</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-sm-12 marginTop-10">
+                        <div class="col-sm-6">
+
+                            <a href="/Setup/SecUserList" class="btn btn-info ">Back to List</a>
+                            <a href="/Setup/SecUser" class="btn btn-success">Add</a>
+                            <a href="#" class="btn btn-danger " onclick="location.reload();">Cancel</a>
+                            <a href="#" class="btn btn-primary SaveSecUser ">Save</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="SecUser">
+
+
+        $().ready(function () {
+
+            $(".SaveSecUser").click(function (e) {
+                e.preventDefault;
+                
+                if (IsValid() == false) {
+                    return;
+                }
+
+                var obj = getObject();
+                var jsonData = JSON.stringify({ "SecUser": obj });
+
+                $.ajax({
+                    url: "/Setup/SecUserSave",
+                    type: "POST",
+                    data: jsonData,
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "JSON",
+                    success: function (res) {
+
+                        if (res.status == true) {
+        
+                            alert(res.resMessage);
+                            //var url = "/Setup/SecUserList";
+                            //window.location = url;
+
+                        }
+                        else {
+                            alert(res.resMessage);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            });
+        });
+
+        function IsValid() {
+            var valid = true;
+            $(".error").hide();
+
+            
+            if ($("#CompanyID").val() == "") {
+                $("#spnCompanyIDError").show();
+                valid = false;
+            }
+
+            if ($("#StatusTypeID").val() == "") {
+                $("#spnStatusTypeIDError").show();
+                valid = false;
+            }
+
+            if ($("#Name").val() == "") {
+                $("#spnNameError").show();
+                valid = false;
+            }
+            if ($("#Username").val() == "") {
+                $("#spnUsernameError").show();
+                valid = false;
+            }
+            if ($("#Password").val() == "") {
+                $("#spnPasswordError").show();
+                valid = false;
+            }
+            if ($("#StatusTypeID").val() == "") {
+                $("#spnStatusTypeIDError").show();
+                valid = false;
+            }
+            if ($("#RoleID").val() == "") {
+                $("#spnRoleIDError").show();
+                valid = false;
+            }
+            if ($("#CreatedAt").val() == "") {
+                $("#spnCreatedAtError").show();
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        function getObject() {
+            
+            var obj = {
+                UsersID: $("#SecUserID").val(),
+                Name: $("#Name").val(),
+                username: $("#Username").val(),
+                password: $("#Password").val(),
+                StatusTypeID: $("#StatusTypeID").val(),
+                RoleID: $("#RoleID").val(),
+                CreatedAt: $("#CreatedAt").val(),
+                CreatedBy: $("#hdCreatedBy").val(),
+                CompanyID: $("#CompanyID").val(),
+                
+            }
+
+            return obj;
+        }
+
+    </script>
+}
+
+
+
+

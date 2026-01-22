@@ -1,0 +1,1271 @@
+﻿@model GL.ViewModels.DV.ApplicationFormViewModel
+
+@{
+
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<div class="container-fluid">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Application Form </h2>
+                        @if (Model.spDVGetApplicationForm.Cancelled == true)
+                        {
+                            <h4 style="color:red;" class="box-title"> &nbsp; &nbsp; Cancelled</h4>
+                        }
+
+                        <input type="hidden" id="MApplicationFormID" value="@Model.spDVGetApplicationForm.ApplicationFormID" />
+                        <input type="hidden" id="MCreatedAt" value="@Model.spDVGetApplicationForm.CreatedAt" />
+                        <input type="hidden" id="MCreatedBy" value="@Model.spDVGetApplicationForm.CreatedBy" />
+                        <input type="hidden" id="MModifiedAt" value="@Model.spDVGetApplicationForm.ModifiedAt" />
+                        <input type="hidden" id="MModifiedBy" value="@Model.spDVGetApplicationForm.ModifiedBy" />
+                        <input type="hidden" id="CompanyID" value="@Model.spDVGetApplicationForm.CompanyID" />
+                        <input type="hidden" id="Cancelled" value="@Model.spDVGetApplicationForm.Cancelled" />
+
+                        @*<input type="hidden" id="MIsActive" value="@Model.spDVGetApplicationForm.IsActive" />*@
+                        <input type="hidden" id="MRoleID" value="@Model.RoleID" />
+                        @Html.HiddenFor(m => m.spDVGetApplicationForm.IsActive, new { @id = "MIsActive" })
+
+                    </div>
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="BankTransID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.spDVGetApplicationForm.ApplicationFormID" id="ApplicationFormID">
+
+                        </div>
+
+                        <label class="control-label col-sm-1">Project</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(x => x.spDVGetApplicationForm.ProjectID, new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --",
+                            new { @class = "form-control showError", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select a project</span>
+                        </div>
+                        @if (Model.RoleID == 1 || Model.RoleID == 2)
+                        {
+                            <label for="IsActive" class="control-label col-sm-1">Active</label>
+                            <div class="col-sm-1">
+
+                                <input type="checkbox" id="IsActive" @(Model.spDVGetApplicationForm.IsActive == true ? "checked" : "") style="font:bold; height:20px; width:20px;" />
+                            </div>
+                        }
+
+                        <label for="PossessionStatus" class="control-label col-sm-2">Possession Status</label>
+                        <div class="col-sm-1">
+                            <input type="checkbox" id="PossessionStatus" @(Model.spDVGetApplicationForm.PossessionStatus == true ? "checked" : "") style="font:bold; height:20px; width:20px;" />
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1">Form No</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" readonly id="ApplicationFormNo" value="@Model.spDVGetApplicationForm.ApplicationFormNo" />
+                            @*<span id="spnBankIDError" class="error" style="display:none;">Please select a bank</span>*@
+                        </div>
+
+                        <label for="ApplicationFormDate" class="control-label col-sm-1 PaddingTop-5">Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="ApplicationFormDate" value="@Model.spDVGetApplicationForm.ApplicationFormDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnApplicationFormDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1 PaddingTop-5">Unit</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(x => x.spDVGetApplicationForm.UnitID, new SelectList(ViewBag.Units, "UnitID", "UnitNo"), "-- Select --", new { @class = "form-control showError", @id = "UnitID" })
+                            <span id="spnUnitIDError" class="error" style="display:none;">Please select a unit</span>
+                        </div>
+
+                        <label for="ApplicationFormID" class="col-sm-1 control-label ">Type</label>
+                        <div class="col-sm-2">
+
+                            @*@Html.DropDownListFor(x => x.spDVGetApplicationForm.DVUnit.UnitTypeID, new SelectList(ViewBag.UnitTypes, "UnitTypeID", "UnitTypeName"), "-- Select --", new { @class = "form-control showError", @id = "UnitTypeID" })*@
+                            <input class="form-control " readonly value="@Model.spDVGetApplicationForm.UnitTypeID" id="UnitTypeID" style="display:none;">
+                            <input class="form-control " readonly value="@Model.spDVGetApplicationForm.UnitTypeName" id="UnitTypeName">
+                        </div>
+
+                        <label for="FloorNo" class="col-sm-1 control-label ">Floor</label>
+                        <div class="col-sm-2">
+                            <input class="form-control " readonly value="@Model.spDVGetApplicationForm.FloorNo" id="FloorNo">
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+
+                        <label for="SQFT" class="col-sm-1 control-label ">SQFT</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.spDVGetApplicationForm.SQFT" id="SQFT">
+                        </div>
+
+                        <label for="Price" class="col-sm-1 control-label ">Price</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" onchange="calculateAmount()" value="@Model.spDVGetApplicationForm.Price" id="Price">
+                            <span id="spnPriceError" class="error" style="display:none;">Please enter price</span>
+                        </div>
+                        <label for="Amount" class="col-sm-1 control-label ">Amount</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@ViewBag.Amount" id="Amount">
+                        </div>
+                        @if (Model.spDVGetApplicationForm.ApplicationFormID > 0 && (Model.RoleID == 1 || Model.RoleID == 2) && Model.spDVGetApplicationForm.Cancelled == false)
+                        {
+                            @*<label for="Cancelled" class="control-label col-sm-1">Cancel</label>*@
+                            <div class="col-sm-1">
+                                <button class="btn btn-danger" onclick="cancelUnit();" style="float:right;color:white;">Cancel</button>
+                                @*<input type="checkbox" id="Cancelled" @(Model.spDVGetApplicationForm.Cancelled == true ? "checked" : "") style="font:bold; height:20px; width:20px;" />*@
+                            </div>
+                        }
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="TokenMoney" class="col-sm-1 control-label ">Token Money</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" value="@Model.spDVGetApplicationForm.TokenMoney" id="TokenMoney">
+                            <span id="spnTokenMoneyError" class="error" style="display:none;">Please enter token money</span>
+                        </div>
+
+                        <label for="A4" class="col-sm-1 control-label ">A4</label>
+                        <div class="col-sm-1">
+                            <input type="text" id="A4" maxlength="4" style="width:60px;" value="@Model.spDVGetApplicationForm.A4" class="form-control showError integer" />
+                            @*<span id="spnA4DuplicateError" class="error" style="display:none;">You can not enter duplicate A4</span>*@
+                        </div>
+                        <span id="spnA4DuplicateError" class="error" style="display:none;">You can not enter duplicate A4</span>
+
+                        <label class="control-label col-sm-2 PaddingTop-5">Arrangement Type</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(x => x.spDVGetApplicationForm.DVArrangementTypeID, new SelectList(ViewBag.DVArrangementTypes, "DVArrangementTypeID", "DVArrangementDesc"), "-- Select --", new { @class = "form-control showError", @id = "DVArrangementTypeID" })
+                            @*@Html.DropDownListFor(x => x.spDVGetApplicationForm.DVArrangementTypeID, new SelectList(ViewBag.DVArrangementTypes, "DVArrangementTypeID", "DVArrangementDesc"), "-- Select --", new { @class = "form-control showError", @id = "UnitID" })*@
+                            @* <span id="spnUnitIDError" class="error" style="display:none;">Please select a unit</span>*@
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1">Applicants</label>
+                        <div class="col-sm-2">
+
+                        </div>
+
+                    </div>
+                    <br />
+
+                    <a href="/DVDevelopment/DVDocumentList?ApplicationFormID=@Model.spDVGetApplicationForm.ApplicationFormID" class="btn btn-default" style="float:right">Document</a>
+                    <a href="/DVPaymentPlan/DVPaymentPlan?ApplicationFormID=@Model.spDVGetApplicationForm.ApplicationFormID" class="btn btn-default" style="float:right">Payment Plan</a>
+                    <a href="/DVDevelopment/DVReceipt?ApplicationFormID=@Model.spDVGetApplicationForm.ApplicationFormID" class="btn btn-default" style="float:right">Receipt</a>
+                    <a class="btn btn-success " id="add-applicant" style="float:right">Add Applicant</a>
+                    <br />
+                    <br />
+
+                    <div id="dvApplicants">
+
+                        @if (Model.DVApplicantRows != null && Model.DVApplicantRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.DVApplicantRows)
+                            {
+                                <div class="dvApplicant">
+
+                                    <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                    <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                    <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                    <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                    <input type="hidden" id="DCompanyID" value="@item.CompanyID" />
+                                    <input type="hidden" id="ApplicationFormID" value="@item.ApplicationFormID" />
+
+                                    <fieldset class="PaddingTop-10">
+                                        <legend style="font:300;font-style:italic;color:blue">Applicant @(i+1)</legend>
+                                        <input type="hidden" id="ApplicantID" value="@item.ApplicantID" />
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1"> Name</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Name" value="@item.Name" />
+                                                <span id="spnNameError" class="error" style="display:none;">Please add name</span>
+                                            </div>
+
+                                            <label class="control-label col-sm-1">Gender</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="GenderInput" value="@item.GenderID" style="display:none;" />
+                                                @Html.DropDownListFor(x => x.DVApplicantRows[i].GenderID, new SelectList(ViewBag.Genders, "GenderID", "GenderName"), "-- Select --", new { @class = "form-control showError", @id = "GenderID" })
+                                                <span id="spnGenderIDError" class="error" style="display:none;">Please select gender</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">Fath/Husband Name1</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="HusbandFather" value="@item.HusbandFather" />
+                                                <span id="spnHusbandFatherError" class="error" style="display:none;">Please enter Father's/Husband Name</span>
+                                            </div>
+
+
+                                            <label class="control-label col-sm-1">NICOP/CNIC</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="NICOP_CNIC" value="@item.NICOP_CNIC" />
+                                                <span id="spnNICOP_CNICError" class="error" style="display:none;">Please enter NICOP/CNIC</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label for="Passport" class="control-label col-sm-1">Passport</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Passport" value="@item.Passport" />
+                                                <span id="spnPassportError" class="error" style="display:none;">Please enter passport</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">Profession</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Profession" value="@Model.DVApplicantRows[i].Profession" />
+                                                <span id="spnProfessionError" class="error" style="display:none;">Please enter profession</span>
+                                            </div>
+                                            <label class="control-label col-sm-1">Sub Profession</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="SubProfession" value="@Model.DVApplicantRows[i].SubProfession" />
+                                                <span id="spnSubProfessionError" class="error" style="display:none;">Please enter sub profession</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">Street</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="StreetArea" value="@item.StreetArea" />
+                                                <span id="spnStreetAreaError" class="error" style="display:none;">Please enter street area</span>
+                                            </div>
+                                            <label class="control-label col-sm-1">Area</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Area" value="@item.Area" />
+                                                <span id="spnAreaError" class="error" style="display:none;">Please enter area</span>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">City</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="City" value="@item.City" />
+                                                <span id="spnCityError" class="error" style="display:none;">Please city</span>
+                                            </div>
+                                            <label class="control-label col-sm-1">District</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="District" value="@item.District" />
+                                                <span id="spnDistrictError" class="error" style="display:none;">Please enter district</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">Division</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Division" value="@item.Division" />
+                                                <span id="spnDivisionError" class="error" style="display:none;">Please enter division</span>
+                                            </div>
+
+                                            <label class="control-label col-sm-1">Country</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Country" value="@item.Country" />
+                                                <span id="spnCountryError" class="error" style="display:none;">Please enter country</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">Province</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="provinceId" value="@item.ProvinceID" style="display:none;" />
+                                                @Html.DropDownListFor(x => x.DVApplicantRows[i].ProvinceID, new SelectList(ViewBag.Provinces, "ProvinceID", "ProvinceName"),
+                                                "-- Select --", new { @class = "form-control showError", @id = "ProvinceID" })
+                                                <span id="spnProvinceIDError" class="error" style="display:none;">Please select province</span>
+                                            </div>
+
+                                            <label class="control-label col-sm-1">Tax</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Tax" value="@Model.DVApplicantRows[i].Tax" />
+                                                <span id="spnTaxError" class="error" style="display:none;">Please enter tax</span>
+                                            </div>
+
+                                        </div>
+                                        @*Picture Box*@
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <form action="/DVDevelopment/UploadApplicantPic" id="uploadImageForm" method="post" enctype="multipart/form-data">
+                                                <label class="control-label col-sm-1">Image</label>
+                                                <input type="hidden" name="ApplicationFormID" value="@item.ApplicationFormID" />
+                                                <input type="hidden" name="ApplicantID" value="@item.ApplicantID" />
+                                                <input type="hidden" id="ImagePath" value="@item.ImagePath" />
+                                                <div class="col-sm-5">
+                                                    <input type="image" id="imgBox" src="@item.ImagePath" style="min-height:200px; max-height: 200px;min-width:200px; max-width:200px; border: 1px solid black; display:block;" />
+
+                                                    <div class="mb-3">
+                                                        <input class="form-control" type="file" name="imgFile" id="imgFile">
+                                                    </div>
+
+                                                    <input type="submit" class="btn btn-success" value="Upload" />
+
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                        @*Picture Box*@
+
+                                        <fieldset class="PaddingTop-10">
+                                            <legend style="font:300;font-style:italic">Correspondence</legend>
+                                            <div class="row" style="margin-bottom:10px;">
+                                                <label class="control-label col-sm-1">Address</label>
+                                                <div class="col-sm-11">
+                                                    <input type="text" class="form-control" id="CorrespondenceAdressHouseNo" value="@Model.DVApplicantRows[i].CorrespondenceAdressHouseNo" />
+                                                    <span id="spnCorrespondenceAdressHouseNoError" class="error" style="display:none;">Please enter correspondence adress house no</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row" style="margin-bottom:10px;">
+                                                <label class="control-label col-sm-1">Phone</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="PhoneNo" value="@Model.DVApplicantRows[i].PhoneNo" />
+                                                    <span id="spnPhoneNoError" class="error" style="display:none;">Please enter phone no</span>
+                                                </div>
+                                                <label class="control-label col-sm-1">Phone2</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="Phone2" value="@Model.DVApplicantRows[i].Phone2" />
+                                                    <span id="spnPhone2Error" class="error" style="display:none;">Please enter phone 2</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row" style="margin-bottom:10px;">
+                                                <label class="control-label col-sm-1">Street Area2</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="StreetArea2" value="@Model.DVApplicantRows[i].StreetArea2" />
+                                                    <span id="spnStreetArea2Error" class="error" style="display:none;">Please enter street area2</span>
+                                                </div>
+                                                <label class="control-label col-sm-1">City 2</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="City2" value="@item.City2" />
+                                                    <span id="spnCity2Error" class="error" style="display:none;">Please city 2</span>
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="row" style="margin-bottom:10px;">
+                                                <label class="control-label col-sm-1">Country2</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="Country2" value="@item.Country2" />
+                                                    <span id="spnCountry2Error" class="error" style="display:none;">Please enter country2</span>
+                                                </div>
+                                                <label class="control-label col-sm-1">Email</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="Email" value="@Model.DVApplicantRows[i].Email" />
+                                                    <span id="spnEmailError" class="error" style="display:none;">Please enter email</span>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row" style="margin-bottom:10px;">
+                                                <label class="control-label col-sm-1">Living</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="Living" value="@Model.DVApplicantRows[i].Living" />
+                                                    <span id="spnLivingError" class="error" style="display:none;">Please enter living</span>
+                                                </div>
+                                                <label class="control-label col-sm-1">Citizen</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="Citizen" value="@Model.DVApplicantRows[i].Citizen" />
+                                                    <span id="spnCitizenError" class="error" style="display:none;">Please enter citizen</span>
+                                                </div>
+
+                                            </div>
+
+                                        </fieldset>
+                                    </fieldset>
+
+                                    <fieldset>
+                                        <legend style="font:bold;font-style:italic">Nominee</legend>
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">Name</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="NomioneeName" value="@Model.DVApplicantRows[i].NomioneeName" />
+                                                <span id="spnNomioneeNameError" class="error" style="display:none;">Please enter nomionee name</span>
+                                            </div>
+                                            <label class="control-label col-sm-2">Father's/Husband Name'</label>
+                                            <div class="col-sm-4">
+                                                <input type="text" class="form-control" id="NomineeFatherHusbandName" value="@Model.DVApplicantRows[i].NomineeFatherHusbandName" />
+                                                <span id="spnNomineeFatherHusbandNameError" class="error" style="display:none;">Please nominee father husband name</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-bottom:10px;">
+                                            <label class="control-label col-sm-1">NICOP/CNIC</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control" id="Nominee_NICOP_CNIC" value="@Model.DVApplicantRows[i].Nominee_NICOP_CNIC" />
+                                                <span id="spnNominee_NICOP_CNICError" class="error" style="display:none;">Please enter nominee NICOP/CNIC</span>
+                                            </div>
+                                            <label class="control-label col-sm-2">Relation</label>
+                                            <div class="col-sm-4">
+                                                <input type="text" class="form-control" id="Relation" value="@Model.DVApplicantRows[i].Relation" />
+                                                <span id="spnRelationError" class="error" style="display:none;">Please enter relation</span>
+                                            </div>
+
+                                        </div>
+                                    </fieldset>
+
+                                    <span style="display:none">@(i = i + 1);</span>
+                                    <hr />
+                                </div>
+                            }
+                        }
+                    </div>
+
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLVoucher/GLVoucher" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    @*<button class="btn btn-primary" onclick="fullReceived();"><span style="font-weight:bold;">++</span></button>*@
+                    <a href="/DVDevelopment/DVFormApplicationList" class="btn btn-info ">Back to List</a>
+                    <a href="/DVDevelopment/ApplicationForm" class="btn btn-primary">Add</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    @if (
+                            (Model.RoleID == 1 || Model.RoleID == 2 || Model.spDVGetApplicationForm.Cancelled.GetValueOrDefault(false) == false) ||
+                            (Model.spDVGetApplicationForm.IsActive == true)
+                        )
+                    {
+                        <a href="#" class="btn btn-primary btnSave">Save</a>
+                    }
+                    <a onclick="viewReport()" class=" btn btn-success"> View Report</a>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<div class="TemplateDiv" style="display:none">
+    <fieldset class="PaddingTop-10">
+        <legend style="font:300;font-style:italic;color:blue">Applicant </legend>
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1"> Name</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Name" value="" />
+                <span id="spnNameError" class="error" style="display:none;">Please add name</span>
+            </div>
+
+            <label class="control-label col-sm-1">Gender</label>
+            <div class="col-sm-5">
+                <input type="text" class="GenderInput" value="" style="display:none;" />
+                <input type="text" class="GenderInput" value="" style="display:none;" />
+                @Html.DropDownList("GenderID", new SelectList(ViewBag.Genders, "GenderID", "GenderName"), "-- Select --", new { @class = "form-control showError", @id = "GenderID" })
+                <span id="spnGenderIDError" class="error" style="display:none;">Please select gender</span>
+            </div>
+
+        </div>
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">Fath/Husband Name</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="HusbandFather" value="" />
+                <span id="spnHusbandFatherError" class="error" style="display:none;">Please enter Nominee Father's/Husband Name</span>
+            </div>
+
+
+            <label class="control-label col-sm-1">NICOP/CNIC</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="NICOP_CNIC" value="" />
+                <span id="spnNICOP_CNICError" class="error" style="display:none;">Please enter NICOP/CNIC</span>
+            </div>
+
+        </div>
+
+        <div class="row" style="margin-bottom:10px;">
+            <label for="Passport" class="control-label col-sm-1">Passport</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Passport" value="" />
+                <span id="spnPassportError" class="error" style="display:none;">Please passport</span>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">Profession</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Profession" value="" />
+                <span id="spnProfessionError" class="error" style="display:none;">Please enter profession</span>
+            </div>
+            <label class="control-label col-sm-1">Sub Profession</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="SubProfession" value="" />
+                <span id="spnSubProfessionError" class="error" style="display:none;">Please enter sub profession</span>
+            </div>
+
+        </div>
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">Street</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="StreetArea" value="" />
+                <span id="spnStreetAreaError" class="error" style="display:none;">Please enter street area</span>
+            </div>
+            <label class="control-label col-sm-1">Area</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Area" value="" />
+                <span id="spnAreaError" class="error" style="display:none;">Please enter area</span>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">City</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="City" value="" />
+                <span id="spnCityError" class="error" style="display:none;">Please city</span>
+            </div>
+            <label class="control-label col-sm-1">District</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="District" value="" />
+                <span id="spnDistrictError" class="error" style="display:none;">Please enter district</span>
+            </div>
+
+        </div>
+
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">Division</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Division" value="" />
+                <span id="spnDivisionError" class="error" style="display:none;">Please enter division</span>
+            </div>
+
+            <label class="control-label col-sm-1">Country</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Country" value="" />
+                <span id="spnCountryError" class="error" style="display:none;">Please enter country</span>
+            </div>
+
+        </div>
+
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">Province</label>
+            <div class="col-sm-5">
+                <input type="text" class="provinceId" value="" style="display:none;" />
+                @Html.DropDownList("ProvinceID", new SelectList(ViewBag.Provinces, "ProvinceID", "ProvinceName"),
+                "-- Select --", new { @class = "form-control showError", @id = "ProvinceID" })
+                <span id="spnProvinceIDError" class="error" style="display:none;">Please select province</span>
+            </div>
+
+            <label class="control-label col-sm-1">Tax</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Tax" value="" />
+                <span id="spnTaxError" class="error" style="display:none;">Please enter tax</span>
+            </div>
+
+        </div>
+
+
+
+
+        <fieldset class="PaddingTop-10">
+            <legend style="font:300;font-style:italic">Correspondence</legend>
+            <div class="row" style="margin-bottom:10px;">
+                <label class="control-label col-sm-1">Address</label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="CorrespondenceAdressHouseNo" value="" />
+                    <span id="spnCorrespondenceAdressHouseNoError" class="error" style="display:none;">Please enter correspondence adress house no</span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:10px;">
+                <label class="control-label col-sm-1">Phone</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="PhoneNo" value="" />
+                    <span id="spnPhoneNoError" class="error" style="display:none;">Please enter phone no</span>
+                </div>
+                <label class="control-label col-sm-1">Phone2</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="Phone2" value="" />
+                    <span id="spnPhone2Error" class="error" style="display:none;">Please enter phone 2</span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:10px;">
+                <label class="control-label col-sm-1">Street Area2</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="StreetArea2" value="" />
+                    <span id="spnStreetArea2Error" class="error" style="display:none;">Please enter street area2</span>
+                </div>
+                <label class="control-label col-sm-1">City 2</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="City2" value="" />
+                    <span id="spnCity2Error" class="error" style="display:none;">Please city 2</span>
+                </div>
+
+            </div>
+
+
+            <div class="row" style="margin-bottom:10px;">
+                <label class="control-label col-sm-1">Country2</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="Country2" value="" />
+                    <span id="spnCountry2Error" class="error" style="display:none;">Please enter country2</span>
+                </div>
+                <label class="control-label col-sm-1">Email</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="Email" value="" />
+                    <span id="spnEmailError" class="error" style="display:none;">Please enter email</span>
+                </div>
+
+            </div>
+
+            <div class="row" style="margin-bottom:10px;">
+                <label class="control-label col-sm-1">Living</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="Living" value="" />
+                    <span id="spnLivingError" class="error" style="display:none;">Please enter living</span>
+                </div>
+                <label class="control-label col-sm-1">Citizen</label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" id="Citizen" value="" />
+                    <span id="spnCitizenError" class="error" style="display:none;">Please enter citizen</span>
+                </div>
+
+            </div>
+
+        </fieldset>
+    </fieldset>
+
+    <fieldset>
+        <legend style="font:bold;font-style:italic">Nominee</legend>
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">Name</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="NomioneeName" value="" />
+                <span id="spnNomioneeNameError" class="error" style="display:none;">Please enter nomionee name</span>
+            </div>
+            <label class="control-label col-sm-2">Father's/Husband Name'</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="NomineeFatherHusbandName" value="" />
+                <span id="spnNomineeFatherHusbandNameError" class="error" style="display:none;">Please nominee father husband name</span>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:10px;">
+            <label class="control-label col-sm-1">NICOP/CNIC</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="Nominee_NICOP_CNIC" value="" />
+                <span id="spnNominee_NICOP_CNICError" class="error" style="display:none;">Please enter nominee NICOP/CNIC</span>
+            </div>
+            <label class="control-label col-sm-2">Relation</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="Relation" value="" />
+                <span id="spnRelationError" class="error" style="display:none;">Please enter relation</span>
+            </div>
+
+        </div>
+    </fieldset>
+
+    <hr />
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="ApplicationForm">
+        var applicantCount = 1;
+
+        $("#UnitID").select2();
+
+        $(document).ready(function (e) {
+
+            if ("@Model.spDVGetApplicationForm.Cancelled" == "True") {
+                $('#UnitID').prop('disabled', true);
+            }
+
+            $('#add-applicant').click(function (e) {
+
+                if ($('.dvApplicant').length >= 2) {
+                    alert("You can add only 2 applicants");
+                    return;
+                }
+                e.preventDefault;
+
+                addApplicant();
+                alert("New Applicant added!");
+            });
+
+            $(document).on("change", "#imgFile", function (e) {
+
+                e.preventDefault;
+
+                var file = e.target.files[0];// $(this.files[0]);
+                var imageBox = $(this).parent().parent().children("#imgBox");
+
+                var oFReader = new FileReader();
+                oFReader.readAsDataURL(file);
+
+                oFReader.onload = function (oFREvent) {
+                    $(imageBox).attr("src", oFREvent.target.result);
+                };
+
+            });
+
+            $(document).on("change", "#UnitID", function (e) {
+
+                e.preventDefault;
+
+                var unitid = $('#UnitID').val()
+                if (unitid == "")
+                    return;
+
+                $.post("/DVDevelopment/GetUnitData", { unitID: unitid }).done(function (unit) {
+
+                    if (unit != null && unit != '') {
+                        fillUnitInfo(unit[0]);
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                });
+
+            });
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+                //uploadImage();
+                //return;
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    alert("Please correct the error");
+                    return;
+                }
+
+
+                var objDVApplicationForm = getObject();
+                var objDVApplicants = getObjectDetails();
+
+                
+
+                $.post("/DVDevelopment/IsA4Duplicate", { ProjectID: $("#ProjectID").val(), ApplicationFormID: $("#ApplicationFormID").val(), A4: $("#A4").val() }).done(function (res) {
+
+                    if (res == true) {
+                        $('#spnA4DuplicateError').show();
+                        $('.btnSave').removeAttr('disabled');
+                        return;
+                    }
+                    else {
+                        $('#spnA4DuplicateError').hide();
+                    }
+                    debugger;
+                    var dvArrangementTypeID = $("#DVArrangementTypeID").val();
+
+                    $.post("/DVDevelopment/DVFormApplicationSave", { DVApplicationForm: objDVApplicationForm, DVApplicantList: objDVApplicants, DVArrangementTypeID: dvArrangementTypeID }).done(function (res) {
+                        if (res.status == true) {
+
+                            // uploadImage(res.resObjList);
+                            alert(res.resMessage);
+
+                            window.location = "/DVDevelopment/ApplicationForm/" + res.id;
+
+                        }
+                        else {
+                            alert(res.resMessage);
+                        }
+
+                    }).fail(function (ex) {
+                        alert(ex.responseText);
+                        // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                    }).always(function () { });
+
+
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () { });
+
+
+            });
+
+            $(document).on("change", "#ProjectID", function (e) {
+
+                e.preventDefault;
+                var projectID = $('#ProjectID').val();
+
+
+                $.post("/DVDevelopment/GetUnitListByProjectID", { ProjectID: projectID }).done(function (result) {
+
+
+                    $("#UnitID").empty();
+                    var options = '';
+                    options = options + '<option value="">' + "--Select--" + '</option> ';
+                    for (var i = 0; i < result.length; i++) {
+                        options = options + '<option value="' + result[i].UnitID + '">' + result[i].UnitNo + '</option> ';
+                    }
+
+                    $("#UnitID").append(options);
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () { });
+            });
+
+            $("#uploadImageForm").on("submit", function (event) {
+
+                if ($('#imgFile').val() == undefined || $('#imgFile').val() == '') {
+                    alert("Please select an image first");
+                    event.preventDefault();
+                }
+            });
+        });
+
+        function imageUploadCheck() {
+
+            alert("imageBox");
+            return false;
+        }
+
+
+        function viewReport() {
+
+
+            var ApplicationFormID = $('#MApplicationFormID').val();
+
+            var url = "/ReportsWebForms/ReportForm.aspx?ReportName=ApplicationForm&ApplicationFormID=" + ApplicationFormID;
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+
+            //}
+        }
+
+        $(".dvApplicant").each(function () {
+
+            var GenderInput = $(this).find(".GenderInput").val();
+            $(this).find('#GenderID').val(GenderInput);
+            $(this).find('#GenderID').val(GenderInput);
+
+            var ProvinceID = $(this).find(".provinceId").val();
+            $(this).find('#ProvinceID').val(ProvinceID);
+        });
+
+        function calculateAmount() {
+            var sqft = parseInt($('#SQFT').val());
+            var price = parseInt($('#Price').val());
+            var amount = sqft * price;
+            $('#Amount').val(amount);
+        }
+
+        function fillUnitInfo(unit) {
+            if (unit != '') {
+
+                $('#UnitTypeID').val(unit.UnitTypeID);
+                $('#UnitTypeName').val(unit.UnitTypeName);
+                $('#FloorNo').val(unit.FloorNo);
+                $('#SQFT').val(unit.SQFT);
+                $('#Price').val('');
+                $('#Amount').val('');
+
+            }
+        }
+
+
+        function cancelUnit() {
+            var unitID = $('#UnitID').val();
+            debugger;
+            var conf = confirm("Are you sure you want to cancel this unit");
+            if (conf) {
+                $.post("/DVDevelopment/CancelUnit", { UnitID: unitID }).done(function (res) {
+
+                    if (res == true) {
+                        alert("This unit is cancelled and no longer avaible");
+
+                        window.location = "/DVDevelopment/ApplicationForm/" + $("#MApplicationFormID").val();
+
+                    }
+                    else {
+                        alert("This unit is not cancelled");
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+            }
+        }
+
+        function uploadImage() {
+
+            if (window.FormData != undefined) {
+
+                var fileUpload = $("#imgFile").get(0);
+                var files = fileUpload.files;
+
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                // Adding one more key to FormData object
+                fileData.append('username', 'Manas');
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/DVDevelopment/UploadPic',
+                    crossDomain: true,
+                    data: fileData,
+                    dataType: "json",
+                    contentType: "multipart/form-data",
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }).done(function () {
+                    //$('.success').addClass('is-active');
+                }).fail(function () {
+                    //alert('An error occurred please try again later.')
+                });
+
+
+            }
+
+        }
+
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#ProjectID").val() == "") {
+                $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            if ($("#ApplicationFormDate").val() == "") {
+                $("#spnApplicationFormDateError").show();
+                valid = false;
+            }
+
+            if ($("#UnitID").val() == "") {
+                $("#spnUnitIDError").show();
+                valid = false;
+            }
+
+            if ($("#Price").val() == "" || $("#Price").val() == "0") {
+                $("#spnPriceError").show();
+                valid = false;
+            }
+
+            ////if ($(".dvApplicant").length == 0) {
+            ////    alert("Please add atlease one applicant");
+            ////    valid = false;
+            ////}
+
+            if ($(".dvApplicant").length == 0) {
+                return valid;
+            }
+
+            $(".dvApplicant").each(function (index, elem) {
+
+                if ($(elem).find("#Name").val() == "") {
+                    $(elem).find("#spnNameError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#GenderID").val() == "") {
+                    $(elem).find("#spnGenderIDError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#HusbandFather").val() == "") {
+                    $(elem).find("#spnHusbandFatherError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#NICOP_CNIC").val() == "") {
+                    $(elem).find("#spnNICOP_CNICError").show();
+                    valid = false;
+                }
+                if ($(elem).find("#Passport").val() == "") {
+                    $(elem).find("#spnPassportError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Profession").val() == "") {
+                    $(elem).find("#spnProfessionError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#SubProfession").val() == "") {
+                    $(elem).find("#spnSubProfessionError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#StreetArea").val() == "") {
+                    $(elem).find("#spnStreetAreaError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Area").val() == "") {
+                    $(elem).find("#spnAreaError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#City").val() == "") {
+                    $(elem).find("#spnCityError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#District").val() == "") {
+                    $(elem).find("#spnDistrictError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Division").val() == "") {
+                    $(elem).find("#spnDivisionError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Country").val() == "") {
+                    $(elem).find("#spnCountryError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#ProvinceID").val() == "") {
+                    $(elem).find("#spnProvinceIDError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Tax").val() == "") {
+                    $(elem).find("#spnTaxError").show();
+                    valid = false;
+                }
+
+
+                if ($(elem).find("#CorrespondenceAdressHouseNo").val() == "") {
+                    $(elem).find("#spnCorrespondenceAdressHouseNoError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#PhoneNo").val() == "") {
+                    $(elem).find("#spnPhoneNoError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Phone2").val() == "") {
+                    $(elem).find("#spnPhone2Error").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#StreetArea2").val() == "") {
+                    $(elem).find("#spnStreetArea2Error").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#City2").val() == "") {
+                    $(elem).find("#spnCity2Error").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Country2").val() == "") {
+                    $(elem).find("#spnCountry2Error").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Email").val() == "") {
+                    $(elem).find("#spnEmailError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Living").val() == "") {
+                    $(elem).find("#spnLivingError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Citizen").val() == "") {
+                    $(elem).find("#spnCitizenError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#NomioneeName").val() == "") {
+                    $(elem).find("#spnNomioneeNameError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#NomineeFatherHusbandName").val() == "") {
+                    $(elem).find("#spnNomineeFatherHusbandNameError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Nominee_NICOP_CNIC").val() == "") {
+                    $(elem).find("#spnNominee_NICOP_CNICError").show();
+                    valid = false;
+                }
+
+                if ($(elem).find("#Relation").val() == "") {
+                    $(elem).find("#spnRelationError").show();
+                    valid = false;
+                }
+
+            });
+
+            //if ($("#tbodyList tr").length == 1) {
+            //    valid = false;
+            //    alert("Please enter a row in detail");
+            //}
+
+            return valid;
+        }
+
+
+        function getObject() {
+
+
+            var IsActive = false;
+            var MRoleID = $("#MRoleID").val();
+            if (MRoleID != 1 && MRoleID != 2) {
+                IsActive = $("#MIsActive").val()
+            }
+            else {
+                IsActive = ($("#IsActive").val() == "" || $("#IsActive").is(":checked") == false) ? false : true;
+            }
+
+
+            var obj = {
+                ApplicationFormID: $("#ApplicationFormID").val(),
+                ApplicationFormNo: $("#ApplicationFormNo").val(),
+                ApplicationFormDate: $("#ApplicationFormDate").val(),
+                ProjectID: $("#ProjectID").val(),
+                UnitID: $("#UnitID").val(),
+                Price: $("#Price").val(),
+                TokenMoney: $("#TokenMoney").val(),
+                IsActive: IsActive,
+                Cancelled: $("#Cancelled").val(),
+                PossessionStatus: $("#PossessionStatus").is(":checked") ? true : false,
+                A4: $("#A4").val(),
+
+
+                // hidden fields
+                CompanyID: $("#CompanyID").val(),
+                CreatedBy: $("#MCreatedBy").val(),
+                CreatedAt: $("#MCreatedAt").val(),
+                ModifiedBy: $("#MModifiedBy").val(),
+                ModifiedAt: $("#MModifiedAt").val(),
+                //IsActive: $("#IsActive").val(),
+
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var ApplicationFormRows = [];
+
+            $(".dvApplicant").each(function (index, elem) {
+
+                var ApplicationFormRow = {
+
+
+                    ApplicantID: $(this).find('#ApplicantID').val(),
+                    ApplicationFormID: $(this).find('#ApplicationFormID').val(),
+                    Name: $(this).find('#Name').val(),
+                    GenderID: $(this).find('#GenderID').val(),
+                    HusbandFather: $(this).find('#HusbandFather').val(),
+                    NICOP_CNIC: $(this).find('#NICOP_CNIC').val(),
+                    Passport: $(this).find('#Passport').val(),
+                    HouseNo: $(this).find('#HouseNo').val(),
+                    StreetArea: $(this).find('#StreetArea').val(),
+                    Area: $(this).find('#Area').val(),
+                    City: $(this).find('#City').val(),
+                    District: $(this).find('#District').val(),
+                    Division: $(this).find('#Division').val(),
+                    ProvinceID: $(this).find('#ProvinceID').val(),
+                    Country: $(this).find('#Country').val(),
+                    CorrespondenceAdressHouseNo: $(this).find('#CorrespondenceAdressHouseNo').val(),
+                    StreetArea2: $(this).find('#StreetArea2').val(),
+                    City2: $(this).find('#City2').val(),
+                    Country2: $(this).find('#Country2').val(),
+                    PhoneNo: $(this).find('#PhoneNo').val(),
+                    Phone2: $(this).find('#Phone2').val(),
+                    Phone3: $(this).find('#Phone3').val(),
+                    Email: $(this).find('#Email').val(),
+                    Profession: $(this).find('#Profession').val(),
+                    SubProfession: $(this).find('#SubProfession').val(),
+                    Living: $(this).find('#Living').val(),
+                    Citizen: $(this).find('#Citizen').val(),
+                    Tax: $(this).find('#Tax').val(),
+                    ImagePath: $(this).find('#ImagePath').val(),
+                    NomioneeName: $(this).find('#NomioneeName').val(),
+                    NomineeFatherHusbandName: $(this).find('#NomineeFatherHusbandName').val(),
+                    Nominee_NICOP_CNIC: $(this).find('#Nominee_NICOP_CNIC').val(),
+                    Relation: $(this).find('#Relation').val(),
+
+                    CompanyID: $(this).find("#DCompanyID").val(),
+                    CreatedBy: $(this).find("#CreatedBy").val(),
+                    CreatedAt: $(this).find("#CreatedAt").val(),
+                    ModifiedBy: $(this).find("#ModifiedBy").val(),
+                    ModifiedAt: $(this).find("#ModifiedAt").val(),
+
+                }
+                ApplicationFormRows.push(ApplicationFormRow);
+
+            });
+
+            return ApplicationFormRows;
+        }
+
+        function addApplicant() {
+
+            var applicantDiv = $('.TemplateDiv').clone();
+            $(applicantDiv).removeClass("TemplateDiv");
+            $(applicantDiv).addClass("dvApplicant");
+            $(applicantDiv).css('display', 'block');
+            $('#dvApplicants').append(applicantDiv);
+
+        }
+    </script>
+}

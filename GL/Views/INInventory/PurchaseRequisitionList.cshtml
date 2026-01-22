@@ -1,0 +1,152 @@
+﻿@model GL.ViewModels.Inventory.INPurchaseRequisitionViewModel
+
+@{
+
+    ViewBag.Title = "PR List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="form-horizontal">
+                    <div class="box-body">
+                        <div class="box-header with-border">
+                            <h2 class="box-title">Purchase Requisition List</h2>
+                        </div>
+                        <br />
+
+                        <div class="row" style="margin-bottom:10px;">
+
+                            <label for="RequestDateFrom" class="control-label col-sm-2">From Date</label>
+                            <div class="col-sm-3">
+                                <div class="input-group ">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker dt" placeholder="" autocomplete="off" id="RequestDateFrom" value="" />
+                                </div>
+                                <span id="spnRequestDateFromError" class="error" style="display:none;">Please select request from date</span>
+                            </div>
+
+                            <label for="RequestDate" class="control-label col-sm-2">To Date</label>
+                            <div class="col-sm-3">
+                                <div class="input-group ">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker dt" placeholder="" autocomplete="off" id="RequestDateTo" value="" />
+                                </div>
+                                <span id="spnRequestDateToFromError" class="error" style="display:none;">Please select request to date</span>
+                            </div>
+
+                        </div>
+
+                        @*<div class="row" style="margin-bottom:10px;">
+            <label for="ItemCode" class="col-sm-1 control-label">Code</label>
+            <div class="col-sm-4">
+                <input class="form-control" id="ItemCode">
+            </div>
+            <label for="GroupID" class="control-label col-sm-1 PaddingTop-5">Group</label>
+
+            <div class="col-sm-4">
+                @Html.DropDownList("GroupID", new SelectList(ViewBag.INGroupList, "GroupID", "Name"), "-- Select --", new { @class = "form-control showError ddl", @id = "GroupID" })
+            </div>
+
+        </div>
+
+        <div class="row" style="margin-bottom:10px;">
+            <label for="Name" class="col-sm-1 control-label">Name</label>
+            <div class="col-sm-9">
+                <input class="form-control" id="Name">
+            </div>
+
+        </div>*@
+
+                        <!-- /.box-body -->
+                    <div class="box-footer">
+                        @if (ViewBag.roleid == 4 && !(ViewBag.username == "ind.umer" || ViewBag.username == "ind.shafeeq"))
+                        {
+                            <a href="/INInventory/PurchaseRequisition" class="btn btn-primary">Add</a>
+
+                        }
+                        <button class="btn btn-info pull-right" onclick="search()">Search</button>
+                    </div>
+                        <!-- /.box-footer -->
+                        @*</form>*@
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div id="ListRows">
+        </div>
+
+    </div>
+</section>
+@*<link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">*@
+
+@section scripts{
+
+    <script class="INItemList">
+
+        $().ready(function () {
+            search();
+            //$(".ddl").select2();
+
+            $('.dt').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+        });
+
+        function getSearchObject() {
+
+            var obj = {
+                ItemCode: $("#ItemCode").val(),
+                Name: $("#Name").val(),
+                GroupID: $("#GroupID").val() == "" ? null : $("#GroupID").val()
+            };
+            return obj;
+        }
+
+        function search() {
+
+            //var obj = getSearchObject();
+
+            debugger;
+
+            //var ItemCode = $("#ItemCode").val();
+            //var Name = $("#Name").val();
+            //var GroupID = $("#GroupID").val() == "" ? null : $("#GroupID").val();
+
+            var RequestDateFrom = $("#RequestDateFrom").val();
+            var RequestDateTo = $("#RequestDateTo").val();
+
+            $.post("/INInventory/PurchaseRequisitionSearchList", { RequestDateFrom: RequestDateFrom, RequestDateTo: RequestDateTo }).done(function (res) {
+
+                $("#ListRows").empty();
+                $("#ListRows").html(res);
+
+            }).fail(function (ex) {
+                alert(ex.responseText);
+            }).always(function () { });
+
+        }
+
+
+    </script>
+}
+
+
+

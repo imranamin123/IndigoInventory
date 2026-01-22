@@ -1,0 +1,99 @@
+﻿@model GL.ViewModels.Inventory.INPurchaseOrderViewModel
+@{
+    Layout = null;
+}
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Date</label>
+                        </th>
+
+                        <th>
+                            <label>Project</label>
+                        </th>
+                        <th>
+                            <label>Remarks</label>
+                        </th>
+                        <th style="width:50px;">
+                            <label>Approved</label>
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.INPurchaseOrderSearchList)
+                    {
+
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PurchaseOrderID)
+                            </td>
+                            <td>
+                                @item.PurchaseOrderDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProjectName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Remarks)
+                            </td>
+
+                            <td style="text-align: center; padding-right: 90px;">
+                                @if (item.Approved == 1)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+
+                            <td>
+                                <a href="/INInventory/PurchaseOrder?PurchaseOrderID=@item.PurchaseOrderID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+
+                                @if (Model.RoleID == 5 && item.Approved == 1)
+                                {
+                                    <a href="/INInventory/POUnApprove/@item.PurchaseOrderID" onclick="return confirm('Are you sure you want to revert');" title="Revert" class="btn btn-danger btn-xs"><i class="fa fa-edit"></i></a>
+                                }
+
+                                @*@if (item.Approved == 1)
+        {
+            <a href="/ReportsWebForms/ReportForm.aspx?ReportName=INGoodsReceiptNoteReportDownload&GoodsReceiptNoteID=@item.PurchaseOrderID" target="_blank" title="Print" class="btn btn-success btn-xs"><i class="fa fa-print"></i></a>
+        }*@
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'order': [[0, "desc"]],
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+
+
+
+</script>

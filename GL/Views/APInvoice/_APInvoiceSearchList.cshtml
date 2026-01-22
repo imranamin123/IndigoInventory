@@ -1,0 +1,102 @@
+﻿@model GL.ViewModels.AP.APInvoiceViewModel
+@{
+    Layout = null;
+}
+
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <p>
+                @*@Html.ActionLink("Create New", "Student")*@
+                @*<a href="/Setup/StaffAdd" class="btn btn-primary">Add</a>*@
+            </p>
+            <table class="table  table-hover" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Date</label>
+                        </th>
+                        <th>
+                            <label>APInvoice Amount</label>
+                        </th>
+                        <th>
+                            <label>APVendorName</label>
+                        </th>
+
+                        <th style="text-align: center; padding-right: 90px;">
+                            <label>Posted</label>
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.APInvoiceSearchList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.APInvoiceID)
+                            </td>
+                            <td>
+                                @item.APInvoiceDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.APInvoiceAmount)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.APVendorName)
+                            </td>
+                            <td style="text-align: center; padding-right: 90px;">
+                                @if (item.IsPosted == true)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+                            <td>
+                                <a href="/APInvoice/APInvoice?APInvoiceID=@item.APInvoiceID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                                @*<a href="/Students/Delete/@item.StudentID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>*@
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true,
+            // display everything
+            "iDisplayLength": -1,
+            "aaSorting": [[3, "asc"]] // Sort by first column descending
+        });
+
+        //$('#tblList').DataTable({
+        //    'paging': true,
+        //    'lengthChange': true,
+        //    'searching': true,
+        //    'ordering': true,
+        //    'info': true,
+        //    'autoWidth': true
+        //});
+
+    });
+</script>

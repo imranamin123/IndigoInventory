@@ -1,0 +1,259 @@
+﻿
+@model GL.ViewModels.Setup.GLAccountViewModel
+
+@{
+    ViewBag.Title = "GL Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string inActive = "0";
+    if (Model.GLAccount != null)
+    {
+        if (Model.GLAccount.InActive == true)
+        {
+            inActive = "1";
+        }
+        else
+        {
+            inActive = "0";
+        }
+    }
+
+}
+
+
+
+<style>
+    .error {
+        border-color: red;
+    }
+    .datepicker.dropdown-menu {
+        top: 100% !important; /* Ensure it opens downwards */
+        bottom: auto !important; /* Remove any conflicting upward positioning */
+    }
+
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">GL Account </h3>
+                </div>
+
+                <div class="form-horizontal">
+                    <input type="hidden" value="@Model.GLAccount.GLAccountID" id="hdGLAccountID" />
+                    <input type="hidden" value="@Model.GLAccount.CompanyID" id="hdCompanyID" />
+                    <input type="hidden" value="@Model.GLAccount.CreatedAt" id="hdCreatedAt" />
+                    <input type="hidden" value="@Model.GLAccount.CreatedBy" id="hdCreatedBy" />
+
+
+                    <div class="box-body">
+
+                        <div class="col-sm-12">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="A1" class="control-label col-sm-2 ">Account No</label>
+                                    <div class="col-sm-1">
+                                        <input type="text" id="A1" maxlength="2" style="width:40px;" value="@Model.GLAccount.A1" class="form-control showError integer" />
+                                        <span id="spnA1Error" class="error" style="display:none;">Please enter A1 Level</span>
+                                    </div>
+
+                                    <div class="col-sm-1">
+                                        <input type="text" id="A2" maxlength="2" style="width:40px;" value="@Model.GLAccount.A2" class="form-control showError integer" />
+                                        <span id="spnA2Error" class="error" style="display:none;">Please enter A2 Level</span>
+                                    </div>
+
+                                    <div class="col-sm-1">
+                                        <input type="text" id="A3" maxlength="2" style="width:40px;" value="@Model.GLAccount.A3" class="form-control showError integer" />
+                                        <span id="spnA3Error" class="error" style="display:none;">Please enter A3 Level</span>
+                                    </div>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" id="A4" maxlength="4" style="width:60px;" value="@Model.GLAccount.A4" class="form-control showError integer" />
+                                        <span id="spnA4Error" class="error" style="display:none;">Please enter A4 Level</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="StudentName" class="control-label col-sm-2">Description</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="Description" value="@Model.GLAccount.Description" class="form-control showError" />
+                                        <span id="spnDescriptionError" class="error" style="display:none;">Please enter Description</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <div class="col-sm-8">
+                                <div class="">
+
+                                    <div class="checkbox">
+                                        <label class="control-label  offset-sm-2">
+                                            <input type="checkbox" id="InActive" value="@Model.GLAccount.InActive" class=" showError"> In Active
+                                        </label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group col-sm-12">
+                            <div class="Actions">
+                                <a href="/GLAccount/GLAccountList" class="btn btn-info ">Back to List</a>
+
+                                <a class="btn btn-danger GLAccountDelete">Delete</a>
+                                <a href="#" class="btn btn-primary SaveGLAccount">Save</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+
+
+    $().ready(function () {
+
+        var inacrive = @inActive;
+        if (inacrive == "1")
+            $('#InActive')[0].checked = true;
+
+        else
+            $('#InActive')[0].checked = false;
+
+
+        $(".GLAccountDelete").click(function (e) {
+            e.preventDefault;
+           
+            if (confirm("Are you sure you want to delete this record ?")) {
+                if (inacrive == "1") {
+                    window.location = "/GLAccount/GLAccountDelete/@Model.GLAccount.GLAccountID";
+                }
+                else {
+                    alert("Please make this record In Active and then delete");
+                }
+            }
+        });
+
+
+        $(".SaveGLAccount").click(function (e) {
+                e.preventDefault;
+
+                if (IsValid() == false) {
+                    return;
+                }
+                
+                var obj = getObject();
+                var jsonData = JSON.stringify({ "GLAccount": obj });
+
+                $.ajax({
+                    url: "/GLAccount/GLAccountSave",
+                    type: "POST",
+                    data: jsonData,
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "JSON",
+                    success: function (res) {
+                        
+                        if (res.status == true) {
+                            alert("Record saved successfully!");
+                            var url = "/GLAccount/GLAccountList";
+                            window.location = url;
+
+                        }
+                        else if (res.status == false) {
+                            alert(res.resMessage);
+                        }
+                        else {
+                            alert("Error occured in saving");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        
+                        alert(errorThrown);
+                    }
+                });
+            });
+        });
+
+        function IsValid() {
+            var valid = true;
+            $(".error").hide();
+
+            $("#A1").css("border-color", "#d2d6de");
+            $("#A2").css("border-color", "#d2d6de");
+            $("#A3").css("border-color", "#d2d6de");
+            $("#A4").css("border-color", "#d2d6de");
+
+            if ($("#A1").val() == "") {
+                $("#A1").css("border-color", "red");
+                valid = false;
+            }
+
+            if ($("#A2").val() == "") {
+                $("#A2").css("border-color", "red");
+                valid = false;
+            }
+
+            if ($("#A3").val() == "") {
+                $("#A3").css("border-color", "red");
+                valid = false;
+            }
+
+            if ($("#A4").val() == "") {
+                $("#A4").css("border-color", "red");
+                valid = false;
+            }
+
+            if ($("#Description").val() == "") {
+                $("#spnDescriptionError").show();
+                valid = false;
+            }
+
+
+            return valid;
+        }
+
+        function getObject() {
+  
+            var inActive = false;
+            if ($('#InActive').is(":checked")) {
+                inActive = true;
+            }
+            else {
+                inActive = false;
+            }
+
+            var obj = {
+                GLAccountID: $("#hdGLAccountID").val(),
+                A1: $("#A1").val(),
+                A2: $("#A2").val(),
+                A3: $("#A3").val(),
+                A4: $("#A4").val(),
+                Description: $("#Description").val(),
+                CompanyID: $("#hdCompanyID").val(),
+                CreatedAt: $("#hdCreatedAt").val(),
+                CreatedBy: $("#hdCreatedBy").val(),
+                InActive: inActive,
+             }
+            return obj;
+        }
+
+    </script>
+}
+

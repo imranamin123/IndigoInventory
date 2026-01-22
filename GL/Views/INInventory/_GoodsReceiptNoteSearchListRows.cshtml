@@ -1,0 +1,119 @@
+﻿@model GL.ViewModels.Inventory.INGoodsReceiptNoteViewModel
+@{
+    Layout = null;
+}
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Date</label>
+                        </th>
+
+                        <th>
+                            <label>Project</label>
+                        </th>
+                        <th>
+                            <label>Remarks</label>
+                        </th>
+                        <th style="width:50px;">
+                            <label>IsPosted</label>
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.INGoodsReceiptNoteSearchList)
+                    {
+
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GoodsReceiptNoteID)
+                            </td>
+                            <td>
+                                @item.GoodsReceiptNotesDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProjectName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Remarks)
+                            </td>
+
+                            <td style="text-align: center; padding-right: 90px;">
+                                @if (item.IsPosted == true)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+
+                            <td>
+
+                                @*<a href="/INInventory/GoodsReceiptNote/@item.GoodsReceiptNoteID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>*@
+
+                                @if (item.IsPosted == true)
+                                {
+                                    @*<a href="/ReportsWebForms/ReportForm.aspx?ReportName=INGoodsReceiptNoteReport&GoodsReceiptNoteID=@item.GoodsReceiptNoteID" target="_blank" title="Print" class="btn btn-success btn-xs"><i class="fa fa-print"></i></a>*@
+                                    <a href="/ReportsWebForms/ReportForm.aspx?ReportName=INGoodsReceiptNoteReportDownload&GoodsReceiptNoteID=@item.GoodsReceiptNoteID" target="_blank" title="Print" class="btn btn-success btn-xs"><i class="fa fa-print"></i></a>
+                                }
+
+                                @if (Model.RoleID == 4)
+                                {
+                                    if (item.IsPosted != true)
+                                    {
+                                        <a href="/INInventory/GoodsReceiptNote/@item.GoodsReceiptNoteID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                                    }
+                                }
+                                @if (Model.RoleID == 5 && item.IsPosted == true)
+                                {
+                                    <a href="/Integration/INGoodRreceiptNoteUnPost/@item.GoodsReceiptNoteID" onclick="return confirm('Are you sure you want to revert posting');" title="Revert posting" class="btn btn-danger btn-xs"><i class="fa fa-edit"></i></a>
+                                }
+
+                                @if (item.PurchaseOrderID.GetValueOrDefault(0) <= 0 && Model.username == "ind.umer")
+                                {
+                                    <a title="Approve" href="/INInventory/PurchaseOrderForGRN/@item.GoodsReceiptNoteID" class="btn btn-primary btn-xs"><i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+                                }
+                                @*@if (Model.RoleID == 5)
+        {
+            <a href="/INInventory/GoodsReceiptNote/@item.GoodsReceiptNoteID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+        }*@
+
+                                @*<a href="/Students/Delete/@item.StudentID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>*@
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'order': [[0, "desc"]],
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+
+
+
+</script>

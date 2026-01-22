@@ -1,0 +1,890 @@
+﻿@model GL.ViewModels.Inventory.INStoreTransferNoteViewModel
+
+@{
+
+    ViewBag.Title = "Purchase Requisition";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var a = Model;
+
+    //var RoleID = Model.RoleID;
+    ////   var RequestID = Model.INStoreTransferNote.RequestID;
+    //var SubmitedByKPO = Model.SubmitedByKPO;
+    //var SubmitedByMD = Model.SubmitedByMD;
+    //var IsNew = Model.IsNew;
+
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content-fluid">
+    @*<input type="hidden" id="SubmitedByKPO" value="@Model.INStoreTransferNote.SubmitedByKPO" />
+        <input type="hidden" id="SubmitedAtKPO" value="@Model.INStoreTransferNote.SubmitedAtKPO" />
+        <input type="hidden" id="SubmitedByMD" value="@Model.INStoreTransferNote.SubmitedByMD" />
+        <input type="hidden" id="SubmitedAtMD" value="@Model.INStoreTransferNote.SubmitedAtMD" />*@
+
+    <input type="hidden" id="mCreatedBy" value="@Model.INStoreTransferNote.CreatedBy" />
+    <input type="hidden" id="mCreatedAt" value="@Model.INStoreTransferNote.CreatedAt" />
+    <input type="hidden" id="mModifiedBy" value="@Model.INStoreTransferNote.ModifiedBy" />
+    <input type="hidden" id="mModifiedAt" value="@Model.INStoreTransferNote.ModifiedAt" />
+    <input type="hidden" id="mApprovedByID" value="@Model.INStoreTransferNote.ApprovedByID" />
+    <input type="hidden" id="mApprovedByAt" value="@Model.INStoreTransferNote.ApprovedByAt" />
+    <input type="hidden" id="mReceivedByID" value="@Model.INStoreTransferNote.ReceivedByID" />
+    <input type="hidden" id="mReceivedByAt" value="@Model.INStoreTransferNote.ReceivedByAt" />
+    <input type="hidden" id="mCompanyID" value="@Model.INStoreTransferNote.CompanyID" />
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal" id="header">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Store Transfer Notes</h2>
+                    </div>
+
+                    @*@if (Model.INStoreTransferNote.IsPosted == true)
+                        {
+                            <h4 style="color:red; font:200;" class="box-title"> <b>Posted</b> </h4>
+                        }*@
+
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="UserID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control integer" readonly value="@Model.INStoreTransferNote.StoreTransferNoteID" id="StoreTransferNoteID">
+
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="INStoreTransferNoteDate" class="control-label col-sm-1">Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker dt" placeholder="" autocomplete="off" id="INStoreTransferNoteDate" value="@Model.INStoreTransferNote.StoreTransferNoteDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnINStoreTransferNotesDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+
+                        <label for="RefOGPNo" class="control-label col-sm-1 ">REF OGP#</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" value="@Model.INStoreTransferNote.RefOGPNo" id="RefOGPNo">
+                            <span id="spnRefOGPNoError" class="error" style="display:none;">Please select ref/ogp no</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row" style="margin-bottom:10px;">
+
+                        <label for="ToProjectID" class="control-label col-sm-1 PaddingTop-5">To Project</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INStoreTransferNote.ToProjectID, new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --", new { @class = "form-control showError ddl", @id = "ToProjectID" })
+                            <span id="spnToProjectIDError" class="error" style="display:none;">You can not select same projects</span>
+                        </div>
+
+                        <label for="FromProjectID" class="control-label col-sm-1 PaddingTop-5">From Project</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INStoreTransferNote.FromProjectID, new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --", new { @class = "form-control showError ddl", @id = "FromProjectID" })
+                            <span id="spnFromProjectIDError" class="error" style="display:none;">Please select from project</span>
+                            <span id="spnProjectIDDuplicateError" class="error" style="display:none;">Please select different projects</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="Remarks" class="col-sm-1 control-label ">Remarks</label>
+                        <div class="col-sm-7">
+                            <input class="form-control" value="@Model.INStoreTransferNote.Remarks" id="Remarks">
+                            <span id="spnRemarksError" class="error" style="display:none;">Please enter remarks</span>
+                        </div>
+                    </div>
+
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLINStoreTransferNote/GLINStoreTransferNote" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+
+
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="text-align:left;"><label>Item</label></th>
+                            <th style="width:150px;" class="align-right"><label>Size</label></th>
+                            <th style="width:150px;" class="align-right"><label>Unit</label></th>
+                            <th style="text-align: left; width: 200px;"><label>Remarks</label></th>
+
+                            <th style="width:150px;" class="align-right"><label>Qty In Hand</label></th>
+                            @*<th style="width:150px;" class="align-right"><label>Requested Qty</label></th>*@
+                            <th style="width:150px;" class="align-right"><label>Transfer Qty</label></th>
+
+                            @if (Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) > 0 && Model.INStoreTransferNote.StoreTransferNoteID > 0)
+                            {
+                                <th style="width:5px;"></th>
+                            }
+
+
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.INStoreTransferNoteDetailRows != null && Model.INStoreTransferNoteDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.INStoreTransferNoteDetailRows)
+                            {
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+                                        <input type="hidden" id="INStoreTransferNoteDetailID" value="@item.StoreTransferNoteDetailID" />
+                                        <input type="hidden" id="StoreTransferNoteID" value="@item.StoreTransferNoteID" />
+                                        <input type="hidden" id="ItemID" value="@item.ItemID" />
+
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                        <label>@item.StoreTransferNoteDetailID</label>
+                                    </td>
+
+                                    <td style="width:300px">
+                                        <input type="text" class="itemId" value="@item.ItemID" style="display:none;" />
+                                        <input type="text" class="requestDetailID" value="@item.RequestDetailID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.INStoreTransferNoteDetailRows[i].ItemID, new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly id="Size" class="form-control" placeholder="" value="@item.Size" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly id="Unit" class="form-control" placeholder="" value="@item.Unit" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" id="rem" class="form-control remarks" placeholder="" value="@item.Remarks" onchange="hidSubmit();" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly style="text-align:right;" id="QtyInHand" class="form-control decimal post" value="@item.QtyInHand" />
+                                        <span id="spnApprovedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
+                                    </td>
+
+                                    @*<td>
+                                            <input type="text" style="text-align:right;" id="RequestedQty" class="form-control decimal " value="@item.RequestedQty" />
+                                        </td>*@
+
+                                    <td>L
+                                        <input type="text" style="text-align:right;" id="TransferQty" class="form-control decimal" value="@item.TransferQty" />
+                                        <span id="spnTransferQtyError" class="error" style="display:none;">Please enter transfer qty</span>
+                                        <span id="spnTransferQtyGreaterThanBalanceError" class="error" style="display:none;">Received qty can not be greater than demand balance</span>
+                                        <span id="spnTransferQtyGreaterThanQtyInHandError" class="error" style="display:none;">Received qty can not be greater than qty in hand</span>
+                                    </td>
+
+                                    @if (Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) <= 0 && Model.INStoreTransferNote.StoreTransferNoteID > 0)
+                                    {
+                                        <td>
+                                            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                        </td>
+                                    }
+
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+                                <input type="hidden" id="INStoreTransferNoteDetailID" value="" />
+                                <input type="hidden" id="StoreTransferNoteID" value="" />
+                                <input type="hidden" id="ItemID" value="" />
+
+                                <input type="hidden" id="CreatedBy" value="" />
+                                <input type="hidden" id="CreatedAt" value="" />
+                                <input type="hidden" id="ModifiedBy" value="" />
+                                <input type="hidden" id="ModifiedAt" value="" />
+                                <input type="hidden" id="CompanyID" value="" />
+
+                                <label></label>
+                            </td>
+
+                            <td style="width:300px">
+                                <input type="text" class="itemId" value="" style="display: none;" />
+                                <input type="text" class="requestDetailID" value="" style="display: none;" />
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </td>
+
+                            <td>
+                                <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" id="rem" class="form-control remarks" placeholder="" value="" />
+                            </td>
+                            <td>
+                                <input type="text" readonly style="text-align:right;" id="QtyInHand" class="form-control decimal" value="" />
+                                <span id="spnApprovedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
+                            </td>
+
+                            @*<td>
+                                    <input type="text" style="text-align:right;" id="RequestedQty" class="form-control decimal " value="" />
+                                </td>*@
+
+                            <td>
+                                <input type="text" style="text-align:right;" id="TransferQty" class="form-control decimal" value="" />
+                                <span id="spnTransferQtyError" class="error" style="display:none;">Please enter transfer qty</span>
+                                <span id="spnTransferQtyGreaterThanBalanceError" class="error" style="display:none;">Received qty can not be greater than demand balance</span>
+                                <span id="spnTransferQtyGreaterThanQtyInHandError" class="error" style="display:none;">Received qty can not be greater than qty in hand</span>
+                            </td>
+
+
+                            @if (Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) <= 0 && Model.INStoreTransferNote.StoreTransferNoteID > 0)
+                            {
+                                <td>
+                                    <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                </td>
+                            }
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+
+                        @*<tr>
+                                <td colspan="8" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
+                                <td colspan="2"><input type="text" id="TotalAmount" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
+                                <td></td>
+                            </tr>*@
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    @*<button class="btn btn-primary" onclick="fullReceived();"><span style="font-weight:bold;">++</span></button>*@
+                    <a href="/INInventory/StoreTransferNoteList" class="btn btn-info ">Back to List</a>
+                    <a href="/INInventory/StoreTransferNote" class="btn btn-primary">Add</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    <a onclick="downloadReport()" class=" btn btn-primary"> Download Report</a>
+                    @if (Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) <= 0)
+                    {
+                        <a href="#" class="btn btn-primary btnSave">Save</a>
+                    }
+                    @if (Model.RoleID == 5 && Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) <= 0)
+                    {
+                        <a onclick="approve()" href="#" class="btn btn-success pull-right"> Approve</a>
+                    }
+                    @if (Model.RoleID == 4 && Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) > 0 && Model.INStoreTransferNote.ReceivedByID.GetValueOrDefault(0) <=0 )
+                    {
+                        <a onclick="receive()" id="btnReceive" class=" btn btn-primary pull-right"> Receive</a>
+                    }
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+            <input type="hidden" id="INStoreTransferNoteDetailID" value="" />
+            <input type="hidden" id="StoreTransferNoteID" value="" />
+            <input type="hidden" id="ItemID" value="" />
+
+            <input type="hidden" id="CreatedBy" value="" />
+            <input type="hidden" id="CreatedAt" value="" />
+            <input type="hidden" id="ModifiedBy" value="" />
+            <input type="hidden" id="ModifiedAt" value="" />
+            <input type="hidden" id="CompanyID" value="" />
+
+            <label></label>
+        </td>
+
+        <td style="width:300px">
+            <input type="text" class="itemId" value="" style="display: none;" />
+            <input type="text" class="requestDetailID" value="" style="display: none;" />
+            @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+        </td>
+
+        <td>
+            <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+        </td>
+
+        <td>
+            <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+        </td>
+
+        <td>
+            <input type="text" id="rem" class="form-control remarks" placeholder="" value="" />
+        </td>
+        <td>
+            <input type="text" readonly style="text-align:right;" id="QtyInHand" class="form-control decimal" value="" />
+            <span id="spnApprovedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
+        </td>
+
+        @*<td>
+                <input type="text" style="text-align:right;" id="RequestedQty" class="form-control decimal " value="" />
+            </td>*@
+
+        <td>
+            <input type="text" style="text-align:right;" id="TransferQty" class="form-control decimal" value="" />
+            <span id="spnTransferQtyError" class="error" style="display:none;">Please enter transfer qty</span>
+            <span id="spnTransferQtyGreaterThanBalanceError" class="error" style="display:none;">Received qty can not be greater than demand balance</span>
+            <span id="spnTransferQtyGreaterThanQtyInHandError" class="error" style="display:none;">Received qty can not be greater than qty in hand</span>
+        </td>
+
+
+        @*@if (Model.INStoreTransferNote.ApprovedByID.GetValueOrDefault(0) > 0 && Model.INStoreTransferNote.StoreTransferNoteID > 0)
+            {*@
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+            @*</td>
+                }*@
+    </tr>
+
+    @*<tr class="trTotalTemplate">
+                <td colspan="5" style="text-align:right;"><label>Total</label></td>
+                <td><input type="text" id="DrTotal" style="font-size:large; font-weight:bold; background-color:white;" class="form-control integer number" readonly value="0" /></td>
+                <td><input type="text" id="CrTotal" style="font-size:large; font-weight:bold;background-color:white;" class="form-control integer number" readonly value="0" /></td>
+        </tr>*@
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="StoreTransferNote">
+
+        @*var roleId = @RoleID;
+        var requestID = '';//
+        var submitedByKPO = @SubmitedByKPO;
+        var submitedByMD = @SubmitedByMD;
+        var isNotSavedMD = false;
+        var isNew = @IsNew;*@
+
+        $().ready(function () {
+            $("#APVendorID").select2();
+            @*var roleId = @RoleID;
+            var requestID = @RequestID;*@
+
+
+            $('.dt').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+            calculateTotals();
+
+            //if (roleId == 5) {
+            //    $('#header').find('input, select, textarea, button').prop('disabled', true);
+            //}
+
+
+
+            $("#tbodyList tr").each(function () {
+
+
+
+                $(this).find(".ddl").select2();
+                var itemId = $(this).find(".itemId").val();
+                var requestDetailID = $(this).find(".requestDetailID").val();
+                var value = requestDetailID + "," + itemId;
+                $(this).find(".ddl").val(value).change();
+
+                $(this).find(".select2.select2-container").css("width", "300px");
+                calculateTotals();
+            });
+
+            ////$(document).on("change", "#Type", function () {
+
+            ////    calculateVAT();
+            ////    calculateTotals();
+            ////    hidSubmit();
+            ////});
+
+            $(document).on("click", ".delete-row", function () {
+
+                if (confirm("Are you sure you want to delete this row")) {
+                    debugger;
+                    var row = $(this).closest("tr");
+                    var INStoreTransferNoteDetailID = $(this).closest("tr").find("#INStoreTransferNoteDetailID").val();
+
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() + 1) {
+                        $(row).find("#INStoreTransferNoteDetailID").val("");
+                        $(row).find(".itemId").val("");
+                        $(row).find(".requestDetailID").val("");
+                        $(row).find("#Size").val("");
+                        $(row).find("#Unit").val("");
+                        $(row).find("#QtyInHand").val("");
+                        $(row).find("#ApprovedQty").val("");
+
+                        $(row).find("#QtyInHand").val("");
+                        $(row).find("#RequestedQty").val("");
+                        $(row).find("#TransferQty").val("");
+
+                    }
+                    else if (INStoreTransferNoteDetailID != "" || $(INStoreTransferNoteDetailID).val() > 0) {
+
+                        $.get("/INInventory/StoreTransferNoteDetailDelete", { id: INStoreTransferNoteDetailID }).done(function (res) {
+
+                            $(row).remove();
+                             calculateTotals();
+
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if ((INStoreTransferNoteDetailID == "" || $(INStoreTransferNoteDetailID).val() == undefined)) {
+                        var totalRows = $("#tbodyList tr").length;
+                        if (totalRows > 1) {
+
+                            $(row).remove();
+                            calculateTotals();
+                        }
+                        else {
+                            $(row).find("#GLAccountID").val("");
+                            $(row).find("#Debit").val("");
+                            $(row).find("#Credit").val("");
+                            $(row).find("#GLNarration").val("");
+                        }
+                    }
+                }
+            });
+
+            $(document).on("click", ".btnSubmit", function (e) {
+
+                e.preventDefault;
+
+                if (isNew == 1) {
+                    alert("Please first save the requisition");
+                    return;
+                }
+
+                $('.btnSubmit').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSubmit').removeAttr('disabled');
+                    return;
+                }
+
+                var requestId = $("#RequestID").val();
+
+
+                $.post("/INInventory/INStoreTransferNoteSubmit", { RequestID: requestId }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+                        window.location = "/INInventory/PurchaseRequisitionList/";
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+
+                });
+
+            });
+
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    return;
+                }
+
+
+
+                var obj = getObject();
+                var objDetails = getObjectDetails();
+
+
+
+                $.post("/INInventory/INStoreTransferNoteSave", { INStoreTransferNote: obj, INStoreTransferNoteDetailList: objDetails }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+                        $('.btnSave').removeAttr('disabled');
+                        window.location = "/INInventory/StoreTransferNote/" + res.id;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+            $(document).on("change", "#ItemID", function () {
+                debugger;
+
+                var Item = $(this).children("option:selected").val();// $(this).children("option").filter(":selected").val();
+                var text = $(this).children("option:selected").text();
+                var lastDashIndex = text.lastIndexOf("= ");
+                var balance = text.substr(lastDashIndex + 2, (text.length - lastDashIndex));
+
+                const [requestDetailID, itemID] = Item.split(',');
+
+                $(this).closest("tr").find(".itemId").val(itemID).change();
+                $(this).closest("tr").find(".requestDetailID").val(requestDetailID).change();
+
+                var currentRow = $(this).closest("tr");
+                $(currentRow).attr("Balance", balance);
+
+                $(currentRow).find("#Unit").val("");
+                $(currentRow).find("#Size").val("");
+                $(currentRow).find("#QtyInHand").val("");
+                $(currentRow).find("#TransferQty").val("");
+
+                $.get("/INInventory/GetINGRNItemRow", { ItemID: itemID, RequestDetailID: requestDetailID }).done(function (res) {
+                    if (res != "") {
+
+
+                        $(currentRow).find("#Unit").val(res.Unit);
+                        $(currentRow).find("#Size").val(res.Size);
+                        $(currentRow).find("#QtyInHand").val(res.QtyInHand);
+                       // $(currentRow).find("#ApprovedQty").val(res.ApprovedQty);
+
+                        var totalRows = $("tr", "#tbodyList").length;
+                        var currentRowIndex = currentRow.index();
+                        var diff = totalRows - currentRowIndex;
+                        if (diff == 1) {
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find(".ddl").select2();
+                            // $(row).find(".select2.select2-container").css("width", "300px");
+
+                        }
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+
+                }).always(function () {
+
+                });
+            });
+
+            $(document).on("change", "#ToProjectID", function () {
+                debugger;
+                var FromProjectID = $("#ToProjectID").val();
+                if (FromProjectID != undefined && FromProjectID != "") {
+                    var companyID = $("#mCompanyID").val();
+                    $(".item-list").html("");
+                    $(".item-list").append('<option value="">-- Select --</option>'); 
+                    $.get("/INInventory/GetINGRDropdownItems", { CompanyID: companyID, ProjectID: FromProjectID }).done(function (res) {
+                        if (res != "") {
+ 
+                            $(res).each(function (index, element) {
+
+                                $(".item-list").append('<option value="' + element.ItemID + '">' + element.Description + '</option>');
+
+                            });
+                            $(".item-list").attr('selectedIndex', 0);
+
+                            $("#tbodyList").html("");
+
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find(".ddl").select2();
+
+                            $("#tbodyList").append(row);
+                        }
+
+                    }).fail(function (ex) {
+                        alert(ex.responseText);
+
+                    }).always(function () {
+
+                    });
+                }
+            });
+
+        });
+
+        function hidSubmit() {
+            debugger;
+            $("#btnPost").css("display", "none");
+        }
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#INStoreTransferNoteDate").val() == "") {
+                $("#spnINStoreTransferNotesDateError").show();
+                valid = false;
+            }
+
+            if ($("#RefOGPNo").val() == "") {
+                $("#spnRefOGPNoError").show();
+                valid = false;
+            }
+
+            if ($("#FromProjectID").val() == "") {
+                $("#spnFromProjectIDError").show();
+                valid = false;
+            }
+
+            if ($("#ToProjectID").val() == "") {
+                $("#spnToProjectIDError").show();
+                valid = false;
+            }
+
+            if ($("#FromProjectID").val() == $("#ToProjectID").val()) {
+                $("#spnProjectIDDuplicateError").show();
+                valid = false;
+            }
+
+            if ($("#Remarks").val() == "") {
+                $("#spnRemarksError").show();
+                valid = false;
+            }
+
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                //var ItemID = $("#VoucherTypeID").children("option").filter(":selected").text()
+
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "" ) {
+
+                    debugger;
+
+                    if ($(this).find('#TransferQty').val() == "" || $(this).find('#TransferQty').val() == "0") {
+                        $(this).find('#spnTransferQtyError').show();
+                        valid = false;
+                    }
+
+                    if (parseFloat($(this).find('#TransferQty').val()) > parseFloat($(this).find('#QtyInHand').val())) {
+                        $(this).find('#spnTransferQtyGreaterThanQtyInHandError').show();
+                        valid = false;
+                    }
+                    else if (parseFloat($(this).find('#TransferQty').val()) > parseFloat($(this).attr('balance'))) {
+                        $(this).find('#spnTransferQtyGreaterThanBalanceError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+            var rowCount = $("#tbodyList").find('tr').length;
+            if (rowCount == 1) {
+                alert("Please enter data at least one row");
+                valid = false;
+
+            }
+
+            return valid;
+        }
+
+
+    function getObject() {
+        debugger;
+            var obj = {
+
+                StoreTransferNoteID: $("#StoreTransferNoteID").val(),
+                StoreTransferNoteDate: $("#INStoreTransferNoteDate").val(),
+                FromProjectID: $("#FromProjectID").val(),
+                ToProjectID: $("#ToProjectID").val(),
+                RefOGPNo: $("#RefOGPNo").val(),
+                Remarks: $("#Remarks").val(),
+                ApprovedByID: $("#mApprovedByID").val(),
+                ApprovedByAt: $("#mApprovedByAt").val(),
+                ReceivedByID: $("#mReceivedByID").val(),
+                ReceivedByAt: $("#mReceivedByAt").val(),
+                CreatedBy: $("#mCreatedBy").val(),
+                CreatedAt: $("#mCreatedAt").val(),
+                ModifiedBy: $("#mModifiedBy").val(),
+                ModifiedAt: $("#mModifiedAt").val(),
+
+                CompanyID: $("#mCompanyID").val()
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var DetailRows = [];
+
+            debugger;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
+                    const [requestDetailID, itemID] = $(this).find('.ddl').val().split(',');
+                    var DetailRow = {
+
+                        StoreTransferNoteDetailID: $(this).find('#INStoreTransferNoteDetailID').val(),
+                        StoreTransferNoteID: $(this).find('#StoreTransferNoteID').val(),
+                        RequestDetailID: requestDetailID,
+                        ItemID: itemID,
+                        QtyInHand: $(this).find('#QtyInHand').val(),
+                        TransferQty: $(this).find('#TransferQty').val(),
+                        Remarks: $(this).find('#rem').val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val()
+                    }
+                    DetailRows.push(DetailRow);
+
+                }
+            });
+
+
+            return DetailRows;
+        }
+
+        function calculateTotals() {
+
+            var AmountSum = 0;
+            //var creditSum = 0;
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
+
+
+                    var Amount = $(this).find('#Amount').val() == '' ? 0 : parseFloat($(this).find('#Amount').val());
+
+                    AmountSum += parseFloat(Amount);
+                    // $("#APInvoiceAmount").val(AmountSum);
+                }
+            });
+
+            $("#TotalAmount").val(parseFloat(AmountSum).toFixed(2));
+        }
+
+        function approve() {
+
+            debugger;
+
+            if (confirm("Are you sure you want to approve the store transfer")) {
+                var storeTransferNoteID = $('#StoreTransferNoteID').val();
+
+                //var objDetails = getObjectDetails();
+                //$.post('@Url.Action("StoreTransferNoteApprove", "Inventory")', { StoreTransferNoteID: parseInt(StoreTransferNoteID) })
+                //$.post("/Inventory/StoreTransferNoteApprove", { StoreTransferNoteID: parseInt(StoreTransferNoteID) }).done(function (res) {
+                $.post("/INInventory/StoreTransferNoteApprove", { StoreTransferNoteID: storeTransferNoteID }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+                        window.location = "/INInventory/StoreTransferNoteList/";
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+
+                });
+            }
+        }
+
+        function receive() {
+
+            debugger;
+
+            if (confirm("Are you sure you want to receive")) {
+                var storeTransferNoteID = $('#StoreTransferNoteID').val();
+
+                $.post("/INInventory/StoreTransferNoteReceive", { StoreTransferNoteID: storeTransferNoteID }).done(function (res) {
+
+                    if (res.status = true) {
+                        alert(res.resMessage);
+                        //$('#btnReceive').css("visibility", 'hidden');
+                        window.location.reload();
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () { });
+            }
+        }
+
+        function downloadReport() {
+            debugger;
+            var StoreTransferNoteID = $('#StoreTransferNoteID').val();
+
+            var url = "/Reports/StoreTransferNoteReportDownload?StoreTransferNoteID=" + StoreTransferNoteID;
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+        }
+
+    </script>
+
+}
+

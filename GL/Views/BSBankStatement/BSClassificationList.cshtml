@@ -1,0 +1,185 @@
+﻿@model GL.ViewModels.BS.BSClassificationViewModel
+
+@{
+
+    ViewBag.Title = "Bank Transaction List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Main content -->
+<section class="content">
+
+    <style>
+        .error {
+            color: red;
+        }
+
+        .errorDetail {
+            border-color: red;
+            color: black;
+        }
+    </style>
+
+    <section class="content">
+
+
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="form-horizontal">
+                    <div class="box-body">
+                        <div class="box-header with-border">
+                            <h2 class="box-title">Bank Statement Classification </h2>
+
+                            <input type="hidden" id="CreatedBy" value="@Model.BSClassification.CreatedBy" />
+                            <input type="hidden" id="CreatedAt" value="@Model.BSClassification.CreatedAt" />
+                            <input type="hidden" id="ModifiedBy" value="@Model.BSClassification.ModifiedBy" />
+                            <input type="hidden" id="ModifiedAt" value="@Model.BSClassification.ModifiedAt" />
+                            <input type="hidden" id="CompanyID" value="@Model.BSClassification.CompanyID" />
+
+                        </div>
+                        <br />
+
+                        <div class="row" style="margin-bottom:10px;">
+                            <label for="BKBankID" class="control-label col-sm-1 ">Bank</label>
+                            <div class="col-sm-3">
+                                @Html.DropDownListFor(x => x.BSClassification.BKBankID, new SelectList(ViewBag.Banks, "BankID", "BankName"), "-- Select --", new { @class = "form-control showError", @id = "BkBankID" })
+                                <span id="spnBKBankIDError" class="error" style="display:none;">Please select a bank</span>
+                            </div>
+
+                            <label for="IsPending" class="control-label col-sm-1">Pending</label>
+                            <div class="col-sm-3">
+
+                                <input type="checkbox" id="IsPending" style="font:bold; height:20px; width:20px;" />
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-bottom:10px;">
+
+                            <label for="ValueDate" class="control-label col-sm-1 PaddingTop-5">From</label>
+                            <div class="col-sm-3">
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker" autocomplete="off" id="ValueDateFrom" value="@Model.BSClassification.BSClassificationDate.Value.ToString("dd-MMM-yyyy")" />
+                                </div>
+                                <span id="spnBSClassificationDateError" class="error" style="display:none;">Please select date</span>
+                            </div>
+
+                            <label for="ValueDate" class="control-label col-sm-1 PaddingTop-5">To</label>
+                            <div class="col-sm-3">
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker" autocomplete="off" id="ValueDateTo" value="@Model.BSClassification.BSClassificationDate.Value.ToString("dd-MMM-yyyy")" />
+                                </div>
+                                <span id="spnBSClassificationDateError" class="error" style="display:none;">Please select date</span>
+                            </div>
+                            <button class="btn btn-primary" onclick="fillPendingUnpendingList()">Search</button>
+                        </div>
+
+                        <div class="row">
+                            <div id="BSBankStatementPendingUnpendingList">
+                            </div>
+
+                        </div>
+
+                        <div style="margin-top: 7px;">
+
+                            <table class="table table-striped tblDetail" id="tblList">
+                                <thead>
+                                    <tr>
+                                        <th style="width:100px;text-align:center" class="th"><label>Det ID</label></th>
+                                        <th style="text-align:left;"><label>Type</label></th>
+                                        <th style="width:200px;" class="align-right"><label>Amount</label></th>
+                                        <th style="width:5px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyList">
+                                </tbody>
+                            </table>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="Actions">
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+    </section>
+    <div class="row">
+        <div id="BSBankStatementPendingUnpendingList">
+        </div>
+
+    </div>
+
+</section>
+
+@section scripts{
+
+    <script class="BSClassificationList">
+
+        function fillPendingUnpendingList() {
+
+            
+            var BkBankID = $("#BkBankID").val();
+            var IsPending = $("#IsPending").prop('checked');
+            var ValueDateFrom = $("#ValueDateFrom").val();
+            var ValueDateTo = $("#ValueDateTo").val();
+
+            if (BkBankID != "") {
+
+                $.get("/BSBankStatement/BSBankStatementPendingUnpendingSearchList", { BkBankID: BkBankID, IsPending: IsPending, ValueDateFrom: ValueDateFrom, ValueDateTo: ValueDateTo }).done(function (res) {
+
+                    $("#BSBankStatementPendingUnpendingList").empty();
+                    $("#BSBankStatementPendingUnpendingList").html(res);
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                });
+            }
+        }
+        function getSearchObject() {
+
+            var obj = {
+                GLVoucherID: $("#GLVoucherID").val(),
+                VoucherTypeID: $("#VoucherTypeID").val(),
+            };
+            return obj;
+        }
+
+        function search() {
+
+            $.post("/BSBankStatement/BSClassificationSearchList", {}).done(function (res) {
+
+                $("#ListRows").empty();
+                $("#ListRows").html(res);
+
+            }).fail(function (ex) {
+                alert(ex.responseText);
+            }).always(function () { });
+
+        }
+
+
+    </script>
+}
+
+
+

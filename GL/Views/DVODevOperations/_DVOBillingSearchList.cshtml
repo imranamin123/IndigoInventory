@@ -1,0 +1,84 @@
+﻿@model GL.ViewModels.DVO.DVOBillingViewModel
+@{
+    Layout = null;
+}
+
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <p>
+                @*@Html.ActionLink("Create New", "Student")*@
+                @*<a href="/Setup/StaffAdd" class="btn btn-primary">Add</a>*@
+            </p>
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Project</label>
+                        </th>
+                        <th>
+                            <label>Unit</label>
+                        </th>
+                        <th>
+                            <label>Bill Month</label>
+                        </th>
+                        <th>
+                            <label>Issue Date</label>
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.DVOBillingSearchListRows)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BillingID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProjectName)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UnitNo)
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.BillMonth)*@
+                                @item.BillingDate.Value.ToString("MMM-yyyy")
+                            </td>
+                            <td>
+                                @item.BillingDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                <a href="/DVODevOperations/DVOBilling?BillingID=@item.BillingID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+</script>

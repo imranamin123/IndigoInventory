@@ -1,0 +1,47 @@
+﻿@model  GL.ViewModels.Setup.APCompanyViewModel
+
+@{
+    ViewBag.Title = "Company List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<link rel="stylesheet" href="~/admin-lte/dist/css/skins/_all-skins.min.css">*@
+
+
+<section class="container">
+    <div class="row">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Company List</h3>
+            </div>
+            @if (ViewBag.IsSuperAdmin == true)
+            {
+                <h1>Total Active Sessions: @ViewBag.activeSessionCount</h1>
+            }
+
+            <div class="box-body">
+                <div class="col-sm-12" style="overflow:auto;">
+                    <p>
+                        <a href="/Setup/Company" class="btn btn-primary">Add</a>
+                    </p>
+                    <div id="ListGrid">
+                        @Html.Partial("_CompanyList", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script class="ListClass">
+
+        $().ready(function () {
+            $('#tblCompanyList').DataTable();
+        });
+    </script>
+
+}
+

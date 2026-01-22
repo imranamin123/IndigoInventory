@@ -1,0 +1,255 @@
+﻿
+@model GL.ViewModels.AP.APVendorViewModel
+
+@{
+    ViewBag.Title = "Vendor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .error {
+        color: red;
+        border-color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Vendor</h3>
+                </div>
+
+
+                <div class="form-horizontal">
+                    <input type="hidden" value="@Model.APVendor.CompanyID" id="hdCompanyID" />
+                    <input type="hidden" value="@Model.APVendor.CreatedAt" id="hdCreatedAt" />
+                    <input type="hidden" value="@Model.APVendor.CreatedBy" id="hdCreatedBy" />
+                    <input type="hidden" value="@Model.APVendor.ModifiedAt" id="hdModifiedAt" />
+                    <input type="hidden" value="@Model.APVendor.ModifiedBy" id="hdModifiedBy" />
+
+
+                    <div class="box-body">
+
+
+                        <div class="row" style="margin-bottom:2px;">
+
+                            <div class="form-group">
+                                <label for="APVendorID" class="control-label col-sm-2">ID</label>
+                                <div class="col-sm-3">
+                                    <input type="text" readonly id="APVendorID" value="@Model.APVendor.APVendorID" class="form-control showError" />
+                                    @*<span id="spnAPVendorIDError" class="error" style="display:none;">Please enter Company name</span>*@
+                                </div>
+
+                                <label for="APVendorCode" class="control-label col-sm-1">Code</label>
+                                <div class="col-sm-3">
+                                    <input type="text" id="APVendorCode" value="@Model.APVendor.APVendorCode" class="form-control showError" />
+                                    <span id="spnAPVendorCodeError" class="error" style="display:none;">Please vendor enter code</span>
+                                </div>
+
+
+                                <input type="checkbox" id="chkOnHold" @(Model.APVendor.OnHold.GetValueOrDefault(false) == true ? "checked" : "") style="font:bold; height:20px; width:20px;" />
+                                <label for="chkOnHold" class="control-label" style="margin-left:5px;">On Hold</label>
+
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom:2px;">
+                            <div class="form-group">
+                                <label for="APVendorName" class="control-label col-sm-2">Vendor Name</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="APVendorName" value="@Model.APVendor.APVendorName" class="form-control showError" />
+                                    <span id="spnAPVendorNameError" class="error" style="display:none;">Please enter vendor name</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom:2px;">
+                            <div class="form-group">
+
+                                <label for="ContactPerson" class="control-label col-sm-2">Contact Person</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="ContactPerson" value="@Model.APVendor.ContactPerson" class="form-control showError" />
+                                    <span id="spnContactPersonError" class="error" style="display:none;">Please enter contact person</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom:2px;">
+                            <div class="form-group">
+
+                                <label for="BankDetails" class="control-label col-sm-2">Bank Details</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="BankDetails" value="@Model.APVendor.BankDetails" class="form-control showError" />
+                                    <span id="spnBankDetailsError" class="error" style="display:none;">Please enter bank details</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom:2px;">
+                            <div class="form-group">
+
+                                <label for="APVendorCategoryID" class="control-label col-sm-2 ">Category</label>
+                                <div class="col-sm-7">
+                                    @Html.DropDownListFor(x => x.APVendor.APVendorCategoryID, new SelectList(ViewBag.APVendorCategories, "APVendorCategoryID", "APVendorCategoryName"), "-- Select --", new { @class = "form-control showError", @id = "APVendorCategoryID" })
+                                    <span id="spnAPVendorCategoryIDError" class="error" style="display:none;">Please select category</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom:2px;">
+                            <div class="form-group">
+                                <label for="ContactNumber" class="control-label col-sm-2">Contact No</label>
+                                <div class="col-sm-3">
+                                    <input type="text" id="ContactNumber" value="@Model.APVendor.ContactNumber" class="form-control showError" />
+                                    <span id="spnContactNumberError" class="error" style="display:none;">Please enter contact number</span>
+                                </div>
+
+                                <label for="Email" class="control-label col-sm-1">Email</label>
+                                <div class="col-sm-3">
+                                    <input type="text" id="Email" value="@Model.APVendor.Email" class="form-control showError" />
+                                    <span id="spnEmailError" class="error" style="display:none;">Please vendor enter email</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="row" style="margin-bottom:2px;">
+                            <div class="form-group">
+                                <label for="Address" class="control-label col-sm-2">Address</label>
+                                <div class="col-sm-7">
+
+                                    <textarea type="text" id="Address" class="form-control showError">@Model.APVendor.Address</textarea>
+                                    <span id="spnAddressError" class="error" style="display:none;">Please vendor enter address</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <div class="Actions">
+                                <a href="/APAccountsPayable/VendorList" class="btn btn-info ">Back to List</a>
+                                <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                                <a href="#" class="btn btn-primary SaveVendor">Save</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="Vendors">
+
+        $().ready(function () {
+            $(".SaveVendor").click(function (e) {
+                e.preventDefault;
+                debugger;
+                if (IsValid() == false) {
+                    return;
+                }
+
+                var obj = getObject();
+                var jsonData = JSON.stringify({ "Vendor": obj });
+
+                $.ajax({
+                    url: "/APAccountsPayable/VendorSave",
+                    type: "POST",
+                    data: jsonData,
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "JSON",
+                    success: function (res) {
+
+                        if (res.status == true) {
+                            alert(res.resMessage);
+                            var url = "/APAccountsPayable/VendorList";
+                            window.location = url;
+
+                        }
+                        else {
+                            alert(res.resMessage);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            });
+        });
+
+        function IsValid() {
+            var valid = true;
+            $(".error").hide();
+
+            if ($("#APVendorCode").val() == "") {
+                $("#spnAPVendorCodeError").show();
+                valid = false;
+            }
+
+            if ($("#APVendorName").val() == "") {
+                $("#spnAPVendorNameError").show();
+                valid = false;
+            }
+
+            if ($("#APVendorCategoryID").val() == "") {
+                $("#spnAPVendorCategoryIDError").show();
+                valid = false;
+            }
+
+
+
+            if ($("#ContactPerson").val() == "") {
+                $("#spnContactPersonError").show();
+                valid = false;
+            }
+
+            if ($("#ContactNumber").val() == "") {
+                $("#spnContactNumberError").show();
+                valid = false;
+            }
+
+            if ($("#Address").val() == "") {
+                $("#spnAddressError").show();
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        function getObject() {
+            debugger;
+            var obj = {
+                APVendorID: $("#APVendorID").val(),
+                APVendorCode: $("#APVendorCode").val(),
+                APVendorName: $("#APVendorName").val(),
+                APVendorCategoryID: $("#APVendorCategoryID").val(),
+                ContactPerson: $("#ContactPerson").val(),
+                BankDetails: $("#BankDetails").val(),
+                ContactNumber: $("#ContactNumber").val(),
+                Email: $("#Email").val(),
+                Address: $("#Address").val(),
+                OnHold: ($("#chkOnHold").is(":checked") ? true : false),
+                CreatedAt: $("#hdCreatedAt").val(),
+                CreatedBy: $("#hdCreatedBy").val(),
+                ModifiedAt: $("#hdModifiedAt").val(),
+                ModifiedBy: $("#hdModifiedBy").val(),
+
+                CompanyID: $("#hdCompanyID").val()
+            }
+            return obj;
+        }
+
+    </script>
+}
+

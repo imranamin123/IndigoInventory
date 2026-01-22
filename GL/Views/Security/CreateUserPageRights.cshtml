@@ -1,0 +1,188 @@
+﻿@model GL.Security.ViewModels.MenuViewModel
+@{
+    ViewBag.Title = "Create user page rights";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="box box-info">
+    <div class="box-body">
+        <div class="form-horizontal">
+            <div class="box-body">
+                <div class="box-header with-border">
+                    <h2 class="box-title">Create User Page Rights</h2>
+                </div>
+                <br />
+                <div class="row">
+                    <label for="SchoolID" class="col-sm-1 control-label input-sm">Company</label>
+                    <div class="col-sm-3">
+                        <input type="text" value="@ViewBag.CompanyName" readonly />
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="ClassID" class="control-label col-sm-1">Login</label>
+                    <div class="col-sm-3">
+                        <input type="text" value="@ViewBag.Login" readonly />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="ClassID" class="control-label col-sm-1">User</label>
+                    <div class="col-sm-3">
+                        <input type="text" value="@ViewBag.UserName" readonly />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-12" style="overflow:auto;">
+            <table class="table table-hover" id="tblListCreateUserPageRights">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>Module</label>
+                        </th>
+                        <th>
+                            <label>Page</label>
+                        </th>
+                        <th>
+                            <label>View Allowed</label>
+                        </th>
+
+                        @*<th>
+                            <label>Add Allowed</label>
+                        </th>
+                        <th>
+                            <label>Edit Allowed</label>
+                        </th>
+                        <th>
+                            <label>Delete Allowed</label>
+                        </th>
+                        <th>
+                            <label>Print Allowed</label>
+                        </th>*@
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.UserPagesRights)
+                    {
+                        <tr>
+
+                            <td class="ModuleName">
+                                @Html.HiddenFor(modelItem => item.PageRightsID, new { @id = "PageRightsID" })
+                                @Html.HiddenFor(modelItem => item.CompanyID, new { @id = "CompanyID" })
+                                @Html.HiddenFor(modelItem => item.UsersID, new { @id = "UserID" })
+                                @Html.HiddenFor(modelItem => item.ModuleNo, new { @id = "ModuleNo" })
+                                @Html.HiddenFor(modelItem => item.ModuleOrderNo, new { @id = "ModuleOrderNo" })
+                                @Html.HiddenFor(modelItem => item.PageNo, new { @id = "PageNo" })
+                                @Html.HiddenFor(modelItem => item.PageOrderNo, new { @id = "PageOrderNo" })
+                                @Html.DisplayFor(modelItem => item.ModuleName, new { @id = "ModuleName", @style= "font:bold;" })
+                            </td>
+                            <td class="PageName">
+                                @Html.DisplayFor(modelItem => item.PageName)
+
+                            </td>
+                            <td class="IsViewAllowed">
+                                <input type="checkbox"  id="IsViewAllowed" @(item.IsViewAllowed.GetValueOrDefault(false) == true ? "checked" : "") style="font:bold; height:20px; width:20px;" />
+                            </td>
+                            @*@{
+                                if (item.PageNo != null)
+                                {
+                                    <td class="IsAddAllowed">
+                                        <input type="checkbox" id="IsAddAllowed" @(item.IsAddAllowed.GetValueOrDefault(false) == true ? "checked" : "") />
+                                    </td>
+                                    <td class="IsEditAllowed">
+                                        <input type="checkbox" id="IsEditAllowed" @(item.IsEditAllowed.GetValueOrDefault(false) == true ? "checked" : "") />
+                                    </td>
+                                    <td class="ModuleName">
+                                        <input type="checkbox" id="IsDeleteAllowed" @(item.IsDeleteAllowed.GetValueOrDefault(false) == true ? "checked" : "") />
+                                    </td>
+                                    <td class="IsPrintAllowed">
+                                        <input type="checkbox" id="IsPrintAllowed" @(item.IsPrintAllowed.GetValueOrDefault(false) == true ? "checked" : "") />
+                                    </td>
+
+                                }
+                                else
+                                {
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                }
+                            }*@
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="box-footer">
+                <button class="btn btn-info pull-right" onclick="Save()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $().ready(function () {
+        $('#tblListCreateUserPageRights').DataTable({
+            'paging': false,
+            'lengthChange': true,
+            'searching': false,
+            'ordering': false,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+    function Save() {
+        //if (IsValidSearch() == false) {
+        //    return;
+        //}
+        
+        var objList = getObject();
+
+        //$.get("/Security/myPost").done(function (res) {
+        //    
+        //    var a = res;
+        //});
+        $.post("/Security/CreateUserPageRightsSave", { SecPagesRights: objList }).done(function (res) {
+            
+            if (res.status == true) {
+                alert(res.resMessage)
+                location.reload();
+            }
+
+        }).fail(function (ex) {
+            alert(ex.responseText);
+        }).always(function () { });
+
+    }
+    function getObject() {
+        var list = [];
+        $('#tblListCreateUserPageRights').find('tbody').find('tr').each(function () {
+
+            var obj = {
+                PageRightsID: $(this).find("#PageRightsID").val(),
+                CompanyID: $(this).find("#CompanyID").val(),
+                UserID: $(this).find("#UserID").val(),
+                ModuleNo: $(this).find("#ModuleNo").val(),
+                ModuleOrderNo: $(this).find("#ModuleOrderNo").val() == "" ? $(this).find("#ModuleNo").val() : $(this).find("#ModuleOrderNo").val(),
+                PageNo: $(this).find("#PageNo").val(),
+                PageOrderNo: $(this).find("#PageOrderNo").val() == "" ? $(this).find("#PageNo").val() : $(this).find("#PageOrderNo").val(),
+
+                IsViewAllowed: ($(this).find("#IsViewAllowed").is(":checked") ? true : false),
+                IsAddAllowed: ($(this).find("#IsAddAllowed").is(":checked") ? true : false),
+                IsEditAllowed: ($(this).find("#IsEditAllowed").is(":checked") ? true : false),
+                IsDeleteAllowed: ($(this).find("#IsDeleteAllowed").is(":checked") ? true : false),
+                IsPrintAllowed: ($(this).find("#IsPrintAllowed").is(":checked") ? true : false),
+            }
+            list.push(obj);
+        });
+        return list;
+    }
+</script>

@@ -1,0 +1,99 @@
+﻿
+@{
+    //ViewBag.Title = "Trial Balance Report";
+}
+
+<h2>Trial Balance Report</h2>
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Trial Balance </h2>
+                    </div>
+                    <br />
+                    <div class="row">
+
+                        <label class="control-label col-sm-2">Fiscal Year</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("fiscalYear", new SelectList(ViewBag.fiscalYears, "FiscalYearSetupID", "FiscalYearPeriod"), "-- Select --", new { @class = "form-control showError ddl", @id = "fiscalYear" })
+                            <span id="spnFiscalYearError" class="error" style="display:none;">Please select fiscal year</span>
+                        </div>
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="viewReport()" class=" btn btn-success" > View Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script id="GLAccounts">
+    $().ready(function () {
+
+        $("#fiscalYear").select2();
+    });
+
+        function viewReport() {
+
+            if (IsValid()) {
+                var fiscalYear = $('#fiscalYear :selected').text();
+                var url = "/ReportsWebForms/TrialBalance.aspx?CompanyID=" + @ViewBag.CompanyID + "&fiscalYear=" + fiscalYear;
+
+                let a = document.createElement('a');
+                a.target = '_blank';
+                a.href = url;
+                a.click();
+
+            }
+        }
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($('#fiscalYear').val() == '') {
+                $("#spnFiscalYearError").show();
+                valid = false;
+            }
+
+            return valid;
+        }
+</script>
+}

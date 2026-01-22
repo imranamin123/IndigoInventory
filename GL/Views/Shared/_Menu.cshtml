@@ -1,0 +1,104 @@
+﻿<!-- sidebar menu: : style can be found in sidebar.less -->
+@using GL.EF;
+
+@{
+    var modules = (List<SecModule>)Session["MenuModules"];// new DALUserManagement().GetModules(true);// ViewBag.modules;
+    //var MenuPages = (List<spGetMenuPagesRights_Result>)Session["MenuPages"];
+    var MenuPages = (List<spGetMenuPages_Result>)Session["MenuPages"];
+}
+
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+@*<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
+
+@*<script src="~/admin-lte/bower_components/bootstrap-datepicker/tests/assets/jquery-1.7.1.min.js"></script>
+<script src="~/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>*@
+
+<ul class="sidebar-menu modSortable" data-widget="tree">
+
+    @if (modules != null)
+    {
+
+        foreach (var module in modules)
+        {
+            if (module.IsViewAllowed == true)
+            {
+
+
+            <li class="treeview moduleLi" data-modId="@module.ModuleID">
+                <a href="#">
+                    <i class="fa fa-pie-chart"></i>
+                    <span>@module.ModuleName</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu pageSortable">
+                    @foreach (var menuPage in MenuPages)
+                    {
+                        if (module.ModuleNo == menuPage.ModuleNo)
+                        {
+                            <li class="pageLi" data-pageId="@menuPage.PageNo">
+                                <a href="@menuPage.PageUrl">@menuPage.PageName</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </li>
+
+             }
+        }
+    }
+    else
+    {
+        Response.Redirect("~/Security/Login");
+    }
+</ul>
+
+@*<script id="sortableMenu">
+    $(function () {
+        $(".modSortable").sortable({
+            update: function (event, ui) {
+                
+                var modIds = "";
+                $(".modSortable").find(".moduleLi").each(function () {
+                    var modId = $(this).attr("data-modId");
+                    modIds = modIds + modId + ",";
+                });
+                $.ajax({
+                    url:'@Url.Action("UpdateModuleOrder", "Security")',
+                    data: { modIds: modIds },
+                    type: "POST",
+                    success: function (data) {
+                    },
+                    error: function (xhr, status, error) {
+                    }
+                });
+            }
+        });
+
+        $(".pageSortable").sortable({
+
+            update: function (event, ui) {
+                var pageIds = "";
+
+                $(this).closest('ul').find(".pageLi").each(function () {
+                    var pageId = $(this).attr("data-pageId");
+                    pageIds = pageIds + pageId + ",";
+                });
+                
+                var modId = $(this).closest('ul').closest('li').attr("data-modId");
+                $.ajax({
+                    url:'@Url.Action("UpdateModulePageOrder", "Security")',
+                    data: { modId: modId, pageIds: pageIds },
+                    type: "POST",
+                    success: function (data) {
+
+                    },
+                    error: function (xhr, status, error) {
+                    }
+                });
+            }
+        });
+    });
+</script>*@
+

@@ -1,0 +1,90 @@
+﻿@model GL.ViewModels.BS.BSClassificationViewModel
+@{
+    Layout = null;
+}
+
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <p>
+                @*@Html.ActionLink("Create New", "Student")*@
+                @*<a href="/Setup/StaffAdd" class="btn btn-primary">Add</a>*@
+            </p>
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>Transaction ID</label>
+                        </th>
+                        <th>
+                            <label>Transaction Date</label>
+                        </th>
+                        <th>
+                            <label>Value Date</label>
+                        </th>
+                        <th>
+                            <label>Transaction Reference No</label>
+                        </th>
+                        <th>
+                            <label>Amount</label>
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.BSBankStatementPendingUnpendingList)
+                    {
+                        <tr class="trPending" TransactionID ="@item.TransactionID">
+                            <td >      
+                                @Html.DisplayFor(modelItem => item.TransactionID)
+                                
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.TransactionDate)*@
+                                @item.TransactionDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.ValueDate.Value.ToString("dd-MMM-yyyy"))*@
+                                @item.ValueDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TransactionReferenceNo)
+                            </td>
+                            <td style="text-align:right;" id="amount" amount="@(item.Credit - item.Debit)">
+
+                                @{
+                                    item.Credit = item.Credit - item.Debit;
+                                 }
+                                @item.Credit
+                            </td>                                                       
+                            <td>
+                                
+                                <a href="/BSBankStatement/BSClassification?TransactionID=@item.TransactionID" class="btn btn-primary btn-xs"><i class="fa fa-chevron-down"></i></a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+</script>

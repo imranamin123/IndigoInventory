@@ -1,0 +1,225 @@
+﻿
+@{
+    //ViewBag.Title = "Trial Balance Report";
+}
+
+<h2>General Ledger Report</h2>
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">General Ledger </h2>
+                    </div>
+                    <br />
+                    <div class="row">
+
+                        <label class="control-label col-sm-2">GL Account From</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("GLAccountNoFrom", new SelectList(ViewBag.GLAccounts, "GLAccountNo", "DisplayText"), "-- Select --", new { @class = "form-control showError ddl", @id = "GLAccountNoFrom" })
+                            <span id="spnFiscalYearError" class="error" style="display:none;">Please select gl account from</span>
+                        </div>
+
+                        <label class="control-label col-sm-2">GL Account To</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("GLAccountNoTo", new SelectList(ViewBag.GLAccounts, "GLAccountNo", "DisplayText"), "-- Select --", new { @class = "form-control showError ddl", @id = "GLAccountNoTo" })
+                            <span id="spnFiscalYearError" class="error" style="display:none;">Please select gl account to</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-top:5px;">
+                        <label for="StartDate" class="control-label col-sm-2 PaddingTop-5">Start Date</label>
+                        <div class="col-sm-4">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="StartDate" />
+                            </div>
+                            <span id="spnStartDateError" class="error" style="display:none;">Please select start date</span>
+                        </div>
+
+                        <label for="EndDate" class="control-label col-sm-2 PaddingTop-5">End Date</label>
+                        <div class="col-sm-4">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="EndDate" />
+                            </div>
+                            <span id="spnEndDateError" class="error" style="display:none;">Please select end date</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="viewReportOB()" class=" btn btn-success"> View Report</a>
+                    <a onclick="downloadReportOB()" class=" btn btn-primary"> Download Report</a>
+                    @*<a onclick="downloadReport()" class=" btn btn-primary"> Download Report</a>*@
+
+                    @*@if (ViewBag.LoginUser.UsersID == 7 || ViewBag.LoginUser.UsersID == 53 || ViewBag.LoginUser.UsersID == 1)
+                        {*@
+                    @*<a onclick="downloadReportOB()" class=" btn btn-primary"> Download Report OB</a>*@
+                    @*}*@
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+    $().ready(function () {
+
+        $('#StartDate, #EndDate').datepicker({
+            autoclose: true,
+            orientation: "bottom auto",  // Forces the datepicker to open downward
+            format: 'dd-M-yyyy',
+        });
+
+
+        $(".ddl").select2();
+
+        $("#GLAccountNoFrom").change(function () {
+            debugger;
+            $("#GLAccountNoTo").val($("#GLAccountNoFrom").val()).trigger("change");
+        });
+    });
+
+
+
+        function viewReportOB() {
+
+            //if (IsValid()) {
+
+
+            var GLAccountNoFrom = $('#GLAccountNoFrom :selected').val();
+            var GLAccountNoTo = $('#GLAccountNoTo :selected').val();
+            var StartDate = $('#StartDate').val();
+            var EndDate = $('#EndDate').val();
+
+            var url = "/ReportsWebForms/ReportForm.aspx?ReportName=GeneralLedgerOB&CompanyID=" + @ViewBag.CompanyID + "&GLAccountNoStart=" + GLAccountNoFrom + '&GLAccountNoTo=' + GLAccountNoTo +
+                '&StartDate=' + StartDate + '&EndDate=' + EndDate;
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+
+            //}
+        }
+
+
+
+        function downloadReportOB() {
+
+        //if (IsValid()) {
+
+
+        var GLAccountNoFrom = $('#GLAccountNoFrom :selected').val();
+        var GLAccountNoTo = $('#GLAccountNoTo :selected').val();
+        var StartDate = $('#StartDate').val();
+        var EndDate = $('#EndDate').val();
+
+        var url = "/Reports/DVGeneralLedgerReportDownloadOB?GLAccountNoFrom=" + GLAccountNoFrom + '&GLAccountNoTo=' + GLAccountNoTo +
+            '&StartDate=' + StartDate + '&EndDate=' + EndDate;
+
+        let a = document.createElement('a');
+        a.target = '_blank';
+        a.href = url;
+        a.click();
+
+        //}
+    }
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($('#fiscalYear').val() == '') {
+                $("#spnFiscalYearError").show();
+                valid = false;
+            }
+
+            return valid;
+    }
+
+
+    @*function viewReport() {
+
+    //if (IsValid()) {
+
+
+        var GLAccountNoFrom = $('#GLAccountNoFrom :selected').val();
+        var GLAccountNoTo = $('#GLAccountNoTo :selected').val();
+        var StartDate = $('#StartDate').val();
+        var EndDate = $('#EndDate').val();
+        GeneralLedgerReportOB
+        var url = "/ReportsWebForms/ReportForm.aspx?ReportName=GeneralLedger&CompanyID=" + @ViewBag.CompanyID + "&GLAccountNoStart=" + GLAccountNoFrom + '&GLAccountNoTo=' + GLAccountNoTo +
+            '&StartDate=' + StartDate + '&EndDate=' + EndDate;
+
+        let a = document.createElement('a');
+        a.target = '_blank';
+        a.href = url;
+        a.click();
+
+    //}
+    }
+    function downloadReport() {
+
+        //if (IsValid()) {
+
+
+            var GLAccountNoFrom = $('#GLAccountNoFrom :selected').val();
+            var GLAccountNoTo = $('#GLAccountNoTo :selected').val();
+            var StartDate = $('#StartDate').val();
+            var EndDate = $('#EndDate').val();
+
+            var url = "/Reports/DVGeneralLedgerReportDownload?GLAccountNoFrom=" + GLAccountNoFrom + '&GLAccountNoTo=' + GLAccountNoTo +
+                '&StartDate=' + StartDate + '&EndDate=' + EndDate;
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+
+        //}
+    }*@
+
+    </script>
+}

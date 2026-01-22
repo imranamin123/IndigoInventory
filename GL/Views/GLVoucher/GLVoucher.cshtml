@@ -1,0 +1,670 @@
+﻿@model GL.ViewModels.Setup.GLVoucherViewModel
+
+@{
+    //Model.feeReceipt.SessionID=0;
+    List<GL.EF.spGLAccountsForDropdown_Result> gl = ViewBag.GLAccounts;
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Voucher </h2>
+                    </div>
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="UserID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control integer" readonly value="@Model.GLVoucher.GLVoucherID" id="GLVoucherID">
+
+                        </div>
+
+                    </div>
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="VoucherTypeID" class="control-label col-sm-1 ">VType</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.GLVoucher.VoucherTypeID, new SelectList(ViewBag.VoucherTypes, "VoucherTypeID", "VTYPE"), "-- Select --", new { @class = "form-control showError", @id = "VoucherTypeID" })
+                            <span id="spnVoucherTypeIDError" class="error" style="display:none;">Please select voucher type</span>
+                        </div>
+                        <label class="control-label col-sm-1">VNumber</label>
+                        <div class="col-sm-3">
+                            @*<input type="text" readonly class="form-control" id="VoucherNumber" />*@
+                            <input type="text" readonly class="form-control" id="VoucherNumber" value="@Model.GLVoucher.VoucherNumber" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="VoucherDate" class="control-label col-sm-1 PaddingTop-5">VDate</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" placeholder="" autocomplete="off" id="VoucherDate" value="@Model.GLVoucher.VoucherDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnVoucherDateError" class="error" style="display:none;">Please select voucher date</span>
+                        </div>
+
+                        <label class="control-label col-sm-1">FY</label>
+                        <div class="col-sm-3">
+                            @Html.EditorFor(model => model.GLVoucher.FiscalYear, new { htmlAttributes = new { @id = "FiscalYear", @class = "form-control" } })
+                            <span id="spnFiscalYearError" class="error" style="display:none;">Please add fiscal year</span>
+                        </div>
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLVoucher/GLVoucher" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+
+
+                            <th style="width:50px;text-align:center" class="th"><label>Det ID</label></th>
+                            <th style="text-align:left;"><label>Account No</label></th>
+                            @*<th style="width: 150px;text-align: left;"><label>Account Desc</label></th>*@
+                            <th style="width: 577px; text-align: left;"><label>Narration</label></th>
+                            <th style="width:200px;" class="align-right"><label>Debit</label></th>
+                            <th style="width:200px;" class="align-right"><label>Credit</label></th>
+                            <th style="width:5px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.GLVoucherDetailRows != null && Model.GLVoucherDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.GLVoucherDetailRows)
+                            {
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+                                        <input type="hidden" id="GLVoucherDetailID" value="@item.GLVoucherDetailID" />
+                                        <input type="hidden" id="GLVoucherID" value="@item.GLVoucherID" />
+                                        <input type="hidden" id="GLAccountID" value="@item.GLAccountID" />
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+
+                                        <label>@item.GLVoucherDetailID</label>
+                                    </td>
+
+                                    @*<td> <input type="text" id="GLAccountNo" class="form-control integer align" value="@item.GLAccountNo" /></td>*@
+
+                                    <td>
+                                        <input type="text" class="glid" value="@item.GLAccountID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.GLVoucherDetailRows[i].GLAccountID, new SelectList(ViewBag.GLAccounts, "GLAccountID", "DisplayText"), "-- Select --", new { @class = "form-control showError  ddl", @id = "GLAccountID" })
+                                    </td>
+
+                                    @*<td>
+                                            <input type="text" style="text-align:left;" readonly id="Description" class="form-control" placeholder="Imran" value="@item.Description" />
+
+                                        </td>*@
+                                    <td>
+                                        @*<input type="text" style="text-align:left;" id="GLNarration" class="form-control " placeholder="Imran" value="@item.GLNarration" />*@
+                                        <textarea style="text-align:left;" id="GLNarration" class="form-control ">@item.GLNarration</textarea>
+                                        <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="Debit" onblur="calculateTotals(this);" class="form-control number decimal" value="@item.Debit" />
+                                        <span id="spnDebitError" class="error" style="display:none;">Please enter debit</span>
+
+                                    </td>
+                                    <td>
+                                        <input type="text" id="Credit" onblur="calculateTotals()" class="form-control number decimal" value="@item.Credit" />
+                                        <span id="spnCreditError" class="error" style="display:none;">Please enter credit</span>
+                                    </td>
+
+                                    <td>
+                                        <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                        @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+                                <input type="hidden" id="GLVoucherDetailID" value="" />
+                                <input type="hidden" id="GLVoucherID" value="" />
+                                <input type="hidden" id="CreatedBy" value="" />
+                                <input type="hidden" id="CreatedAt" value="" />
+                                <input type="hidden" id="ModifiedBy" value="" />
+                                <input type="hidden" id="ModifiedAt" value="" />
+
+                                <label></label>
+                            </td>
+
+                            <td>@Html.DropDownList("GLAccountID", new SelectList(ViewBag.GLAccounts, "GLAccountID", "DisplayText"), "-- Select --", new { @class = "form-control showError ddl", @id = "GLAccountID" })</td>
+                            @* <td><input type="text" style="text-align:left;" readonly id="Description" class="form-control" value="" /> </td>*@
+                            <td>
+                                @*<input type="text" style="text-align:left;" id="GLNarration" class="form-control " value="" />*@
+                                <textarea style="text-align:left;" id="GLNarration" class="form-control "></textarea>
+                                <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+                            </td>
+                            <td>
+                                <input type="text" id="Debit" onblur="calculateTotals()" class="form-control number decimal" value="" />
+                                <span id="spnDebitError" class="error" style="display:none;">Please enter debit</span>
+                            </td>
+                            <td>
+                                <input type="text" id="Credit" onblur="calculateTotals()" class="form-control number decimal" value="" />
+                                <span id="spnCreditError" class="error" style="display:none;">Please enter credit</span>
+                                <span id="spnCreditBothHasValueError" class="error" style="display:none;">Debit and credit can not have value in a single row</span>
+                            </td>
+
+                            <td>
+                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+
+                        <tr>
+                            <td colspan="3" style="text-align:right;"><label style="font-size:20px;">Total Debit</label></td>
+                            <td colspan="2"><input type="text" id="DrTotal" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3" style="text-align:right;"><label style="font-size:20px;">Total Credit</label></td>
+                            <td colspan="2"><input type="text" id="CrTotal" style="font-size:large; font-weight:bold;background-color:white;" class="form-control number decimal" readonly value="0" /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3" style="text-align:right;"><label style="font-size:20px;">Difference</label></td>
+                            <td colspan="2"><input type="text" id="DrCrDiff" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
+
+                        </tr>
+
+                        <tr style="text-align:right">
+                            <td colspan="5">
+                                <span id="spnDebitCreditNotEqualError" class="error" style="display:none;">Total debit and total credit are not equal</span>
+                            </td>
+                        </tr>
+
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    @*<button class="btn btn-primary" onclick="fullReceived();"><span style="font-weight:bold;">++</span></button>*@
+                    <a href="/GLVoucher/GLVoucherList" class="btn btn-info ">Back to List</a>
+                    <a href="/GLVoucher/GLVoucher" class="btn btn-primary">Add</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    <a href="#" class="btn btn-primary btnSave">Save</a>
+                    <a href="/ReportsWebForms/Voucher.aspx?GLVoucherID=@Model.GLVoucher.GLVoucherID" class=" btn btn-success" target="_blank"> View Report</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+            <input type="hidden" id="GLVoucherDetailID" value="" />
+            <input type="hidden" id="GLVoucherID" value="" />
+            <input type="hidden" id="CreatedBy" value="" />
+            <input type="hidden" id="CreatedAt" value="" />
+            <input type="hidden" id="ModifiedBy" value="" />
+            <input type="hidden" id="ModifiedAt" value="" />
+
+            <label></label>
+        </td>
+
+        <td>@Html.DropDownList("GLAccountID", new SelectList(ViewBag.GLAccounts, "GLAccountID", "DisplayText"), "-- Select --", new { @class = "form-control showError", @id = "GLAccountID" })</td>
+        @*<td><input type="text" style="text-align:left;" readonly id="Description" class="form-control" value="" /> </td>*@
+        <td>
+            @*<input type="text" style="text-align:left;" id="GLNarration" class="form-control " value="" />*@
+            <textarea style="text-align:left;" id="GLNarration" class="form-control "></textarea>
+            <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+        </td>
+        <td>
+            <input type="text" id="Debit" onblur="calculateTotals()" class="form-control number decimal" value="" />
+            <span id="spnDebitError" class="error" style="display:none;">Please enter debit</span>
+        </td>
+        <td>
+            <input type="text" id="Credit" onblur="calculateTotals()" class="form-control number decimal" value="" />
+            <span id="spnCreditError" class="error" style="display:none;">Please enter credit</span>
+            <span id="spnCreditBothHasValueError" class="error" style="display:none;">Debit and credit can not have value in a single row</span>
+
+        </td>
+
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+
+        </td>
+    </tr>
+
+    @*<tr class="trTotalTemplate">
+                <td colspan="5" style="text-align:right;"><label>Total</label></td>
+                <td><input type="text" id="DrTotal" style="font-size:large; font-weight:bold; background-color:white;" class="form-control integer number" readonly value="0" /></td>
+                <td><input type="text" id="CrTotal" style="font-size:large; font-weight:bold;background-color:white;" class="form-control integer number" readonly value="0" /></td>
+        </tr>*@
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+
+
+        $().ready(function () {
+
+            $('#VoucherDate').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+
+
+            $(".ddl").select2();
+            calculateTotals();
+
+            $("#tbodyList tr").each(function () {
+                $(this).find(".ddl").select2();
+                var glID = $(this).find(".glid").val();
+                $(this).find(".ddl").val(glID).change();
+
+
+                $(this).find(".select2.select2-container").css("width", "400px");
+
+            });
+
+
+
+            var GLVoucherID = $("#GLVoucherID").val();
+            var VoucherType = $("#VoucherTypeID").children("option").filter(":selected").text()
+            //if (GLVoucherID > 0) {
+            //    $("#VoucherNumber").val(VoucherType + "-" + GLVoucherID);
+            //}
+
+
+            $(document).on("click", ".delete-row", function () {
+
+                debugger
+
+                //alert($(this).closest('tr').index());
+                //alert($("#tbodyList tr").length);
+
+
+
+                if (confirm("Are you sure you want to delete this row")) {
+                    
+                    var row = $(this).closest("tr");
+                    var GLVoucherDetailID = $(this).closest("tr").find("#GLVoucherDetailID").val();
+
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() + 1) {
+                        $(row).find("#GLAccountID").val("");
+                        $(row).find("#Debit").val("");
+                        $(row).find("#Credit").val("");
+                        $(row).find("#GLNarration").val("");
+                    }
+                    else if (GLVoucherDetailID != "" || $(GLVoucherDetailID).val() > 0) {
+
+                        $.get("/GLVoucher/GLVoucherDetailDelete", { id: GLVoucherDetailID }).done(function (res) {
+
+                            $(row).remove();
+                            calculateTotals();
+
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if ((GLVoucherDetailID == "" || $(GLVoucherDetailID).val() == undefined)) {
+                        var totalRows = $("#tbodyList tr").length;                        
+                        if (totalRows > 1 ) {
+
+                            $(row).remove();
+                            calculateTotals();
+                        }
+                        else {
+                            $(row).find("#GLAccountID").val("");
+                            $(row).find("#Debit").val("");
+                            $(row).find("#Credit").val("");
+                            $(row).find("#GLNarration").val("");
+                        }
+                    }
+                }
+            });
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    return;
+                }
+
+
+                var objGLVoucher = getObject();
+                var objGLVoucherDetails = getObjectDetails();
+
+
+                $.post("/GLVoucher/GLVoucherSave", { glVoucher: objGLVoucher, glVoucherDetailList: objGLVoucherDetails }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+
+                        window.location = "/GLVoucher/GLVoucher?GLVoucherID=" + res.resObj.GLVoucherID;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+
+            $(document).on("select", "#GLAccountID", function () {
+
+                var GLAccountID = $(this).children("option").filter(":selected").val();
+            });
+
+            $(document).on("change", "#GLAccountID", function () {
+
+                var GLAccountID = $(this).children("option:selected").val();// $(this).children("option").filter(":selected").val();
+                $(this).closest("tr").find("#GLAccountID").val(GLAccountID);
+                //var description = $(this).closest("tr").find("#Description");
+                //$(this).closest("tr").find("#GLAccountID").val(GLAccountID);
+                var currentRow = $(this).closest("tr");
+                $.get("/GLVoucher/GetGLAccountDescription", { id: GLAccountID }).done(function (res) {
+                    if (res != "") {
+
+                        //$(description).val(res);
+                        var totalRows = $("tr", "#tbodyList").length;
+                        var currentRowIndex = currentRow.index();
+                        var diff = totalRows - currentRowIndex;
+                        if (diff == 1) {
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find("#GLAccountID").select2();
+                            $(row).find(".select2.select2-container").css("width", "400px");
+                        }
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                    //
+                    //var totalRows = $("tr", "#tbodyList").length;
+                    //var index = $(this).closest("tr").index();
+                    //var row = $('.trRowTemplate').clone();
+                    //$(row).removeClass("trRowTemplate");
+                    //$('#tbodyList').append(row);
+
+                });
+            });
+
+            $(document).on("change", "#VoucherDate", function () {
+
+                //var GLAccountID = $(this).children("option").filter(":selected").val();
+                //var description = $(this).closest("tr").find("#Description");
+                var VoucherDate = $("#VoucherDate").val();
+
+                $.get("/GLVoucher/GetFiscalYearSetup", { VoucherDate: VoucherDate }).done(function (res) {
+                    if (res != "")
+                        $(FiscalYear).val(res);
+                    else
+                        alert("Fiscal period does not exists against this date");
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                });
+            });
+
+
+
+        });
+
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#VoucherTypeID").val() == "") {
+                $("#spnVoucherTypeIDError").show();
+                valid = false;
+            }
+
+            if ($("#VoucherDate").val() == "") {
+                $("#spnVoucherDateError").show();
+                valid = false;
+            }
+
+            if ($("#FiscalYear").val() == "") {
+                $("#spnFiscalYearError").show();
+                valid = false;
+            }
+
+
+            var debitSum = 0;
+            var creditSum = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#GLAccountID').val() != "" && $(this).find('#GLAccountID').val() > 0) {
+
+
+                    if ($(this).find('#GLNarration').val() == "") {
+                        $(this).find('#spnNarrationError').show();
+                        valid = false;
+                    }
+
+                    var Debit = $(this).find('#Debit').val() == '' ? 0 : parseFloat($(this).find('#Debit').val());
+                    var Credit = $(this).find('#Credit').val() == '' ? 0 : parseFloat($(this).find('#Credit').val());
+
+                    debitSum += parseFloat(Debit);
+                    creditSum += parseFloat(Credit);
+
+                    $(this).find('#Debit').val(Debit);
+                    $(this).find('#Credit').val(Credit);
+
+
+                    if (Debit == 0 && Credit == 0) {
+                        $(this).find('#spnDebitError').show();
+                        $(this).find('#spnCreditError').show();
+                        valid = false;
+                    }
+
+                    if (Debit != 0 && Credit != 0) {
+                        $(this).find('#spnCreditBothHasValueError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+            if (debitSum != creditSum) {
+                $("#spnDebitCreditNotEqualError").show();
+                valid = false;
+            }
+            else {
+                $("#spnDebitCreditNotEqualError").hide();
+            }
+            ////});
+
+            // empty detail check
+            if (valid == true && $("#tbodyList tr").length == 1) {
+                valid = false;
+                alert("Please enter a row in detail");
+            }
+
+            return valid;
+        }
+
+        function calculateTotals() {
+
+            var debitSum = 0;
+            var creditSum = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#GLAccountID').val() != "" && $(this).find('#GLAccountID').val() > 0) {
+
+
+                    var Debit = $(this).find('#Debit').val() == '' ? 0 : parseFloat($(this).find('#Debit').val());
+                    var Credit = $(this).find('#Credit').val() == '' ? 0 : parseFloat($(this).find('#Credit').val());
+
+                    debitSum += parseFloat(Debit);
+                    creditSum += parseFloat(Credit);
+
+                }
+            });
+
+            $("#DrTotal").val(debitSum);
+            $("#CrTotal").val(creditSum);
+            var DrCrDiff = debitSum - creditSum;
+            $("#DrCrDiff").val(DrCrDiff);
+        }
+
+
+        function getObject() {
+
+            var obj = {
+
+                GLVoucherID: $("#GLVoucherID").val(),
+                VoucherTypeID: $("#VoucherTypeID").val(),
+                VoucherNumber: $("#VoucherNumber").val(),
+                VoucherDate: $("#VoucherDate").val(),
+                FiscalYear: $("#FiscalYear").val(),
+
+                // hidden fields
+                CompanyID: $("#CompanyID").val(),
+                CreatedBy: $("#CreatedBy").val(),
+                CreatedAt: $("#CreatedAt").val(),
+                ModifiedBy: $("#ModifiedBy").val(),
+                ModifiedAt: $("#ModifiedAt").val(),
+
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var voucherDetailRows = [];
+
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+
+
+                if ($(this).find('#GLAccountID').val() != "" && $(this).find('#GLAccountID').val() > 0) {
+                    var voucherDetailRow = {
+                        GLVoucherDetailID: $(this).find('#GLVoucherDetailID').val(),
+                        GLVoucherID: $(this).find('#GLVoucherID').val(),
+                        GLAccountID: $(this).find('#GLAccountID').val(),
+                        GLNarration: $(this).find('#GLNarration').val(),
+                        Debit: $(this).find('#Debit').val(),
+                        Credit: $(this).find('#Credit').val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val()
+                    }
+                    voucherDetailRows.push(voucherDetailRow);
+                }
+            });
+
+            return voucherDetailRows;
+        }
+
+        function removeThousandSeperator(obj) {
+
+            var number = $(obj).val();// document.getElementById('numberInput').value;
+            if (number == '' || number == undefined)
+                return;
+
+            var newNum = number.replace(/(\d+),(?=\d{3}(\D|$))/g, "$1");
+            $(obj).val(newNum);
+        }
+
+        function appendThousandSeperator(obj) {
+
+
+
+            var number = $(obj).val(); // document.getElementById('numberInput').value;
+            number = parseFloat(number);
+
+            // Specifying options for formatting
+            const options = {
+                style: 'decimal',  // Other options: 'currency', 'percent', etc.
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            };
+            const formattedWithOptions = number.toLocaleString('en-US', options);
+            //            console.log(formattedWithOptions); // Output: "1,234,567.89"
+
+            $(obj).val(formattedWithOptions);// ('value', 'defaultValue');
+
+        }
+
+    </script>
+
+}
+

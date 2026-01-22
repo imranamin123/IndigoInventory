@@ -1,0 +1,204 @@
+﻿
+@{
+    //ViewBag.Title = "Trial Balance Report";
+}
+
+@*<h2>Member Payment Plan Status Report</h2>*@
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Member Payment Plan Status Report</h2>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <input type="hidden" id="CompanyID" value="@ViewBag.CompanyID" />
+                        <label class="control-label col-sm-1">Project</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --",
+                            new { @class = "form-control showError", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select a project</span>
+                        </div>
+
+                        <label class="control-label col-sm-1 PaddingTop-5">Unit</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownList("UnitID", new SelectList(ViewBag.Units, "UnitID", "UnitNo"), "-- Select --", new { @class = "form-control showError", @id = "UnitID" })
+                            <span id="spnUnitIDError" class="error" style="display:none;">Please select a unit</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row" style="margin-top:5px;">
+                        <label for="StatusDate" class="control-label col-sm-1 PaddingTop-5">Status Date</label>
+                        <div class="col-sm-2">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="StatusDate" value="@ViewBag.LedgerDate" />
+                            </div>
+                            <span id="spnStatusDateError" class="error" style="display:none;">Please select status date</span>
+                        </div>
+
+                        @*<label for="EndDate" class="control-label col-sm-1 PaddingTop-5">End Date</label>
+                        <div class="col-sm-2">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="EndDate" />
+                            </div>
+                            <span id="spnEndDateError" class="error" style="display:none;">Please select end date</span>
+                        </div>*@
+                    </div>
+
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="viewReport()" class=" btn btn-success"> View Report</a>
+                    <a onclick="downloadReport()" class=" btn btn-primary"> Download Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+        $().ready(function () {
+
+            $("#UnitID").select2();
+
+            $(document).on("change", "#ProjectID", function (e) {
+
+                e.preventDefault;
+                var projectID = $('#ProjectID').val();
+
+
+                $.post("/DVDevelopment/GetUnitListByProjectID", { ProjectID: projectID, AllUnits: true }).done(function (result) {
+
+
+                    $("#UnitID").empty();
+                    var options = '';
+                    options = options + '<option value="">' + "--Select--" + '</option> ';
+                    for (var i = 0; i < result.length; i++) {
+                        options = options + '<option value="' + result[i].UnitID + '">' + result[i].UnitNo + '</option> ';
+                    }
+
+                    $("#UnitID").append(options);
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () { });
+            });
+
+        });
+
+
+
+        function viewReport() {
+
+            if (!IsValid()) {
+                return;
+            }
+
+            var ProjectID = $('#ProjectID').val();
+            var UnitID = $('#UnitID').val();
+            var CompanyID = $('#CompanyID').val();
+            var StatusDate = $('#StatusDate').val();
+
+            var url = "/ReportsWebForms/ReportForm.aspx?ReportName=DVMemberPaymentPlanStatusReport&ProjectID=" + ProjectID + '&UnitID=' + UnitID +
+                '&StatusDate=' + StatusDate;
+
+
+            let a = document.createElement('a');
+           // a.target = '_blank';
+            a.href = url;
+            a.click();
+
+            //}
+        }
+
+
+
+        function downloadReport() {
+
+            if (!IsValid()) {
+                return;
+            }
+
+            var ProjectID = $('#ProjectID').val();
+            var UnitID = $('#UnitID').val();
+            var CompanyID = $('#CompanyID').val();
+            var StatusDate = $('#StatusDate').val();
+
+            var url = "/Reports/DVMemberPaymentPlanStatusReportDownload?ReportName=DVMemberPaymentPlanStatusReport&ProjectID=" + ProjectID + '&UnitID=' + UnitID +
+                '&StatusDate=' + StatusDate;
+
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+
+            //}
+        }
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($('#ProjectID').val() == '') {
+                $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            if ($('#UnitID').val() == '') {
+                $("#spnUnitIDError").show();
+                valid = false;
+            }
+
+            if ($('#LedgerDate').val() == '') {
+                $("#spnLedgerDateError").show();
+                valid = false;
+            }
+
+            return valid;
+        }
+    </script>
+}

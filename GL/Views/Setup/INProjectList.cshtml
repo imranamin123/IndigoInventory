@@ -1,0 +1,43 @@
+﻿@model  GL.ViewModels.Setup.INProjectViewModel
+
+@{
+    ViewBag.Title = "Company List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<link rel="stylesheet" href="~/admin-lte/dist/css/skins/_all-skins.min.css">*@
+
+
+<section class="container">
+    <div class="row">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Project List</h3>
+            </div>
+       
+            <div class="box-body">
+                <div class="col-sm-12" style="overflow:auto;">
+                    <p>
+                        <a href="/Setup/INProject" class="btn btn-primary">Add</a>
+                    </p>
+                    <div id="ListGrid">
+                        @Html.Partial("_INProjectList", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script class="ListClass">
+
+        $().ready(function () {
+            $('#tblList').DataTable();
+        });
+    </script>
+
+}
+

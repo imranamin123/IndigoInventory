@@ -1,0 +1,658 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
+<h1 style="color:blue;">Dashboard</h1>
+
+<style>
+    /* Sticky first column */
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 2;
+    }
+
+    /* Sticky header row */
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        background: #f9f9f9;
+        z-index: 3;
+        higher than .sticky-col
+    }
+
+    /* If both row+col cell (top-left corner) */
+    .sticky-col.sticky-header {
+        z-index: 4;
+    }
+</style>
+
+<!-- Main content -->
+<section class="content">
+    @if (1 == 2)
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <!-- DONUT CHART -->
+                <div class="box box-danger" style="min-height:250px;">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Sold/Unsold Status</h3>
+                        <div class="col-sm-3">
+                            @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), new { @class = "form-control showError project", @id = "ProjectID" })
+                        </div>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+            <!-- /.col (LEFT) -->
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-12">
+
+                <!-- DONUT CHART -->
+                @*<div class="box box-danger" style="min-height:250px;">*@
+                <div class="box box-danger">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Unit Matrix</h3>
+                        <div class="col-sm-3">
+                            @*@Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), new { @class = "form-control showError project", @id = "ProjectID" })*@
+                        </div>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div style="margin-top: 7px; overflow-x: scroll; overflow-y: scroll; max-height:500px; max-width: 100%;">
+
+                            <table class="table table-striped tblDetail" id="tblList">
+                                <thead>
+                                    <tr>
+
+                                        <th style="width: 10px;" class="sticky-header sticky-col"><label>Floor</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">A [950]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">B [950]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">C [950]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">D [750]</label></th>
+                                        <th style="width: 50px;" class="sticky-header"><label style="padding-left:13px;">E [600]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">F [600]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">G [550]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">H [550]</label></th>
+                                        <th style="width: 50px;" class="sticky-header"><label style="padding-left:13px;">I [600]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">J [750]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">K [725]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">L [750]</label></th>
+                                        <th style="width: 50px;" class="sticky-header"><label style="padding-left:13px;">M [1200]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">N [450]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">O [450]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">P [450]</label></th>
+                                        <th style="width: 70px;" class="sticky-header"><label style="padding-left:13px;">Q [1200]</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyList">
+                                </tbody>
+
+
+                            </table>
+
+                        </div>
+
+                        @*<canvas id="matrixChart" style="width:800px; height:1000px;"></canvas>*@
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col (RIGHT) -->
+        </div>
+        <!-- /.row -->
+    }
+</section>
+
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width: 10px;" class="sticky-col">
+            <input type="text" id="floor" class="data" />
+        </td>
+
+        <td style="width: 70px;">
+            <input type="text" id="A" class="data" />
+        </td>
+
+        <td style="width: 70px;">
+            <input type="text" id="B" class="data" />
+        </td>
+
+        <td style="width: 70px;">
+            <input type="text" id="C" class="data" />
+        </td>
+
+        <td style="width: 70px;">
+            <input type="text" id="D" class="data" />
+        </td>
+
+        <td style="width: 70px;">
+            <input type="text" id="E" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="F" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="G" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="H" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="I" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="J" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="K" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="L" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="M" class="data" style="background-color:grey" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="N" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="O" class="data" />
+        </td>
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="P" class="data" />
+        </td>
+        <td style="width: 70px;">
+            <input type="text" id="Q" class="data" />
+        </td>
+
+    </tr>
+
+
+</table>
+
+<!-- /.content -->
+<!-- Chart.js library -->
+@*<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>*@
+
+<!-- Chart.js Data Labels plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+@*<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>*@
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script id="dashboard Pie">
+        $(function () {
+            $(".project").select2();
+
+            $("select#ProjectID").prop('selectedIndex', 0);
+            //$(".project").trigger("change");
+            var projectID = $(".project").val()
+
+            $.ajax({
+                url: "/Home/GetUnitSaleDataJson",
+                type: "POST",
+                dataType: "json",
+                async: false,
+                data: { ProjectID: projectID },
+                success: function (res) {
+
+                    chart(res.customLabels, res.data)
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+            $(document).on("change", ".project", function () {
+
+                var projectID = $(".project").val();
+
+                $.ajax({
+                    url: "/Home/GetUnitSaleDataJson",
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    data: { ProjectID: projectID },
+                    success: function (res) {
+                        chart(res.customLabels, res.data)
+                    },
+                    error: function (error) {
+                        //console.log("Error:");
+                        console.log(error);
+                    }
+                });
+
+
+
+            });
+        });
+
+        let pieChartInstance; // Declare this globally
+
+        function chart(customLabels, data) {
+
+
+            const ctx = document.getElementById('pieChart').getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (pieChartInstance) {
+                pieChartInstance.destroy();
+            }
+
+            pieChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: data,//[20, 15, 10], // Must remain numbers
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                    }]
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return customLabels[context.dataIndex]; // show "20 - 50000"
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: function (value, context) {
+                                return data[context.dataIndex]; // same label inside slice
+                            },
+                            color: '#000',
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+        }
+
+
+
+    </script>
+
+    <script id="MatrixHTML">
+        $(function () {
+            var projectID = 1;
+
+            $.ajax({
+                url: "/Home/GetUnitMatrixDataJson",
+                type: "POST",
+                dataType: "json",
+                async: false,
+                data: { ProjectID: projectID },
+                success: function (res) {
+                    var data = res;
+
+                    var bgColorSale = 'skyblue';
+                    var bgColorAdjustment = 'lightpink';
+                    var bgColorBarter = 'lightgreen';
+
+                    $(res).each(function (index, element) {
+
+                        var row = $('.trRowTemplate').clone();
+                        $(row).removeClass("trRowTemplate");
+                        $('#tbodyList').append(row);
+
+                        debugger;
+
+                        $(row).find("#floor").val(element.Floor);
+                        //$(row).find("#floor").prop("readonly", true);
+
+                        $(row).find("#A").val(element.A);
+                        var valA = $(row).find("#A").val();
+                        var typeA = valA.substring(0, valA.indexOf('-'));
+                        var colorA = bgColor(typeA);
+                        $(row).find("#A").css("background-color", colorA);
+                        $(row).find("#A").prop("title", valA);
+                        $(row).find(".data").attr("DVArrangementType", typeA);
+                        //$(row).find("#A").prop("readonly", true);
+
+                        $(row).find("#B").val(element.B);
+                        var valB = $(row).find("#B").val();
+                        var typeB = valB.substring(0, valB.indexOf('-'));
+                        var colorB = bgColor(typeB);
+                        $(row).find("#B").css("background-color", colorB);
+                        //$(row).find("#B").attr("DVArrangementType", typeB);
+                        $(row).find("#B").prop("readonly", true);
+
+                        $(row).find("#C").val(element.C);
+                        var valC = $(row).find("#C").val();
+                        var typeC = valC.substring(0, valC.indexOf('-'));
+                        var colorC = bgColor(typeC);
+                        $(row).find("#C").css("background-color", colorC);
+                        //$(row).find(".data").attr("DVArrangementType", typeC);
+                        $(row).find("#C").prop("readonly", true);
+
+                        $(row).find("#D").val(element.D);
+                        var valD = $(row).find("#D").val();
+                        var typeD = valD.substring(0, valD.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeD);
+                        var colorD = bgColor(typeD);
+                        $(row).find("#D").css("background-color", colorD);
+                        $(row).find("#D").prop("readonly", true);
+
+                        $(row).find("#E").val(element.E);
+                        var valE = $(row).find("#E").val();
+                        var typeE = valE.substring(0, valE.indexOf('-'));
+                        var colorE = bgColor(typeE);
+                        $(row).find("#E").css("background-color", colorE);
+                        //$(row).find(".data").attr("DVArrangementType", typeE);
+                        $(row).find("#E").prop("readonly", true);
+
+                        $(row).find("#F").val(element.F);
+                        var valF = $(row).find("#F").val();
+                        var typeF = valF.substring(0, valF.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeF);
+                        var colorF = bgColor(typeF);
+                        $(row).find("#F").css("background-color", colorF);
+                        $(row).find("#F").prop("readonly", true);
+
+                        $(row).find("#G").val(element.G);
+                        var valG = $(row).find("#G").val();
+                        var typeG = valG.substring(0, valG.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeG);
+                        $(row).find("#G").prop("readonly", true);
+                        var colorG = bgColor(typeG);
+                        $(row).find("#G").css("background-color", colorG);
+
+                        $(row).find("#H").val(element.H);
+                        var valH = $(row).find("#H").val();
+                        var typeH = valH.substring(0, valH.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeH);
+                        var colorH = bgColor(typeH);
+                        $(row).find("#H").css("background-color", colorH);
+                        $(row).find("#H").prop("readonly", true);
+
+                        $(row).find("#I").val(element.I);
+                        var valI = $(row).find("#I").val();
+                        var typeI = valI.substring(0, valI.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeI);
+                        var colorI = bgColor(typeI);
+                        $(row).find("#I").css("background-color", colorI);
+                        $(row).find("#I").prop("readonly", true);
+
+                        $(row).find("#J").val(element.J);
+                        var valJ = $(row).find("#J").val();
+                        var typeJ = valJ.substring(0, valJ.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeJ);
+                        var colorJ = bgColor(typeJ);
+                        $(row).find("#J").css("background-color", colorJ);
+                        $(row).find("#J").prop("readonly", true);
+
+                        $(row).find("#K").val(element.K);
+                        var valK = $(row).find("#K").val();
+                        var typeK = valK.substring(0, valK.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeK);
+                        var colorK = bgColor(typeK);
+                        $(row).find("#K").css("background-color", colorK);
+                        $(row).find("#K").prop("readonly", true);
+
+                        $(row).find("#L").val(element.L);
+                        var valL = $(row).find("#L").val();
+                        var typeL = valL.substring(0, valL.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeL);
+                        var colorL = bgColor(typeL);
+                        $(row).find("#L").css("background-color", colorL);
+                        $(row).find("#L").prop("readonly", true);
+
+                        $(row).find("#M").val(element.M);
+                        var valM = $(row).find("#M").val();
+                        var typeM = valM.substring(0, valM.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeM);
+                        var colorM = bgColor(typeM);
+                        $(row).find("#M").css("background-color", colorM);
+                        $(row).find("#M").prop("readonly", true);
+
+                        $(row).find("#N").val(element.N);
+                        var valN = $(row).find("#N").val();
+                        var typeN = valN.substring(0, valN.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeN);
+                        var colorN = bgColor(typeN);
+                        $(row).find("#N").css("background-color", colorN);
+                        $(row).find("#N").prop("readonly", true);
+
+                        $(row).find("#O").val(element.O);
+                        var valO = $(row).find("#O").val();
+                        var typeO = valO.substring(0, valO.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeO);
+                        var colorO = bgColor(typeO);
+                        $(row).find("#O").css("background-color", colorO);
+                        $(row).find("#O").prop("readonly", true);
+
+                        $(row).find("#P").val(element.P);
+                        var valP = $(row).find("#P").val();
+                        var typeP = valP.substring(0, valP.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeP);
+                        var colorP = bgColor(typeP);
+                        $(row).find("#P").css("background-color", colorP);
+                        $(row).find("#P").prop("readonly", true);
+
+                        $(row).find("#Q").val(element.Q);
+                        var valQ = $(row).find("#Q").val();
+                        var typeQ = valQ.substring(0, valQ.indexOf('-'));
+                        //$(row).find(".data").attr("DVArrangementType", typeQ);
+                        var colorQ = bgColor(typeQ);
+                        $(row).find("#Q").css("background-color", colorQ);
+                        $(row).find("#Q").prop("readonly", true);
+
+                    });
+
+                    // $(".data").prop("readonly", true);
+                }
+            });
+        });
+
+        function bgColor(type) {
+            var color = '#e9e8e5';
+            if (type == "Sale") {
+                color = '#66ccff';
+            }
+            else if (type == "Adjustment") {
+                color = '#ff99ff';
+            }
+            else if (type == "Barter") {
+                color = '#66ff33';
+            }
+            else if (type == 'Onhold') {
+                color = '#ff9966';
+            }
+            else if (type == 'Available') {
+                color = '#ffffff';
+            }
+            return color;
+        }
+    </script>
+
+    @*<script id="Matrix">
+            $(function () {
+                var projectID = $(".project").val();
+
+                const ctx = document.getElementById('matrixChart').getContext('2d');
+
+                const matrix = [];
+                const matrixData = [];
+                //const xLabels = ['A', 'B', 'C', 'D', 'E'];
+                //const yLabels = ['W', 'X', 'Y', 'Z'];
+
+                const xLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+                const yLabels = ['GF', 'MZ', '1st', '2nd ', '3rd', '4th', '5th', '6th', '7th', '8th', '10th'];
+
+
+                $.ajax({
+                    url: "/Home/GetMatrixDataJson",
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    data: { ProjectID: projectID },
+                    success: function (dataMatrix1) {
+                        debugger;
+                        let rows = dataMatrix1.length;
+                        let cols = 17;
+
+                        for (i = 0; i < rows; i++) {
+                            matrix[i] = [];
+                            for (j = 0; j < cols; j++) {
+
+
+                                if (j == 0)
+                                    matrix[i][j] = dataMatrix1[i].A;
+                                else if (j == 1)
+                                    matrix[i][j] = dataMatrix1[i].B;
+                                else if (j == 2)
+                                    matrix[i][j] = dataMatrix1[i].C;
+                                else if (j == 3)
+                                    matrix[i][j] = dataMatrix1[i].D;
+                                else if (j == 4)
+                                    matrix[i][j] = dataMatrix1[i].E;
+                                else if (j == 5)
+                                    matrix[i][j] = dataMatrix1[i].F;
+                                else if (j == 6)
+                                    matrix[i][j] = dataMatrix1[i].G;
+                                else if (j == 7)
+                                    matrix[i][j] = dataMatrix1[i].H;
+                                else if (j == 8)
+                                    matrix[i][j] = dataMatrix1[i].I;
+                                else if (j == 9)
+                                    matrix[i][j] = dataMatrix1[i].J;
+                                else if (j == 10)
+                                    matrix[i][j] = dataMatrix1[i].K;
+                                else if (j == 11)
+                                    matrix[i][j] = dataMatrix1[i].L;
+                                else if (j == 12)
+                                    matrix[i][j] = dataMatrix1[i].M;
+                                else if (j == 13)
+                                    matrix[i][j] = dataMatrix1[i].N;
+                                else if (j == 14)
+                                    matrix[i][j] = dataMatrix1[i].O;
+                                else if (j == 15)
+                                    matrix[i][j] = dataMatrix1[i].P;
+                                else if (j == 16)
+                                    matrix[i][j] = dataMatrix1[i].Q;
+
+                            }
+                        }
+                        //$(dataMatrix1).each(function (index, item) {
+                        //    matrix.push(item.v);
+                        //});
+                        //matrix = dataMatrix1.v;
+                    }
+                });
+
+
+                /*for (let j = 0; j < yLabels.length - 1; j++) {*/
+                for (let j = 0; j < 11; j++) {
+                    var b = j;
+                    for (let i = 0; i < xLabels.length; i++) {
+                        console.log(matrix[j][i])
+                        matrixData.push({
+                            x: i,
+                            y: j,
+                            v: matrix[j][i] //Math.floor(Math.random() * 100) // Random values
+                        });
+                    }
+                    var jj = j;
+                    //alert('y loops end' + j);
+                }
+                debugger;
+                new Chart(ctx, {
+                    type: 'matrix',
+                    data: {
+                        datasets: [{
+                            label: 'Matrix Dataset',
+                            data: matrixData,
+                            width: ({ chart }) => (chart.chartArea || {}).width / totalColumns,
+                            height: ({ chart }) => (chart.chartArea || {}).height / totalRows,
+                            backgroundColor(ctx) {
+                                const value = ctx.dataset.data[ctx.dataIndex].v;
+                                const alpha = value / 100;
+                                return 'grey';//`rgba(0, 123, 255, ${alpha})`;
+                            },
+                            width: 40,
+                            height: 40
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                min: -0.5,
+                                max: xLabels.length - 0.5,
+                                ticks: {
+                                    callback: function (value, index) {
+                                        return xLabels[value] || '';
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'X Axis'
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                min: -0.5,
+                                max: yLabels.length - 0.5,
+                                ticks: {
+                                    callback: function (value, index) {
+                                        return yLabels[value] || '';
+                                    },
+
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Y Axis'
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    title: function () { return ''; },
+                                    label: function (ctx) {
+                                        const item = ctx.raw;
+                                        return `(${xLabels[item.x]}, ${yLabels[item.y]}): ${item.v}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                });
+            });
+
+        </script>*@
+
+}

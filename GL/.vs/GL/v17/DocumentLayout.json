@@ -1,0 +1,195 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\GIT\\GL\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\GIT\\GL\\gl\\views\\dvdevelopment\\applicationform.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\dvdevelopment\\applicationform.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\GIT\\GL\\gl\\controllers\\dvdevelopmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\dvdevelopmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\git\\gl\\gl\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\GIT\\GL\\gl\\dal\\daldevelopment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\dal\\daldevelopment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\git\\gl\\gl\\views\\glvoucher\\glvoucher.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\glvoucher\\glvoucher.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\git\\gl\\gl\\views\\setup\\secuser.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\setup\\secuser.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\git\\gl\\gl\\ef\\province.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\ef\\province.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\git\\gl\\gl\\viewmodels\\dv\\applicationformviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\viewmodels\\dv\\applicationformviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\GIT\\GL\\gl\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\GIT\\GL\\gl\\dal\\dalbkbanktrans.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\dal\\dalbkbanktrans.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 316,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DALDevelopment.cs",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\DAL\\DALDevelopment.cs",
+              "RelativeDocumentMoniker": "GL\\DAL\\DALDevelopment.cs",
+              "ToolTip": "D:\\GIT\\GL\\GL\\DAL\\DALDevelopment.cs",
+              "RelativeToolTip": "GL\\DAL\\DALDevelopment.cs",
+              "ViewState": "AQIAACcAAAAAAAAAAAAUwDcAAAALAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-08T10:53:57.781Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ApplicationForm.cshtml",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\Views\\DVDevelopment\\ApplicationForm.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\DVDevelopment\\ApplicationForm.cshtml",
+              "ToolTip": "D:\\GIT\\GL\\GL\\Views\\DVDevelopment\\ApplicationForm.cshtml",
+              "RelativeToolTip": "GL\\Views\\DVDevelopment\\ApplicationForm.cshtml",
+              "ViewState": "AQIAACwCAAAAAAAAAAAAADUCAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-08-08T06:44:28.096Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DALBKBankTrans.cs",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\DAL\\DALBKBankTrans.cs",
+              "RelativeDocumentMoniker": "GL\\DAL\\DALBKBankTrans.cs",
+              "ToolTip": "D:\\GIT\\GL\\GL\\DAL\\DALBKBankTrans.cs",
+              "RelativeToolTip": "GL\\DAL\\DALBKBankTrans.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAIUAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-08T10:54:19.532Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DVDevelopmentController.cs",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\Controllers\\DVDevelopmentController.cs",
+              "RelativeDocumentMoniker": "GL\\Controllers\\DVDevelopmentController.cs",
+              "ToolTip": "D:\\GIT\\GL\\GL\\Controllers\\DVDevelopmentController.cs",
+              "RelativeToolTip": "GL\\Controllers\\DVDevelopmentController.cs",
+              "ViewState": "AQIAACQAAAAAAAAAAAAUwDQAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-07T05:32:52.077Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Web.config",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\Web.config",
+              "RelativeDocumentMoniker": "GL\\Web.config",
+              "ToolTip": "D:\\GIT\\GL\\GL\\Web.config",
+              "RelativeToolTip": "GL\\Web.config",
+              "ViewState": "AQIAAFoAAAAAAAAAAAAAAGYAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-08-10T07:09:41.781Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ApplicationFormViewModel.cs",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\ViewModels\\DV\\ApplicationFormViewModel.cs",
+              "RelativeDocumentMoniker": "GL\\ViewModels\\DV\\ApplicationFormViewModel.cs",
+              "ToolTip": "D:\\GIT\\GL\\GL\\ViewModels\\DV\\ApplicationFormViewModel.cs",
+              "RelativeToolTip": "GL\\ViewModels\\DV\\ApplicationFormViewModel.cs",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAAACgAAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-09T09:24:14.165Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Province.cs",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\EF\\Province.cs",
+              "RelativeDocumentMoniker": "GL\\EF\\Province.cs",
+              "ToolTip": "D:\\GIT\\GL\\GL\\EF\\Province.cs",
+              "RelativeToolTip": "GL\\EF\\Province.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-10T07:24:04.175Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SecUser.cshtml",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\Views\\Setup\\SecUser.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\Setup\\SecUser.cshtml",
+              "ToolTip": "D:\\GIT\\GL\\GL\\Views\\Setup\\SecUser.cshtml",
+              "RelativeToolTip": "GL\\Views\\Setup\\SecUser.cshtml",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAACAAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-08-10T07:30:42.678Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\GIT\\GL\\GL\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "GL\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AQIAAAgBAAAAAAAAAAAAABABAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-08-08T06:45:38.298Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 84,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GLVoucher.cshtml",
+              "DocumentMoniker": "D:\\GIT\\GL\\GL\\Views\\GLVoucher\\GLVoucher.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\GLVoucher\\GLVoucher.cshtml",
+              "ToolTip": "D:\\GIT\\GL\\GL\\Views\\GLVoucher\\GLVoucher.cshtml",
+              "RelativeToolTip": "GL\\Views\\GLVoucher\\GLVoucher.cshtml",
+              "ViewState": "AQIAAA8BAAAAAAAAAAAwwCABAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-08-09T09:43:12.649Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

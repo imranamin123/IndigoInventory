@@ -1,0 +1,44 @@
+﻿@model  GL.ViewModels.Setup.GLAccountViewModel
+
+
+<table class="table" id="tblGLAccountList">
+    <thead>
+        <tr>
+            <th><label>Account</label></th>
+            <th>
+                <label>Description</label>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.GLAccountList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GLAccountNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    <a href="/GLAccount/GLAccount/@item.GLAccountID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a> 
+                    <a href="/GLAccount/GLAccountDelete/@item.GLAccountID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@*@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="ListCompany">
+
+        $().ready(function () {
+            $('#tblCompanyList').DataTable();
+        });
+    </script>
+
+}*@
+

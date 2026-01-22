@@ -1,0 +1,47 @@
+﻿@model GL.ViewModels.AP.APVendorViewModel
+
+@{
+    ViewBag.Title = "Vendor List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="container-fluid">
+    <div class="row">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Vendor List</h3>
+            </div>
+
+
+            <div class="box-body">
+                <div class="col-sm-12" style="overflow:auto;">
+
+                    @if (ViewBag.username == "ind.shafeeq")
+                    {
+                        <p>
+                            <a href="/APAccountsPayable/vendor" class="btn btn-primary">Add</a>
+                        </p>
+                    }
+                    <div id="ListGrid">
+                        @Html.Partial("_VendorList", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script class="ListClass">
+
+        $().ready(function () {
+            $('#tblList').DataTable();
+        });
+    </script>
+
+}
+

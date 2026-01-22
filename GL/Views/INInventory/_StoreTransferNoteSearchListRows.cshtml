@@ -1,0 +1,112 @@
+﻿@model GL.ViewModels.Inventory.INStoreTransferNoteViewModel
+@{
+    Layout = null;
+}
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Date</label>
+                        </th>
+
+                        <th>
+                            <label>Project To</label>
+                        </th>
+
+                        <th>
+                            <label>Project From</label>
+                        </th>
+
+                        <th>
+                            <label>Remarks</label>
+                        </th>
+                        <th>
+                            <label>Approved</label>
+                        </th>
+                        <th>
+                            <label>Received</label>
+                        </th>
+
+                        @*<th style="width:50px;">
+            <label>IsPosted</label>
+        </th>*@
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.INStoreTransferNoteSearchList)
+                    {
+
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StoreTransferNoteID)
+                            </td>
+                            <td>
+                                @item.StoreTransferNoteDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProjectTo)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PrjectFrom)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Remarks)
+                            </td>
+
+                            <td style="text-align: center; padding-right: 90px;">
+                                @if (item.Approved == 1)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+                            <td style="text-align: center; padding-right: 90px;">
+                                @if (item.Received == 1)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+                            <td>
+                                <a href="/INInventory/StoreTransferNote/@item.StoreTransferNoteID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'order': [[0, "desc"]],
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+
+
+
+</script>
+

@@ -1,0 +1,359 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
+<h1 style="color:blue;">Dashboard</h1>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- DONUT CHART -->
+            <div class="box box-danger" style="min-height:250px;">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Sold/Unsold Status</h3>
+                    <div class="col-sm-3">
+                        @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), new { @class = "form-control showError project", @id = "ProjectID" })
+                    </div>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </div>
+        <!-- /.col (LEFT) -->
+        <div class="col-md-6">
+        </div>
+
+        <!--<div class="col-md-12">
+            
+            <!-- DONUT CHART -->-->
+            <!--@*<div class="box box-danger" style="min-height:250px;">*@
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Unit Matrix</h3>
+                    <div class="col-sm-3">
+                        @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), new { @class = "form-control showError project", @id = "ProjectID" })
+                    </div>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <canvas id="matrixChart" style="width:800px; height:1000px;"></canvas>
+                </div>-->
+                <!-- /.box-body -->
+            <!--</div>-->
+            <!-- /.box -->
+        <!--</div>-->
+        <!-- /.col (RIGHT) -->
+
+        <div class="row">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Unit Matrix</h3>
+                    <div class="col-sm-3">
+                      @*  @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), new { @class = "form-control showError project", @id = "ProjectID" })*@
+                    </div>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    @*<canvas id="matrixChart" style="width:800px; height:1000px;"></canvas>*@
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->
+<!-- Chart.js library -->
+@*<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>*@
+
+<!-- Chart.js Data Labels plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+@*<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>*@
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script id="dashboard Pie">
+            $(function () {
+                $(".project").select2();
+
+                $("select#ProjectID").prop('selectedIndex', 0);
+                //$(".project").trigger("change");
+                var projectID = $(".project").val()
+                debugger;
+                $.ajax({
+                    url: "/Home/GetUnitSaleDataJson",
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    data: { ProjectID: projectID },
+                    success: function (res) {
+
+                        chart(res.customLabels, res.data)
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+
+                $(document).on("change", ".project", function () {
+
+                    var projectID = $(".project").val();
+
+                    $.ajax({
+                        url: "/Home/GetUnitSaleDataJson",
+                        type: "POST",
+                        dataType: "json",
+                        async: false,
+                        data: { ProjectID: projectID },
+                        success: function (res) {
+                            chart(res.customLabels, res.data)
+                        },
+                        error: function (error) {
+                            //console.log("Error:");
+                            console.log(error);
+                        }
+                    });
+
+
+
+                });
+            });
+
+            let pieChartInstance; // Declare this globally
+
+            function chart(customLabels, data) {
+
+
+                const ctx = document.getElementById('pieChart').getContext('2d');
+
+                // Destroy existing chart if it exists
+                if (pieChartInstance) {
+                    pieChartInstance.destroy();
+                }
+
+                pieChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: data,//[20, 15, 10], // Must remain numbers
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return customLabels[context.dataIndex]; // show "20 - 50000"
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                formatter: function (value, context) {
+                                    return data[context.dataIndex]; // same label inside slice
+                                },
+                                color: '#000',
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                }
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+
+            }
+
+
+
+        </script>
+
+
+    @*<script id="Matrix">
+        $(function () {
+            var projectID = $(".project").val();
+
+            const ctx = document.getElementById('matrixChart').getContext('2d');
+
+            const matrix = [];
+            const matrixData = [];
+            //const xLabels = ['A', 'B', 'C', 'D', 'E'];
+            //const yLabels = ['W', 'X', 'Y', 'Z'];
+
+            const xLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+            const yLabels = ['GF', 'MZ', '1st', '2nd ', '3rd', '4th', '5th', '6th', '7th', '8th', '10th'];
+
+
+            $.ajax({
+                url: "/Home/GetMatrixDataJson",
+                type: "POST",
+                dataType: "json",
+                async: false,
+                data: { ProjectID: projectID },
+                success: function (dataMatrix1) {
+                    debugger;
+                    let rows = dataMatrix1.length;
+                    let cols = 17;
+
+                    for (i = 0; i < rows; i++) {
+                        matrix[i] = [];
+                        for (j = 0; j < cols; j++) {
+
+
+                            if (j == 0)
+                                matrix[i][j] = dataMatrix1[i].A;
+                            else if (j == 1)
+                                matrix[i][j] = dataMatrix1[i].B;
+                            else if (j == 2)
+                                matrix[i][j] = dataMatrix1[i].C;
+                            else if (j == 3)
+                                matrix[i][j] = dataMatrix1[i].D;
+                            else if (j == 4)
+                                matrix[i][j] = dataMatrix1[i].E;
+                            else if (j == 5)
+                                matrix[i][j] = dataMatrix1[i].F;
+                            else if (j == 6)
+                                matrix[i][j] = dataMatrix1[i].G;
+                            else if (j == 7)
+                                matrix[i][j] = dataMatrix1[i].H;
+                            else if (j == 8)
+                                matrix[i][j] = dataMatrix1[i].I;
+                            else if (j == 9)
+                                matrix[i][j] = dataMatrix1[i].J;
+                            else if (j == 10)
+                                matrix[i][j] = dataMatrix1[i].K;
+                            else if (j == 11)
+                                matrix[i][j] = dataMatrix1[i].L;
+                            else if (j == 12)
+                                matrix[i][j] = dataMatrix1[i].M;
+                            else if (j == 13)
+                                matrix[i][j] = dataMatrix1[i].N;
+                            else if (j == 14)
+                                matrix[i][j] = dataMatrix1[i].O;
+                            else if (j == 15)
+                                matrix[i][j] = dataMatrix1[i].P;
+                            else if (j == 16)
+                                matrix[i][j] = dataMatrix1[i].Q;
+
+                        }
+                    }
+                    //$(dataMatrix1).each(function (index, item) {
+                    //    matrix.push(item.v);
+                    //});
+                    //matrix = dataMatrix1.v;
+                }
+            });
+
+
+            /*for (let j = 0; j < yLabels.length - 1; j++) {*/
+            for (let j = 0; j < 11; j++) {
+                var b = j;
+                for (let i = 0; i < xLabels.length; i++) {
+                    console.log(matrix[j][i])
+                    matrixData.push({
+                        x: i,
+                        y: j,
+                        v: matrix[j][i] //Math.floor(Math.random() * 100) // Random values
+                    });
+                }
+                var jj = j;
+                //alert('y loops end' + j);
+            }
+            debugger;
+            new Chart(ctx, {
+                type: 'matrix',
+                data: {
+                    datasets: [{
+                        label: 'Matrix Dataset',
+                        data: matrixData,
+                        width: ({ chart }) => (chart.chartArea || {}).width / totalColumns,
+                        height: ({ chart }) => (chart.chartArea || {}).height / totalRows,
+                        backgroundColor(ctx) {
+                            const value = ctx.dataset.data[ctx.dataIndex].v;
+                            const alpha = value / 100;
+                            return 'grey';//`rgba(0, 123, 255, ${alpha})`;
+                        },
+                        width: 40,
+                        height: 40
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: -0.5,
+                            max: xLabels.length - 0.5,
+                            ticks: {
+                                callback: function (value, index) {
+                                    return xLabels[value] || '';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'X Axis'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: -0.5,
+                            max: yLabels.length - 0.5,
+                            ticks: {
+                                callback: function (value, index) {
+                                    return yLabels[value] || '';
+                                },
+
+                            },
+                            title: {
+                                display: true,
+                                text: 'Y Axis'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function () { return ''; },
+                                label: function (ctx) {
+                                    const item = ctx.raw;
+                                    return `(${xLabels[item.x]}, ${yLabels[item.y]}): ${item.v}`;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            });
+        });
+
+    </script>*@
+
+}

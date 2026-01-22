@@ -1,0 +1,173 @@
+﻿@model GL.Security.ViewModels.MenuViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="form-horizontal">
+                    <div class="box-body">
+                        <div class="box-header with-border">
+                            <h2 class="box-title">Menu Rights List</h2>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <label for="CompanyID" class="col-sm-1 control-label input-sm">Company</label>
+                            <div class="col-sm-3">
+                                @Html.DropDownListFor(m => m.CompanyID, new SelectList(ViewBag.Companies, "CompanyID", "Name"), "- Select Company -", new { @id = "CompanyID", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="ClassID" class="control-label col-sm-1">User</label>
+                            <div class="col-sm-3">
+                                <select id="UsersID" class="form-control">
+                                    <option value=''>- Select User -</option>
+                                </select>
+
+                                @*@Html.DropDownListFor(m => m.UserID, new SelectList(ViewBag.Users, "UsersID", "UserName"), "- Select User -", new { @id = "UsersID", @class = "form-control" })*@
+                            </div>
+
+
+                        </div>
+
+
+
+
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <button class="btn btn-info pull-right" onclick="search()">Search</button>
+                            <button class="btn btn-default pull-right" onclick="clearSearch()">Clear</button>
+                        </div>
+                        <!-- /.box-footer -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div id="ListRows">
+        </div>
+
+    </div>
+
+</section>
+
+
+@section scripts{
+
+    <script class="MenuRightsView">
+        $().ready(function () {
+            $(".btnSearch").click(function (e) {
+                e.preventDefault;
+                alert();
+            });
+            //
+            //if ($("#CompanyID").length == 1) {
+            //    $("#CompanyID").prop('disabled', true)
+            //    $("#CompanyID").trigger("change");
+            //}
+
+        });
+
+
+        function getSearchObject() {
+
+            var obj = {
+                CompanyID: $("#CompanyID option:selected").val(),
+                UserID: $("#UsersID option:selected").val(),
+            };
+            return obj;
+        }
+
+        function search() {
+
+            
+            var obj = getSearchObject();
+            //var jsonData = JSON.stringify({ "studentSearch": obj });
+            if (obj.CompanyID == null || obj.CompanyID == '') {
+                alert('Please select a Company');
+                return;
+            }
+
+
+            $.post("/Security/MenuRightsRowsView", { searchModel: obj }).done(function (res) {
+
+                $("#ListRows").empty();
+                $("#ListRows").html(res);
+
+            }).fail(function (ex) {
+                alert(ex.responseText);
+                // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+            }).always(function () { });
+
+        }
+        function clearSearch() {
+
+            $("select#CompanyID")[0].selectedIndex = -1;
+            $("select#UserID")[0].selectedIndex = -1;
+
+            $("#ListRows").empty();
+        }
+        function showSearch() {
+            var state = $("#dvSearch").css("display");
+            if (state == 'block') {
+                $("#dvSearch").css("display", "none");
+                $("#showSearch").text("Show Search");
+            }
+            else {
+                $("#dvSearch").css("display", "block");
+                $("#showSearch").text("Hide Search");
+            }
+        }
+
+
+
+
+        $(document).on('change', '#CompanyID', function (e) {
+            e.preventDefault;
+
+            var index = $("select#CompanyID")[0].selectedIndex;
+            if (index == 0) {
+                $("#UsersID").html("");
+                $("#UsersID").html("<option value=''> - Select User -</option>");
+            }
+            else {
+                var CompanyID = $("#CompanyID").val();
+                //var jsonData = JSON.stringify({ "CompanyID": CompanyID});
+
+                $.post("/Setup/GetUserList", { "CompanyID": CompanyID }).done(function (res) {
+                    $("#UsersID").html("");
+                    $("#UsersID").html("<option value=''>- Select User -</option>");
+                    if (res.status == true) {
+                        $(res.resObj).each(function (index, element) {
+                            var UserID = $(this)[0].UsersID;
+                            var username = $(this)[0].username;
+                            var option = "<option value='" + UserID + "' >" + username + "</option>";
+                            $("#UsersID").append(option);
+                        });
+                    }
+                    else {
+
+                    }
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                }).always(function () { });
+
+            }
+        });
+
+
+
+    </script>
+}
+

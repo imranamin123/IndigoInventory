@@ -1,0 +1,204 @@
+﻿@model GL.ViewModels.DV.DVDocumentViewModel
+
+@{
+
+    ViewBag.Title = "Document List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="form-horizontal">
+                    <div class="box-body">
+                        <div class="box-header with-border">
+                            <h2 class="box-title">Document List</h2>
+                        </div>
+                        <br />
+
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <a href="/DVDevelopment/DVDocument?ApplicationFormID=@ViewBag.ApplicationFormID" class="btn btn-primary">Add Doc</a>
+                            @*<button class="btn btn-info pull-right" onclick="search()">Add</button>*@
+                        </div>
+                        <!-- /.box-footer -->
+                        @*</form>*@
+
+                    </div>
+                </div>
+
+                <div style="margin-top: 7px;">
+
+                    <table class="table table-striped tblDetail" id="tblList">
+                        <thead>
+                            <tr>
+                                @*<th style="width:50px;text-align:center" class="th"><label>Sr</label></th>*@
+                                <th style="width:50px;text-align:center" class="th"><label>Sr</label></th>
+                                <th style="width: 100px; text-align: left;"><label>Date</label></th>
+                                <th style="width: 150px;text-align: left;"><label>Type</label></th>
+                                <th style="width: 150px; text-align: left;"><label>Name</label></th>
+                                <th style="width: 150px;text-align: left;"><label>Description</label></th>
+                                <th style="width:50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyList">
+
+                            @if (Model.DocumentListRows != null && Model.DocumentListRows.Count > 0)
+                            {
+                                int i = 0;
+                                foreach (var item in Model.DocumentListRows)
+                                {
+                                    //TotalAmount += item.Amount.GetValueOrDefault(0);
+
+                                    <tr>
+                                        <td style="width:50px;text-align:center;">
+
+                                            <input type="hidden" id="DocumentID" value="@item.DocumentID" />
+                                            <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                            <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                            <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                            <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                            <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+                                            <input type="hidden" id="DocumentPath" value="@item.DocumentPath" />
+
+
+                                            <label id="lblSrNo">@(i+1) </label>
+                                            @*@Html.DisplayFor(modelItem => item.DocumentID)*@
+                                        </td>
+
+
+                                        <td>
+                                            @item.DocumentDate.Value.ToString("dd-MMM-yyyy")
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentTypeName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentName)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentDescription)
+                                        </td>
+                                        <td>
+                                            @if (item.DocumentPath != null)
+                                            {
+                                                <a id="showPopup" onclick="showImage(this);" class="btn btn-primary btn-xs" style="cursor:pointer;"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="/DVDevelopment/DownloadFile?fileName=@item.DocumentPath" class="btn btn-primary btn-xs"><i class="fa fa-download"></i></a>
+                                            }
+
+                                            <a href="/DVDevelopment/DVDocument?DocumentID=@item.DocumentID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                                            <a href="/DVDevelopment/DVDocumentDelete?ApplicationFormID=@item.ApplicationFormID&DocumentID=@item.DocumentID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>
+                                        </td>
+                                    </tr>
+                                    i = i + 1;
+                                }
+                            }
+
+                        </tbody>
+                        <tfoot>
+
+                        </tfoot>
+                    </table>
+                </div>
+                <a href="/DVDevelopment/ApplicationForm/@ViewBag.ApplicationFormID" style="margin: 12px;" class="btn btn-info ">Back to App</a>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div id="ListRows">
+        </div>
+
+    </div>
+</section>
+
+<div id="attachmentModel" class="modal fade bs-model-lg" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 628px;">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="cont">
+                <object id="obj" width="600" height="800"></object>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@*<link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">*@
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<script>
+
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+    function showImage(obj) {
+        
+         var filePath = $(obj).closest('tr').find("#DocumentPath").val();
+         var obj = "<object id='obj' width='600' height='800' data='" + filePath + "'></object>"
+         $("#cont").html('');
+         $("#cont").html(obj);
+         $('#attachmentModel').modal('show');
+     }
+
+</script>
+
+
+@*@section scripts{
+
+
+    $().ready(function () {
+
+
+
+    $('#tblList').DataTable({
+    'paging': true,
+    'lengthChange': true,
+    'searching': true,
+    'ordering': true,
+    'info': true,
+    'autoWidth': true,
+    // display everything
+    "iDisplayLength": -1,
+    "aaSorting": [[3, "asc"]] // Sort by first column descending
+    });
+
+    resetSrNo();
+
+    });
+
+    function resetSrNo() {
+
+    SrNo = 0;
+    $("#tbodyList tr").each(function () {
+
+    var dt = $(this).find("#DVReceiptID").val();
+    if (dt != undefined && dt != '') {
+    SrNo += 1;
+    $(this).find("#lblSrNo").html(SrNo);
+
+    }
+    });
+    }
+
+}*@

@@ -1,0 +1,93 @@
+﻿@model GL.ViewModels.Inventory.INStoreIssueNoteViewModel
+@{
+    Layout = null;
+}
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Date</label>
+                        </th>
+
+                        <th>
+                            <label>Project</label>
+                        </th>
+                        <th>
+                            <label>Remarks</label>
+                        </th>
+                        <th style="width:50px;">
+                            <label>IsPosted</label>
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.INStoreIssueNoteSearchList)
+                    {
+
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StoreIssueNoteID)
+                            </td>
+                            <td>
+                                @item.StoreIssueNoteDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProjectName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Remarks)
+                            </td>
+
+                            <td>
+                                @if (item.IsPosted == true)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </td>
+
+                            <td style="text-align: center; padding-right: 90px;">
+                                <a href="/INInventory/StoreIssueNote/@item.StoreIssueNoteID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                                @*@if (Model.RoleID == 5 && item.IsPosted == true)
+                                {
+                                    <a href="/INInventory/INStoreIssueNoteUnPost/@item.StoreIssueNoteID" onclick="return confirm('Are you sure you want to revert posting');" title="Revert posting" class="btn btn-danger btn-xs"><i class="fa fa-edit"></i></a>
+                                }*@
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'order': [[0, "desc"]],
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+
+
+
+</script>

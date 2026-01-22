@@ -1,0 +1,52 @@
+﻿@model  GL.ViewModels.AP.APVendorViewModel
+
+
+<table class="table" id="tblList">
+    <thead>
+        <tr>
+            <th><label>ID</label></th>
+            <th>
+                <label>Code</label>
+            </th>
+            <th>
+                <label>Name</label>
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.APVendorList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.APVendorID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.APVendorCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.APVendorName)
+                </td>
+
+                <td>
+                    <a href="/APAccountsPayable/Vendor/@item.APVendorID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                   @* <a href="/APAccountsPayable/VendorDelete/@item.APVendorID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@*@section scripts{
+        @Scripts.Render("~/bundles/jqueryval")
+        <script id="ListCompany">
+
+            $().ready(function () {
+                $('#tblCompanyList').DataTable();
+            });
+        </script>
+
+    }*@
+

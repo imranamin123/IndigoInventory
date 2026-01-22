@@ -1,0 +1,82 @@
+﻿@model GL.Security.ViewModels.MenuViewModel
+    @{
+        Layout = null;
+    }
+
+    <div class="box box-info">
+        <div class="box-body">
+            <div class="col-sm-12" style="overflow:auto;">
+                <table class="table table-hover" id="tblList">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                <label>UserID</label>
+                            </th>
+                            <th>
+                                <label>User Name</label>
+                            </th>
+                            <th>
+                                <label>Company</label>
+                            </th>
+                            <th style="text-align:right;">
+                                <label>Assigned</label>
+                            </th>
+                            <th>
+
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.MenuPagesRightsList)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UsersID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.username)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Company)
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.DisplayFor(modelItem => item.Assigned)
+                                </td>
+                                <td>
+                                    <a href="/Security/CreateUserPageRights?CompanyID=@item.CompanyID&UserID=@item.UsersID" class="btn btn-primary btn-xs" title="edit fee receipt"><i class="fa fa-edit"></i></a>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+                <p></p>
+                <div class="form-group col-sm-12 mt-2">
+                    <div class="Actions" style="text-align:right;">
+                        <a href="#" class="btn btn-primary print">Print</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        $().ready(function () {
+            $('#tblList').DataTable({
+                'paging': false,
+                'lengthChange': true,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': true
+            });
+
+        });
+
+    </script>

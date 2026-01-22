@@ -1,0 +1,125 @@
+﻿
+@model GL.ViewModels.Setup.APCompanyViewModel
+
+@{
+    ViewBag.Title = "Class";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .error {
+        color: red;
+        border-color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Company Form</h3>
+                </div>
+
+
+                <div class="form-horizontal">
+                    <input type="hidden" value="@Model.Company.CompanyID" id="hdCompanyID" />
+                    @*<input type="hidden" value="@Model.Company.SchoolID" id="hdSchoolID" />*@
+
+                    <div class="box-body">
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-7">
+                                <div class="form-group">
+                                    <label for="StudentName" class="control-label col-sm-2">Name</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" id="CompanyName" value="@Model.Company.Name" class="form-control showError" />
+                                        <span id="spnCompanyNameError" class="error" style="display:none;">Please enter Company name</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <div class="Actions">
+                                <a href="/Setup/CompanyList" class="btn btn-info ">Back to List</a>
+                                <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                                <a href="#" class="btn btn-primary SaveCompany">Save</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="Companys">
+
+            $().ready(function () {
+                $(".SaveCompany").click(function (e) {
+                    e.preventDefault;
+
+                    if (IsValid() == false) {
+                        return;
+                    }
+                    
+                    var obj = getObject();
+                    var jsonData = JSON.stringify({ "Company": obj });
+
+                    $.ajax({
+                        url: "/Setup/CompanySave",
+                        type: "POST",
+                        data: jsonData,
+                        contentType: "application/json; charset=UTF-8",
+                        dataType: "JSON",
+                        success: function (res) {
+
+                            if (res.status == true) {
+                                alert("Record saved successfully!");
+                                var url = "/Setup/CompanyList";
+                                window.location = url;
+
+                            }
+                            else {
+                                alert("Error occured in saving");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                });
+            });
+
+            function IsValid() {
+                var valid = true;
+                $(".error").hide();
+
+                if ($("#CompanyName").val() == "") {
+                    $("#spnCompanyNameError").show();
+                    valid = false;
+                }
+                return valid;
+            }
+
+            function getObject() {
+                var obj = {
+                    CompanyID: $("#hdCompanyID").val(),
+                    Name: $("#CompanyName").val(),
+                   // SchoolID: $("#hdSchoolID").val(),
+
+                }
+                return obj;
+            }
+
+    </script>
+}
+

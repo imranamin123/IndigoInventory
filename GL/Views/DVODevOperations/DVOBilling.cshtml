@@ -1,0 +1,574 @@
+﻿@model GL.ViewModels.DVO.DVOBillingViewModel
+
+@{
+    //Model.feeReceipt.SessionID=0;
+    List<GL.EF.spGLAccountsForDropdown_Result> gl = ViewBag.GLAccounts;
+    decimal TotalAmount = 0;
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+    <input type="hidden" id="MCompanyID" value="@Model.DVOBilling.CompanyID" />
+    <input type="hidden" id="MCreatedBy" value="@Model.DVOBilling.CreatedBy" />
+    <input type="hidden" id="MCreatedAt" value="@Model.DVOBilling.CreatedAt" />
+    <input type="hidden" id="MModifiedBy" value="@Model.DVOBilling.ModifiedBy" />
+    <input type="hidden" id="MModifiedAt" value="@Model.DVOBilling.ModifiedAt" />
+    <input type="hidden" id="MApplicationFormID" value="@Model.DVOBilling.ApplicationFormID" />
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Billing </h2>
+                    </div>
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="BillingID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVOBilling.BillingID" id="BillingID">
+                        </div>
+                        <label class="control-label col-sm-1">Project</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(x => x.DVOBilling.ProjectID, new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --",
+                            new { @class = "form-control showError", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select a project</span>
+                        </div>
+
+                        <label class="control-label col-sm-1 PaddingTop-5">Unit</label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(x => x.DVOBilling.UnitID, new SelectList(ViewBag.Units, "UnitID", "UnitNo"), "-- Select --", new { @class = "form-control showError", @id = "UnitID" })
+                            <span id="spnUnitIDError" class="error" style="display:none;">Please select a unit</span>
+                        </div>
+
+                    </div>
+                    <div class="row" style="margin-bottom:10px;">
+                        @*<label class="control-label col-sm-1">Bill Month</label>
+                            <div class="col-sm-2">
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker" placeholder="" autocomplete="off" id="BillingDate" value="@Model.DVOBilling.BillingDate.Value.ToString("MMM-yyyy")" />
+                                </div>
+                                <span id="spnVoucherDateError" class="error" style="display:none;">Please select issue date</span>
+                            </div>*@
+
+                        <label for="BillingDate" class="control-label col-sm-1 PaddingTop-5">Billing Date</label>
+                        <div class="col-sm-2">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" placeholder="" autocomplete="off" id="BillingDate" value="@Model.DVOBilling.BillingDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnBillingDateError" class="error" style="display:none;">Please select issue date</span>
+                        </div>
+
+                        @*<label for="DueDate" class="control-label col-sm-1 PaddingTop-5">Due Date</label>
+                            <div class="col-sm-2">
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker" placeholder="" autocomplete="off" id="DueDate" value="@Model.DVOBilling.BillingDate.Value.ToString("dd-MMM-yyyy")" />
+                                </div>
+                                <span id="spnVoucherDateError" class="error" style="display:none;">Please select due date</span>
+                            </div>*@
+
+                    </div>
+
+                    @* <input type="month" class="form-control col-sm-2" value="@Model.DVOBill.BillMonth"/>*@
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/DVODevOperations/DVOBilling" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="width: 150px;text-align: left;"><label>Payment Type</label></th>
+                            <th style="width: 300px; text-align: left;"><label>Narration</label></th>
+                            <th style="width: 150px; text-align: right;"><label>Amount</label></th>
+                            <th style="width:5px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.DVOBillingDetailRows != null && Model.DVOBillingDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            TotalAmount = 0;
+                            foreach (var item in Model.DVOBillingDetailRows)
+                            {
+                                TotalAmount += item.Amount.GetValueOrDefault(0);
+
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+
+                                        <input type="hidden" id="BillingDetailID" value="@item.BillingDetailID" />
+                                        <input type="hidden" id="BillingID" value="@item.BillingID" />
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                        @Html.DisplayFor(modelItem => item.BillingDetailID)
+                                    </td>
+
+
+                                    <td>
+                                        <input type="text" class="ddlid" value="@item.PaymentPlanTypeID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.DVOBillingDetailRows[i].PaymentPlanTypeID, new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+                                        <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" style="text-align:left;" id="Narration" class="form-control" value="@item.Narration" />
+                                        <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" style="text-align:right;" onchange="calculateTotals(this)" id="Amount" class="form-control" value="@item.Amount" />
+                                        <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+                                    </td>
+
+                                    <td>
+                                        <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+                                <input type="hidden" id="BillingDetailID" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" class="ddlid" value="" style="display:none;" />
+                                @Html.DropDownList("PaymentPlanTypeID", new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+                                <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+                            </td>
+
+                            <td>
+                                <input type="text" style="text-align:left;" id="Narration" class="form-control" value="" />
+                                <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+                            </td>
+                            <td>
+                                <input type="number" style="text-align:right;" onchange="calculateTotals(this)" id="Amount" class="form-control" value="" />
+                                <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+                            </td>
+
+                            <td>
+                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align:right;"><label style="font-size:20px;">Total</label></td>
+                            <td>
+                                <input type="number" id="TotalAmount" value="@TotalAmount" style="font-size:large; text-align:right; font-weight:bold;background-color:white;" class="form-control " readonly />
+                                <span id="spnTotalAmountNotEqualError" class="error" style="display:none;">Total amount is not equal to application amount</span>
+                            </td>
+                        </tr>
+
+
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a href="/DVODevOperations/DVOBillingList" class="btn btn-info ">Back to List</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+
+                    @*@if ((Model.RoleID == 1 || Model.RoleID == 2) || Model.DVReceiptHeadByReceiptID.Varified == false)
+                        {*@
+                    <a href="#" class="btn btn-primary btnSave">Save</a>
+                    @*}*@
+
+                    <a onclick="viewReport()" class=" btn btn-success"> View Report</a>
+                    <a onclick="downloadReport()" class=" btn btn-primary"> Download Report</a>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+
+            <input type="hidden" id="DVReceiptDetailID" value="" />
+            <label id="lblSrNo"></label>
+        </td>
+
+        <td>
+            <input type="text" class="ddlid" value="" style="display:none;" />
+            @Html.DropDownList("PaymentPlanTypeID", new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+            <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+        </td>
+       
+        <td>
+            <input type="text" style="text-align:left;" id="Narration" class="form-control" value="" />
+            <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+        </td>
+        <td>
+            <input type="number" style="text-align:right;" onchange="calculateTotals(this)" id="Amount" onblur="getdata(this);" class="form-control num" value="" />
+            <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+        </td>
+
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+        </td>
+
+    </tr>
+
+    @*<tr class="trTotalTemplate">
+                <td colspan="5" style="text-align:right;"><label>Total</label></td>
+                <td><input type="text" id="DrTotal" style="font-size:large; font-weight:bold; background-color:white;" class="form-control integer number" readonly value="0" /></td>
+                <td><input type="text" id="CrTotal" style="font-size:large; font-weight:bold;background-color:white;" class="form-control integer number" readonly value="0" /></td>
+        </tr>*@
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+
+
+        function getdata(obj) {
+            
+            var val = parseFloat($(obj).val().replace(/,/g, ""))
+                .toFixed(2)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            $(obj).val(val);
+        }
+
+        $().ready(function () {
+
+            $("#UnitID").select2();
+
+            $("#tbodyList tr").each(function () {
+               // $(this).find(".ddl").select2();
+                var glID = $(this).find(".ddlid").val();
+                $(this).find(".ddl").val(glID).change();
+
+                $(this).find(".select2.select2-container").css("width", "400px");
+
+                var BillingID = $("#BillingID").val();
+                if (BillingID > 0) {
+                    $("#ProjectID").prop("disabled", true);
+                    $("#UnitID").prop("disabled", true);
+                }
+            });
+
+
+            $(document).on("click", ".delete-row", function () {
+
+                if (confirm("Are you sure you want to delete this row")) {
+                    
+                    var row = $(this).closest("tr");
+                    var BillingDetailID = $(this).closest("tr").find("#BillingDetailID").val();
+
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() + 1) {
+                        $(row).find("#BillingDetailID").val("");
+                        $(row).find("#PaymentPlanTypeID").val("");
+                        $(row).find("#Narration").val("");
+                        $(row).find("#Amount").val("");
+                    }
+                    else if (BillingDetailID != "" || $(BillingDetailID).val() > 0) {
+
+                        $.get("/DVODevOperations/DVOBillingDetailDelete", { BillingDetailID: BillingDetailID }).done(function (res) {
+
+                            $(row).remove();
+                            calculateTotals();
+
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if ((BillingDetailID == "" || $(BillingDetailID).val() == undefined)) {
+                        var totalRows = $("#tbodyList tr").length;                        
+                        if (totalRows > 1 ) {
+
+                            $(row).remove();
+                            calculateTotals();
+                        }
+                        else {
+                            $(row).find("#BillingDetailID").val("");
+                            $(row).find("#PaymentPlanTypeID").val("");
+                            $(row).find("#Narration").val("");
+                            $(row).find("#Amount").val("");
+                        }
+                    }
+                }
+            });
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    return;
+                }
+
+               
+                var obj = getObject();
+                var objDetails = getObjectDetails();
+
+        
+
+                $.post("/DVODevOperations/DVOBillingSave", { DVOBilling: obj, DVOBillingDetail: objDetails }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+
+                        window.location = "/DVODevOperations/DVOBilling?BillingID=" + res.resObj.BillingID;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+
+            $(document).on("change", "#PaymentPlanTypeID", function () {
+
+                var currentRow = $(this).closest("tr");
+                var totalRows = $("tr", "#tbodyList").length;
+                var currentRowIndex = currentRow.index();
+                var diff = totalRows - currentRowIndex;
+
+                if (diff == 1) {
+                    var row = $('.trRowTemplate').clone();
+                    $(row).removeClass("trRowTemplate");
+                    $('#tbodyList').append(row);
+                }
+            });
+
+            $(document).on("change", "#ProjectID", function (e) {
+
+                e.preventDefault;
+                var projectID = $('#ProjectID').val();
+
+                $.post("/DVDevelopment/DVOccupiedUnitsListByProjectID", { ProjectID: projectID, IsOccupied: true }).done(function (result) {
+
+
+                    $("#UnitID").empty();
+                    var options = '';
+                    options = options + '<option value="">' + "--Select--" + '</option> ';
+                    for (var i = 0; i < result.length; i++) {
+                        options = options + '<option value="' + result[i].UnitID + '">' + result[i].UnitNo + '</option> ';
+                    }
+
+                    $("#UnitID").append(options);
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () { });
+            });
+
+        });
+
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#BillingDate").val() == "") {
+                $("#spnBillingDateError").show();
+                valid = false;
+            }
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#PaymentPlanTypeID').val() != "" && $(this).find('#PaymentPlanTypeID').val() > 0) {
+
+
+                    if ($(this).find('#Narration').val() == "") {
+                        $(this).find('#spnNarrationError').show();
+                        valid = false;
+                    }
+
+                    if ($(this).find('#Amount').val() == "") {
+                        $(this).find('#spnAmountError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+
+            // empty detail check
+            if (valid == true && $("#tbodyList tr").length == 1) {
+                valid = false;
+                alert("Please enter a row in detail");
+            }
+
+            return valid;
+        }
+
+        function calculateTotals() {
+
+            var totalAmount = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#PaymentPlanTypeID').val() != "" && $(this).find('#PaymentPlanTypeID').val() > 0) {
+
+                    var amount = $(this).find('#Amount').val() == '' ? 0 : parseFloat($(this).find('#Amount').val());
+
+                    totalAmount += parseFloat(amount);
+
+                }
+            });
+
+            $("#TotalAmount").val(totalAmount);
+        }
+
+
+        function getObject() {
+
+            var obj = {
+
+                BillingID: $("#BillingID").val(),
+                BillingDate: $("#BillingDate").val(),
+                ApplicationFormID: $("#MApplicationFormID").val(),
+                ProjectID: $("#ProjectID").val(),
+                UnitID: $("#UnitID").val(),
+
+                // hidden fields
+                CreatedBy: $("#MCreatedBy").val(),
+                CreatedAt: $("#MCreatedAt").val(),
+                ModifiedBy: $("#MModifiedBy").val(),
+                ModifiedAt: $("#MModifiedAt").val(),
+                CompanyID: $("#MCompanyID").val(),
+
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var DetailRows = [];
+
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+
+
+                if ($(this).find('#PaymentPlanTypeID').val() != "" && $(this).find('#PaymentPlanTypeID').val() > 0) {
+                    var DetailRow = {
+                        BillingDetailID: $(this).find('#BillingDetailID').val(),
+                        BillingID: $(this).find('#BillingID').val(),
+                        PaymentPlanTypeID: $(this).find('#PaymentPlanTypeID').val(),
+                        Narration: $(this).find('#Narration').val(),
+                        Amount: $(this).find('#Amount').val(),
+
+                        //hidden fields
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val(),
+                        CompanyID: $(this).find('#CompanyID').val()
+
+                    }
+                    DetailRows.push(DetailRow);
+                }
+            });
+
+            return DetailRows;
+        }
+
+        function removeThousandSeperator(obj) {
+
+            var number = $(obj).val();
+            if (number == '' || number == undefined)
+                return;
+
+            var newNum = number.replace(/(\d+),(?=\d{3}(\D|$))/g, "$1");
+            $(obj).val(newNum);
+        }
+
+        function appendThousandSeperator(obj) {
+
+
+
+            var number = $(obj).val(); 
+            number = parseFloat(number);
+
+            // Specifying options for formatting
+            const options = {
+                style: 'decimal',  // Other options: 'currency', 'percent', etc.
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            };
+            const formattedWithOptions = number.toLocaleString('en-US', options);
+
+            $(obj).val(formattedWithOptions);// ('value', 'defaultValue');
+
+        }
+
+    </script>
+
+}
+

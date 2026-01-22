@@ -1,0 +1,827 @@
+﻿@model GL.ViewModels.DV.DVPaymentPlanViewModel
+
+@{
+    //Model.feeReceipt.SessionID=0;
+
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Payment Plan </h2>
+                    </div>
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="PaymentPlanID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" readonly value="@Model.DVPaymentPlanHead.PaymentPlanID" id="PaymentPlanID">
+                        </div>
+
+                        <label for="ProjectName" class="control-label col-sm-1">Project</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" readonly value="@Model.DVPaymentPlanHead.ProjectName" id="ProjectName">
+                        </div>
+
+                        <label for="ProjectName" class="control-label col-sm-1">Application ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" readonly value="@Model.DVPaymentPlanHead.ApplicationFormID" id="ApplicationFormID">
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1">Form No</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" readonly id="ApplicationFormNo" value="@Model.DVPaymentPlanHead.ApplicationFormNo" />
+                        </div>
+
+                        <label for="ApplicationFormDate" class="control-label col-sm-1 PaddingTop-5">Application Date</label>
+                        <div class="col-sm-3">
+
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control " readonly placeholder="" autocomplete="off" id="ApplicationFormDate" value="@Model.DVPaymentPlanHead.ApplicationFormDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnApplicationFormDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+                        <label for="ApplicationFormDate" class="control-label col-sm-1 PaddingTop-5">Plan Date</label>
+                        <div class="col-sm-3">
+
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" placeholder="" autocomplete="off" id="PaymentPlanDate" value="@Model.DVPaymentPlanHead.PaymentPlanDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnPaymentPlanDateError" class="error" style="display:none;">Please select plan date</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1 PaddingTop-5">Unit</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" readonly id="UnitNo" value="@Model.DVPaymentPlanHead.UnitNo" />
+                        </div>
+
+                        <label for="UnitTypeName" class="col-sm-1 control-label ">Type</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" readonly id="UnitTypeName" value="@Model.DVPaymentPlanHead.UnitTypeName" />
+                        </div>
+
+                        <label for="FloorNo" class="col-sm-1 control-label ">Floor</label>
+                        <div class="col-sm-2">
+                            <input class="form-control " readonly value="@Model.DVPaymentPlanHead.FloorNo" id="FloorNo">
+                        </div>
+
+                        <label for="SQFT" class="col-sm-1 control-label ">SQFT</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVPaymentPlanHead.SQFT" id="SQFT">
+                        </div>
+
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+
+                        <label for="Price" class="col-sm-1 control-label ">Price</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVPaymentPlanHead.Price" id="Price">
+                        </div>
+
+                        <label for="Amount" class="col-sm-1 control-label ">Amount</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVPaymentPlanHead.Amount" id="Amount">
+                        </div>
+
+                        <label for="TokenMoney" class="col-sm-1 control-label ">Token Money</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVPaymentPlanHead.TokenMoney" id="TokenMoney">
+                        </div>
+
+                    </div>
+
+                    <div>
+                        <label for="PaymentStartDate" class="control-label col-sm-1 PaddingTop-5">Payment Start Date</label>
+                        <div class="col-sm-3">
+
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control " autocomplete="off" id="PaymentStartDate" value="@Model.DVPaymentPlanHead.PaymentPlanDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnPaymentStartDateError" class="error" style="display:none;">Please enter payment start date</span>
+                        </div>
+                        <a class="btn btn-success payment-package">Load Payment Package</a>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLVoucher/GLVoucher" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="width:200px;text-align:left;"><label>Date</label></th>
+                            <th style="width: 150px;text-align: left;"><label>Payment Type</label></th>
+                            <th style="width: 150px; text-align: right;"><label>Percentage</label></th>
+                            <th style="width: 150px; text-align: right;"><label>Amount</label></th>
+                            <th style="width:5px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.DVPaymentPlanDetailRows != null && Model.DVPaymentPlanDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.DVPaymentPlanDetailRows)
+                            {
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+
+                                        <input type="hidden" id="PaymentPlanDetailID" value="@item.PaymentPlanDetailID" />
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                        <label id="lblSrNo"></label>
+                                    </td>
+
+                                    <td>
+
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            @if (item.PaymentPlanDetailDate != null)
+                                            {
+                                                <input class="form-control date-picker" autocomplete="off" id="PaymentPlanDetailDate" value="@item.PaymentPlanDetailDate.Value.ToString("dd-MMM-yyyy")" />
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control date-picker" autocomplete="off" id="PaymentPlanDetailDate" value="" />
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="ddlid" value="@item.PaymentPlanTypeID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.DVPaymentPlanDetailRows[i].PaymentPlanTypeID, new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+                                        <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" style="text-align:right;" id="Percentage" onchange="calculatePercentTotals(this);" class="form-control " value="@item.Percentage" />
+                                        <span id="spnPercentageError" class="error" style="display:none;">Please enter percentage</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" style="text-align:right;" onchange="calculateAmountTotals(this)" id="Amount" class="form-control " value="@item.Amount" />
+                                        <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+                                    </td>
+
+                                    <td>
+                                        <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+
+                                <label id="lblSrNo"></label>
+                            </td>
+
+                            <td>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input class="form-control date-picker" autocomplete="off" id="PaymentPlanDetailDate" value="" />
+                                </div>
+                            </td>
+
+                            <td>
+                                <input type="text" class="glid" value="" style="display:none;" />
+                                @Html.DropDownList("PaymentPlanTypeID", new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+                                <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+
+                            </td>
+                            <td>
+                                <input type="number" style="text-align:right;" id="Percentage" onchange="calculatePercentTotals(this);" class="form-control " value="" />
+                                <span id="spnPercentageError" class="error" style="display:none;">Please enter percentage</span>
+                            </td>
+                            <td>
+                                <input type="number" style="text-align:right;" onchange="calculateAmountTotals(this)" id="Amount" class="form-control " value="" />
+                                <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+                            </td>
+
+                            <td>
+                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align:right;"><label style="font-size:20px;">Total</label></td>
+                            <td>
+                                <input type="number" id="TotalPercentage" style="font-size:large; font-weight:bold; background-color:white; text-align:right;" class="form-control integer " readonly value="0" />
+                                <span id="spnTotalPercentageNotEqualError" class="error" style="display:none;">Total percentage is not equal to 100</span>
+                            </td>
+                            <td>
+                                <input type="number" id="TotalAmount" style="font-size: large; font-weight: bold; background-color: white; text-align: right;" class="form-control integer " readonly value="0" />
+                                <span id="spnTotalAmountNotEqualError" class="error" style="display:none;">Total amount is not equal to application amount</span>
+                            </td>
+                        </tr>
+
+
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a href="/DVDevelopment/ApplicationForm/@Model.DVPaymentPlanHead.ApplicationFormID" class="btn btn-info ">Back to App</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    <a href="#" class="btn btn-primary btnSave">Save</a>
+                    <a href="#" onclick="viewReport();" class=" btn btn-success" target="_blank"> View Report</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+
+
+            <label id="lblSrNo"></label>
+        </td>
+
+        <td>
+            <div class="input-group date">
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+                <input class="form-control date-picker" autocomplete="off" id="PaymentPlanDetailDate" value="" />
+            </div>
+        </td>
+
+        <td>
+            <input type="text" class="glid" value="" style="display:none;" />
+            @Html.DropDownList("PaymentPlanTypeID", new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+
+
+        </td>
+        <td>
+            <input type="number" style="text-align:right;" onchange="calculatePercentTotals(this);" id="Percentage" class="form-control " value="" />
+            <span id="spnPercentageError" class="error" style="display:none;">Please enter percentage</span>
+        </td>
+        <td>
+            <input type="number" style="text-align:right;" onchange="calculateAmountTotals(this)" id="Amount" class="form-control " value="" />
+            <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+        </td>
+
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+        </td>
+
+    </tr>
+
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="DVPaymentPlan">
+        var SrNo = 0;
+
+
+
+
+        $().ready(function () {
+
+            calculateTotals();
+            resetSrNo();
+
+            $("#tbodyList tr").each(function () {
+                var ID = $(this).find(".ddlid").val();
+                $(this).find(".ddl").val(ID).change();
+            });
+
+            function resetSrNo() {
+                SrNo = 0;
+                $("#tbodyList tr").each(function () {
+
+                    var dt = $(this).find("#PaymentPlanDetailDate").val();
+                    if (dt != undefined && dt != '') {
+                        SrNo += 1;
+                        $(this).find("#lblSrNo").html(SrNo);
+
+                    }
+                });
+            }
+
+            $(document).on("click", ".delete-row", function () {
+
+
+                if (confirm("Are you sure you want to delete this row")) {
+
+                    var row = $(this).closest("tr");
+                    var PaymentPlanDetailID = $(this).closest("tr").find("#PaymentPlanDetailID").val();
+                    if (PaymentPlanDetailID != "" && PaymentPlanDetailID != undefined && PaymentPlanDetailID > 0) {
+
+                        $.get("/DVPaymentPlan/DVPaymentPlanDetailDelete", { PaymentPlanDetailID: PaymentPlanDetailID }).done(function (res) {
+
+                            $(row).remove();
+                            calculateTotals();
+                            resetSrNo();
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if (PaymentPlanDetailID == "" || PaymentPlanDetailID == undefined || $(PaymentPlanDetailID).val() == 0) {
+                        var totalRows = $("#tbodyList tr").length;
+                        if (totalRows > 1) {
+
+                            $(row).remove();
+                            calculateTotals();
+                            resetSrNo();
+
+                        }
+                        else {
+                            $(row).find("#PaymentPlanDetailID").val("");
+                            $(row).find("#Percentage").val("");
+                            $(row).find("#Amount").val("");
+                            resetSrNo();
+                        }
+                    }
+                }
+            });
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                
+                e.preventDefault;
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    alert("Please correct the error");
+                    return;
+                }
+
+
+                var objPlan = getObject();
+                var objDetails = getObjectDetails();
+
+
+                $.post("/DVPaymentPlan/DVPaymentPlanSave", { DVPaymentPlan: objPlan, DVPaymentPlanDetail: objDetails }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+
+
+                        window.location = "/DVPaymentPlan/DVPaymentPlan?ApplicationFormID=" + res.resObj.ApplicationFormID;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+            $(document).on("change", "#PaymentPlanDetailDate", function () {
+
+                var currentRow = $(this).closest("tr");
+                var totalRows = $("tr", "#tbodyList").length;
+                var currentRowIndex = currentRow.index();
+                var diff = totalRows - currentRowIndex;
+
+                if (diff == 1) {
+                    var row = $('.trRowTemplate').clone();
+                    $(row).removeClass("trRowTemplate");
+                    resetSrNo();
+
+                    $('#tbodyList').append(row);
+
+                    $(row).find("#PaymentPlanDetailDate").datepicker({
+                        format: "dd-M-yyyy",
+                        autoclose: true,
+                        ignoreReadonly: true
+                    });
+
+
+                }
+            });
+
+            $(document).on("click", ".payment-package", function (e) {
+
+                e.preventDefault;
+
+                
+
+                if (confirm("Are you sure you want load payment package, Your old payment plans will be deleted permanantly!")) {
+
+                    if ($('#PaymentStartDate').val() == "") {
+                        $('#spnPaymentStartDateError').show();
+                        return;
+                    }
+                    else {
+                        $('#spnPaymentStartDateError').hide();
+                    }
+
+                    var paymentPlanID = $("#PaymentPlanID").val();
+
+                    $.get("/DVPaymentPlan/DVPaymentPackage", { PaymentPlanID: paymentPlanID }).done(function (res) {
+
+
+                        if (res.status == true) {
+                            var obj = res.resObj;
+
+                            if (obj.NoOfInstallments > 0) {
+                                $('#tbodyList').html("");
+
+
+                                var NoOfInstallments = obj.NoOfInstallments;
+                                var PaymentDate = new Date($('#PaymentStartDate').val());
+                                var AmountPayable = $("#Amount").val();
+
+                                //DP row
+                                var row = $('.trRowTemplate').clone();
+                                $(row).removeClass("trRowTemplate");
+                                $('#tbodyList').append(row);
+
+                                var DPPercentage = obj.DP;
+                                var DPPercentAmount = AmountPayable * obj.DP / 100;
+
+                                var PSPercentage = obj.PS;
+                                var PSPercentAmount = AmountPayable * obj.PS / 100;
+
+                                $(row).find("#PaymentPlanDetailDate").datepicker({
+                                    format: "dd-M-yyyy",
+                                    autoclose: true,
+                                    ignoreReadonly: true
+                                });
+
+                                $(row).find('#PaymentPlanDetailDate').val(getFormatedDate(PaymentDate));
+                                $(row).find('#PaymentPlanTypeID').val(2);
+                                $(row).find('#Percentage').val(DPPercentage);
+                                $(row).find('#Amount').val(DPPercentAmount);
+
+
+                                var payableInstallmentAmount = parseFloat(AmountPayable) - (parseFloat(DPPercentAmount) + parseFloat(PSPercentAmount));
+                                var payableInstallmentAmount = parseFloat(AmountPayable) - (parseFloat(DPPercentAmount) + parseFloat(PSPercentAmount));
+                                // installment rows
+                                for (i = 0; i < NoOfInstallments; i++) {
+
+
+                                    PaymentDate = addMonths(PaymentDate, 1);
+
+                                    var row = $('.trRowTemplate').clone();
+                                    $(row).removeClass("trRowTemplate");
+
+                                    var percentAmount = payableInstallmentAmount / obj.NoOfInstallments; //$("#Amount").val() * obj.INS / 100;
+                                    var percent = percentAmount / AmountPayable * 100; //$("#Amount").val() * obj.INS / 100;
+                                    $(row).find("#PaymentPlanDetailDate").datepicker({
+                                        format: "dd-M-yyyy",
+                                        autoclose: true,
+                                        ignoreReadonly: true
+                                    });
+
+                                    $(row).find('#PaymentPlanDetailDate').val(getFormatedDate(PaymentDate));
+                                    $(row).find('#PaymentPlanTypeID').val(3);
+                                    $(row).find('#Percentage').val(percent.toFixed(2));
+                                    $(row).find('#Amount').val(percentAmount.toFixed(2));
+
+                                    $('#tbodyList').append(row);
+                                }
+
+                                //PS row end
+
+
+                                //PS row
+                                var row = $('.trRowTemplate').clone();
+                                $(row).removeClass("trRowTemplate");
+                                $('#tbodyList').append(row);
+
+                                var PSPercentAmount = AmountPayable * obj.PS / 100;
+
+                                $(row).find("#PaymentPlanDetailDate").datepicker({
+                                    format: "dd-M-yyyy",
+                                    autoclose: true,
+                                    ignoreReadonly: true
+                                });
+
+                                $(row).find('#PaymentPlanDetailDate').val(getFormatedDate(PaymentDate));
+                                $(row).find('#PaymentPlanTypeID').val(4);
+                                $(row).find('#Percentage').val(PSPercentage.toFixed(2));
+                                $(row).find('#Amount').val(PSPercentAmount.toFixed(2));
+
+                                //PS row end
+
+                                // Empty Row
+                                var rowEmpty = $('.trRowTemplate').clone();
+                                $(rowEmpty).removeClass("trRowTemplate");
+                                $(rowEmpty).find("#PaymentPlanDetailDate").datepicker({
+                                    format: "dd-M-yyyy",
+                                    autoclose: true,
+                                    ignoreReadonly: true
+                                });
+                                $('#tbodyList').append(rowEmpty);
+                                // Empty Row End
+
+                                resetSrNo();
+                                calculateTotals();
+                            }
+
+
+                        }
+                        else {
+                            alert(res.resMessage);
+                        }
+
+                    }).fail(function (ex) {
+                        alert(ex.responseText);
+                    }).always(function () {
+                        //$('.btnSave').removeAttr('disabled');
+                    });
+                }
+            });
+        });
+
+        function addMonths(date, months) {
+            let newDate = new Date(date);
+            newDate.setMonth(newDate.getMonth() + months);
+
+            // Handle edge case where the day of the month is beyond the last day of the new month
+            if (newDate.getDate() !== date.getDate()) {
+                newDate.setDate(0); // Go to the last day of the previous month
+            }
+
+            return newDate;
+        }
+
+        function getFormatedDate(dt) {
+            var myDate = new Date(dt);
+            const yyyy = myDate.getFullYear();
+            let mm = myDate.getMonth() + 1; // Months start at 0!
+            let dd = myDate.getDate();
+
+            if (dd < 10) dd = '0' + dd;
+            if (mm < 10) mm = '0' + mm;
+
+            const month = myDate.toLocaleString('default', { month: 'short' });
+            var myDate = dd + '-' + month + '-' + yyyy;
+            return myDate;
+        }
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#PaymentPlanDate").val() == "") {
+                $("#spnPaymentPlanDateError").show();
+                valid = false;
+            }
+
+
+            var PercentageSum = 0;
+            var AmountSum = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#PaymentPlanDetailDate').val() != "") {
+
+
+                    if ($(this).find('#PaymentPlanTypeID').val() == "") {
+                        $(this).find('#spnPaymentPlanTypeError').show();
+                        valid = false;
+                    }
+
+                    if ($(this).find('#Percentage').val() == "") {
+                        $(this).find('#spnPercentageError').show();
+                        valid = false;
+                    }
+
+                    if ($(this).find('#Amount').val() == "") {
+                        $(this).find('#spnAmountError').show();
+                        valid = false;
+                    }
+
+
+                    var Percentage = $(this).find('#Percentage').val() == '' ? 0 : parseFloat($(this).find('#Percentage').val());
+                    var Amount = $(this).find('#Amount').val() == '' ? 0 : parseFloat($(this).find('#Amount').val());
+
+                    PercentageSum += parseFloat(Percentage);
+                    AmountSum += parseFloat(Amount);
+
+                }
+            });
+
+            //if (PercentageSum != 100) {
+            //    $("#spnTotalPercentageNotEqualError").show();
+            //    valid = false;
+            //}
+            //else {
+            //    $("#spnTotalPercentageNotEqualError").hide();
+            //}
+
+            if (AmountSum != $("#Amount").val()) {
+                $("#spnTotalAmountNotEqualError").show();
+                valid = false;
+            }
+            else {
+                $("#spnTotalAmountNotEqualError").hide();
+            }
+
+            // empty detail check
+            if (valid == true && $("#tbodyList tr").length == 1) {
+                valid = false;
+                alert("Please enter a row in detail");
+            }
+
+            return valid;
+        }
+
+        function calculateTotals() {
+
+            var PercentageSum = 0;
+            var AmountSum = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#PaymentPlanDetailDate').val() != "") {
+
+
+                    var Percentage = $(this).find('#Percentage').val() == '' ? 0 : parseFloat($(this).find('#Percentage').val());
+                    var Amount = $(this).find('#Amount').val() == '' ? 0 : parseFloat($(this).find('#Amount').val());//$("#Amount").val() * Percentage / 100;
+                    // $(this).find('#Amount').val(Amount.toFixed(2));
+
+                    PercentageSum += parseFloat(Percentage);
+                    AmountSum += parseFloat(Amount);
+                }
+            });
+            
+
+            $("#TotalAmount").val(AmountSum.toFixed(2));
+            var AmountCalculated = parseFloat(AmountSum.toFixed(2));
+            var Amount = parseFloat($("#Amount").val());
+
+            if (AmountCalculated > 0) {
+                var TotalPercent = AmountCalculated / Amount * 100;
+                $("#TotalPercentage").val(TotalPercent.toFixed(2));
+            }
+            else {
+                $("#TotalPercentage").val(0);
+            }
+        }
+
+        function calculatePercentTotals(obj) {
+            
+
+            var PercentageSum = 0;
+            var AmountSum = 0;
+
+            var percent = parseFloat($(obj).val());
+            var Amount = parseFloat($("#Amount").val());
+            var percentAmount = Amount * percent / 100;
+
+            $(obj).closest('tr').find("#Amount").val(percentAmount);
+
+            calculateTotals();
+        }
+
+        function calculateAmountTotals(obj) {
+
+            
+            var PercentageSum = 0;
+            var AmountSum = 0;
+
+            var amount = parseFloat($(obj).val());
+            var ApplicationAmount = parseFloat($("#Amount").val());
+            var percentAmount = amount / ApplicationAmount * 100;
+
+            $(obj).closest('tr').find("#Percentage").val(percentAmount.toFixed(2));
+
+            calculateTotals();
+        }
+
+
+        function getObject() {
+
+            var obj = {
+
+                PaymentPlanID: $("#PaymentPlanID").val(),
+                PaymentPlanDate: $("#PaymentPlanDate").val(),
+                ApplicationFormID: $("#ApplicationFormID").val(),
+                PaymentStartDate: $("#PaymentStartDate").val(),
+
+                // hidden fields
+                CompanyID: $("#CompanyID").val(),
+                CreatedBy: $("#CreatedBy").val(),
+                CreatedAt: $("#CreatedAt").val(),
+                ModifiedBy: $("#ModifiedBy").val(),
+                ModifiedAt: $("#ModifiedAt").val(),
+
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var DetailRows = [];
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#PaymentPlanDetailDate').val() != "") {
+                    var DetailRow = {
+                        PaymentPlanDetailID: $(this).find('#PaymentPlanDetailID').val(),
+                        PaymentPlanDetailDate: $(this).find('#PaymentPlanDetailDate').val(),
+                        PaymentPlanTypeID: $(this).find('#PaymentPlanTypeID').val(),
+                        Percentage: $(this).find('#Percentage').val(),
+                        Amount: $(this).find('#Amount').val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val(),
+                        CompanyID: $(this).find('#CompanyID').val(),
+                    }
+                    DetailRows.push(DetailRow);
+                }
+            });
+
+            return DetailRows;
+        }
+
+
+        function viewReport() {
+            
+            var PaymentPlanID = $("#PaymentPlanID").val();
+            var url = "/ReportsWebForms/ReportForm.aspx?ReportName=DVPaymentPlan&PaymentPlanID=" + PaymentPlanID;
+            let a = document.createElement('a');
+           // a.target = '_blank';
+            a.href = url;
+            a.click();
+        }
+
+
+    </script>
+
+}
+

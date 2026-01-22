@@ -1,0 +1,44 @@
+﻿@model  GL.ViewModels.Setup.APCompanyViewModel
+
+
+<table class="table" id="tblCompanyList">
+    <thead>
+        <tr>
+            <th><label>ID</label></th>
+            <th>
+                <label>Name</label>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.CompanyList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a href="/Setup/Company/@item.CompanyID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                    <a href="/Setup/CompanyDelete/@item.CompanyID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@*@section scripts{
+        @Scripts.Render("~/bundles/jqueryval")
+        <script id="ListCompany">
+
+            $().ready(function () {
+                $('#tblCompanyList').DataTable();
+            });
+        </script>
+
+    }*@
+

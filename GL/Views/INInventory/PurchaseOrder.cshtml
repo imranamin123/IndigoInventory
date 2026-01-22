@@ -1,0 +1,985 @@
+﻿@model GL.ViewModels.Inventory.INPurchaseOrderViewModel
+
+@{
+
+    ViewBag.Title = "Purchase Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<a href="~/Views/INInventory/PurchaseOrder.cshtml">~/Views/INInventory/PurchaseOrder.cshtml</a>
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content-fluid">
+
+    <input type="hidden" id="mApprovedBy" value="@Model.INPurchaseOrder.ApprovedBy" />
+    <input type="hidden" id="mApprovedAt" value="@Model.INPurchaseOrder.ApprovedAt" />
+    <input type="hidden" id="mCreatedBy" value="@Model.INPurchaseOrder.CreatedBy" />
+    <input type="hidden" id="mCreatedAt" value="@Model.INPurchaseOrder.CreatedAt" />
+    <input type="hidden" id="mModifiedBy" value="@Model.INPurchaseOrder.ModifiedBy" />
+    <input type="hidden" id="mModifiedAt" value="@Model.INPurchaseOrder.ModifiedAt" />
+    <input type="hidden" id="mCompanyID" value="@Model.INPurchaseOrder.CompanyID" />
+    <input type="hidden" id="mGoodsReceiptNoteID" value="@Model.INPurchaseOrder.GoodsReceiptNoteID" />
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal" id="header">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Purchase Order</h2>
+                    </div>
+
+                    @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) > 0)
+                    {
+                        <h4 style="color:red; font:200;" class="box-title"> <b>Approved</b> </h4>
+                    }
+
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="UserID" class="col-sm-2 control-label ">ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control integer" readonly value="@Model.INPurchaseOrder.PurchaseOrderID" id="PurchaseOrderID">
+
+                        </div>
+                        <label class="control-label col-sm-2">PO Status</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INPurchaseOrder.POStatusID, new SelectList(ViewBag.INPOStatusList, "POStatusID", "Description"), new { disabled = "disbled", @class = "form-control showError ddl", @id = "POStatusID" })
+                            <span id="spnPOStatusIDError" class="error" style="display:none;">Please select status type</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="INPurchaseOrdersDate" class="control-label col-sm-2">Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker dt" placeholder="" autocomplete="off" id="PurchaseOrderDate" value="@Model.INPurchaseOrder.PurchaseOrderDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnPurchaseOrderDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+
+                        <label for="ProjectID" class="control-label col-sm-2 PaddingTop-5">Project</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INPurchaseOrder.ProjectID, new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --", new { @class = "form-control showError ddl", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select project</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="APVendorID" class="control-label col-sm-2 ">Vendor</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INPurchaseOrder.APVendorID, new SelectList(ViewBag.APVendors, "APVendorID", "DisplayText"), "-- Select --", new { @class = "form-control showError", @id = "APVendorID" })
+                            <span id="spnAPVendorIDError" class="error" style="display:none;">Please select vendor</span>
+                        </div>
+
+                        @*<label for="RequestID" class="control-label col-sm-2 ">Demand ID</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" value="@Model.INPurchaseOrder.RequestID" id="RequestID">
+                                <span id="spnRequestIDError" class="error" style="display:none;">Please select demand id</span>
+                            </div>
+                            <div class="col-sm-3">
+                                 <a href="#" id="loadPurchaseDemand" class="btn btn-primary" style=" margin-left: -24px;">Load</a>
+                            </div>*@
+
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="PaymentTerms" class="col-sm-2 control-label ">Payment Terms</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" value="@Model.INPurchaseOrder.PaymentTerms" id="PaymentTerms">
+                            <span id="spnPaymentTermsError" class="error" style="display:none;">Please enter payment terms</span>
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="Remarks" class="col-sm-2 control-label ">Remarks</label>
+                        <div class="col-sm-8">
+                            @*<input class="form-control" value="@Model.INPurchaseOrder.Remarks" id="Remarks">*@
+                            <textarea  class="form-control" rows="4" id="Remarks">@Model.INPurchaseOrder.Remarks</textarea>
+                            <span id="spnRemarksError" class="error" style="display:none;">Please enter remarks</span>
+                        </div>
+                    </div>
+
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLINPurchaseOrder/GLINPurchaseOrder" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+
+
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="text-align:left;"><label>Item</label></th>
+                            <th style="width:150px;" class="align-right"><label>Size</label></th>
+                            <th style="width:150px;" class="align-right"><label>Unit</label></th>
+                            @*<th style="text-align: left; width: 200px;"><label>Remarks</label></th>*@
+                            @*<th style="width:150px;" class="align-right"><label>Requested Qty</label></th>*@
+                            <th style="width:150px;" class="align-right"><label>Qty</label></th>
+                            <th style="width:150px;" class="align-right"><label>Unit Price</label></th>
+                            <th style="width:150px;" class="align-right"><label>Discount Price</label></th>
+                            <th style="width:150px;" class="align-right"><label>Amount</label></th>
+
+                            @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) > 0 && Model.INPurchaseOrder.PurchaseOrderID > 0)
+                            {
+                                <th style="width:5px;"></th>
+                            }
+
+
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.INPurchaseOrderDetailRows != null && Model.INPurchaseOrderDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.INPurchaseOrderDetailRows)
+                            {
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+                                        <input type="hidden" id="PurchaseOrderDetailID" value="@item.PurchaseOrderDetailID" />
+                                        <input type="hidden" id="PurchaseOrderID" value="@item.PurchaseOrderID" />
+                                        <input type="hidden" id="ItemID" value="@item.ItemID" />
+
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                        <label>@item.PurchaseOrderDetailID</label>
+                                    </td>
+
+                                    <td style="width:300px">
+                                        <input type="text" class="itemId" value="@item.ItemID" style="display:none;" />
+                                        <input type="text" class="requestDetailID" value="@item.RequestDetailID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.INPurchaseOrderDetailRows[i].ItemID, new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly id="Size" class="form-control" placeholder="" value="@item.Size" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly id="Unit" class="form-control" placeholder="" value="@item.Unit" />
+                                    </td>
+
+                                    @*<td>
+            <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post" value="@item.RequestedQty" />
+            <span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
+        </td>*@
+
+                                    <td>
+                                        <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal " onblur="calculateTotals();" onchange="hidSubmit();" value="@item.ApprovedQty" />
+                                        <span id="spnApprovedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
+                                        <span id="spnApprovedQtyGreaterError" class="error" style="display:none;">Approved qty can not be greater than requested qty</span>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" style="text-align:right;" id="UnitPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="@item.UnitPrice" />
+                                        <span id="spnUnitPriceError" class="error" style="display:none;">Please enter unit price</span>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="@item.DiscountedPrice" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly style="text-align:right;" id="Amount" class="form-control decimal" onchange="hidSubmit();" value="@item.Amount" />
+                                    </td>
+
+                                    @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0 && Model.INPurchaseOrder.PurchaseOrderID > 0)
+                                    {
+                                        <td>
+                                            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                            @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
+                                        </td>
+                                    }
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                    <tr>
+                        <td style="width:50px;text-align:center;">
+                            <input type="hidden" id="PurchaseOrderDetailID" value="" />
+                            <input type="hidden" id="PurchaseOrderID" value="" />
+                            <input type="hidden" id="ItemID" value="" />
+
+                            <input type="hidden" id="CreatedBy" value="" />
+                            <input type="hidden" id="CreatedAt" value="" />
+                            <input type="hidden" id="ModifiedBy" value="" />
+                            <input type="hidden" id="ModifiedAt" value="" />
+                            <input type="hidden" id="CompanyID" value="" />
+
+                            <label></label>
+                        </td>
+
+                        <td style="width:300px">
+                            <input type="text" class="itemId" value="" style="display:none;" />
+                            <input type="text" class="requestDetailID" value="" style="display:none;" />
+                            @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                        </td>
+
+                        <td>
+                            <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+                        </td>
+
+                        <td>
+                            <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+                        </td>
+
+                        <!--<td>
+        <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post"  value="" />-->
+                        @*<span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>*@
+                        <!--</td>-->
+
+                        <td>
+                            <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal " onblur="calculateTotals();" value="" />
+                            <span id="spnApprovedQtyError" class="error" style="display:none;">Please add approved qty</span>
+                            <span id="spnApprovedQtyGreaterError" class="error" style="display:none;">Approved qty can not be greater than requested qty</span>
+                        </td>
+
+                        <td>
+                            <input type="text" style="text-align:right;" id="UnitPrice" class="form-control decimal" onblur="calculateTotals();" value="" />
+                            <span id="spnUnitPriceError" class="error" style="display:none;">Please enter unit price</span>
+                        </td>
+
+                        <td>
+                            <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
+                        </td>
+
+                        <td>
+                            <input type="text" style="text-align:right;" id="Amount" class="form-control decimal" value="" />
+                        </td>
+
+                        @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0 && Model.INPurchaseOrder.PurchaseOrderID > 0)
+                        {
+                            <td>
+                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
+                            </td>
+                        }
+                    </tr>
+
+                    </tbody>
+                    <tfoot>
+
+                        <tr>
+                            <td colspan="6" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
+                            <td colspan="2"><input type="text" id="TotalAmount" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    @*<button class="btn btn-primary" onclick="fullReceived();"><span style="font-weight:bold;">++</span></button>*@
+                    <a href="/INInventory/PurchaseOrderList" class="btn btn-info ">Back to List</a>
+                    <a href="/INInventory/PurchaseOrder" class="btn btn-primary">Add</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0)
+                    {
+                        <a href="#" class="btn btn-primary btnSave">Save</a>
+                    }
+
+                    @if (Model.INPurchaseOrder.PurchaseOrderID > 0)
+                    {
+                        <a href="/ReportsWebForms/ReportForm.aspx?ReportName=INPurchaseOrderReportDownload&PurchaseOrderID=@Model.INPurchaseOrder.PurchaseOrderID" class=" btn btn-success" target="_blank"> View Report</a>
+                    }
+
+                    @*@if (Model.RoleID == 4 && Model.INPurchaseOrder.PurchaseOrderID > 0)
+                        {
+                            <a href="#" class="btn btn-success btnSubmit pull-right">Submit</a>
+                        }*@
+                    @if (Model.RoleID == 5 && Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0)
+                    {
+                        <a onclick="approve()" class="btn btn-success btnSubmit pull-right" id="approve">Approve</a>
+                    }
+
+                    @*@if (Model.INPurchaseOrder.IsPosted.GetValueOrDefault(false) == false && Model.INPurchaseOrder.INPurchaseOrderID > 0)
+                        {
+                            <a onclick="post()" id="btnPost" class=" btn btn-danger pull-right"> Post</a>
+                        }*@
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+            <input type="hidden" id="PurchaseOrderDetailID" value="" />
+            <input type="hidden" id="PurchaseOrderID" value="" />
+            <input type="hidden" id="ItemID" value="" />
+
+            <input type="hidden" id="CreatedBy" value="" />
+            <input type="hidden" id="CreatedAt" value="" />
+            <input type="hidden" id="ModifiedBy" value="" />
+            <input type="hidden" id="ModifiedAt" value="" />
+            <input type="hidden" id="CompanyID" value="" />
+
+            <label></label>
+        </td>
+
+        <td style="width:300px">
+            <input type="text" class="itemId" value="" style="display: none;" />
+            <input type="text" class="requestDetailID" value="" style="display: none;" />
+            @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+        </td>
+
+        <td>
+            <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+        </td>
+
+        <td>
+            <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+        </td>
+
+        <!--<td>
+        <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post" value="" />-->
+        @*<span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>*@
+        <!--</td>-->
+
+        <td>
+            <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal" onblur="calculateTotals();" value="" />
+            <span id="spnApprovedQtyError" class="error" style="display:none;">Please enter approved qty</span>
+            <span id="spnApprovedQtyGreaterError" class="error" style="display:none;">Approved qty can not be greater than balance qty</span>
+
+        </td>
+
+
+        <td>
+            <input type="text" style="text-align:right;" id="UnitPrice" class="form-control decimal" onblur="calculateTotals();" value="" />
+            <span id="spnUnitPriceError" class="error" style="display:none;">Please enter Unit Price</span>
+        </td>
+
+        <td>
+            <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
+        </td>
+
+
+        <td>
+            <input type="text" readonly style="text-align:right;" id="Amount" class="form-control decimal" value="" />
+        </td>
+
+        @*@if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) > 1 && Model.INPurchaseOrder.INPurchaseOrderID > 0)
+        {*@
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+        </td>
+        @*}*@
+    </tr>
+
+    @*<tr class="trTotalTemplate">
+                <td colspan="5" style="text-align:right;"><label>Total</label></td>
+                <td><input type="text" id="DrTotal" style="font-size:large; font-weight:bold; background-color:white;" class="form-control integer number" readonly value="0" /></td>
+                <td><input type="text" id="CrTotal" style="font-size:large; font-weight:bold;background-color:white;" class="form-control integer number" readonly value="0" /></td>
+        </tr>*@
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="PurchaseRequisition">
+
+        @*var roleId = @RoleID;
+        var requestID = '';//
+        var submitedByKPO = @SubmitedByKPO;
+        var submitedByMD = @SubmitedByMD;
+        var isNotSavedMD = false;
+        var isNew = @IsNew;*@
+
+    $().ready(function () {
+
+            $("#APVendorID").select2();
+            @*var roleId = @RoleID;*@
+
+        //$("#POStatusID")
+
+            ////var requestID = $("#RequestID").val();
+
+            ////if (requestID != undefined || requestID != "" || requestID != null) {
+
+            ////    loadRequest();
+            ////    //$('#titleee').find('a').trigger('click')
+            ////    //$("#loadPurchaseDemand").trigger("click");
+            ////}
+
+            $('.dt').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+            calculateTotals();
+
+            //if (roleId == 5) {
+            //    $('#header').find('input, select, textarea, button').prop('disabled', true);
+            //}
+
+
+            $("#tbodyList tr").each(function () {
+
+
+
+                $(this).find(".ddl").select2();
+                var itemId = $(this).find(".itemId").val();
+                var requestDetailID = $(this).find(".requestDetailID").val();
+                var value = requestDetailID + "," + itemId;
+                $(this).find(".ddl").val(value).change();
+
+                $(this).find(".select2.select2-container").css("width", "300px");
+                calculateTotals();
+            });
+
+
+
+            var clear = false;
+            $(document).on("click", ".delete-row", function () {
+
+                if (confirm("Are you sure you want to delete this row")) {
+                    debugger;
+                    var row = $(this).closest("tr");
+                    var PurchaseOrderDetailID = $(this).closest("tr").find("#PurchaseOrderDetailID").val();
+
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() ) {
+                        $(row).find("#PurchaseOrderDetailID").val("");
+                        $(row).find(".itemId").val("");
+                        $(row).find(".itemId").text("");
+                        $(row).find(".requestDetailID").val("");
+                        $(row).find("#Size").val("");
+                        $(row).find("#Unit").val("");
+                        $(row).find("#ApprovedQty").val("");
+
+                        //$(row).find("#RequestedQty").val("");
+                        $(row).find("#UnitPrice").val("");
+                        $(row).find("#DiscountedPrice").val("");
+                        $(row).find("#Amount").val("");
+
+
+                    }
+                    else if (PurchaseOrderDetailID != "" || $(PurchaseOrderDetailID).val() > 0) {
+
+                        $.get("/INInventory/INPurchaseOrderDetailDelete", { id: PurchaseOrderDetailID }).done(function (res) {
+
+                            $(row).remove();
+                             calculateTotals();
+
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if ((PurchaseOrderDetailID == "" || $(PurchaseOrderDetailID).val() == undefined)) {
+                        var totalRows = $("#tbodyList tr").length;
+                        if (totalRows > 1) {
+
+                            $(row).remove();
+                            calculateTotals();
+                        }
+                        else {
+                            //$(row).find("#ItemID").val("");
+                            //$(row).find("#ItemID").prop({ selectedIndex: 1 })
+                            //$(row).find('#ItemID').val('').trigger('change');
+                            //$(row).find('#ItemID').text('').trigger('change');
+                            //$(row).find("#ItemID").attr('selectedIndex', 0);
+                            //$(row).find(".select2-ItemID-containerSize").val("");
+                            clear = true;
+                            $(row).find(".ddl").val('').trigger('change');
+
+                            $(row).find("#Size").val("");
+                            $(row).find("#Unit").val("");
+                            $(row).find("#UnitPrice").val("");
+                            $(row).find("#DiscountedPrice").val("");
+                            
+                            //$(row).find("#RequestedQty").val("");
+                            $(row).find("#ApprovedQty").val("");
+                        }
+                    }
+                }
+            });
+
+            //$(document).on("click", ".btnSubmit", function (e) {
+
+            //    e.preventDefault;
+
+
+
+            //    if (isNew == 1) {
+            //        alert("Please first save the requisition");
+            //        return;
+            //    }
+
+            //    $('.btnSubmit').attr('disabled', 'disabled');
+
+            //    if (IsValid() == false) {
+            //        $('.btnSubmit').removeAttr('disabled');
+            //        return;
+            //    }
+
+            //    var requestId = $("#RequestID").val();
+
+
+            //    $.post("/INInventory/INPurchaseOrderSubmit", { RequestID: requestId }).done(function (res) {
+
+            //        if (res.status == true) {
+            //            alert(res.resMessage);
+            //            window.location = "/INInventory/PurchaseRequisitionList/";
+
+            //        }
+            //        else {
+            //            alert(res.resMessage);
+            //        }
+
+            //    }).fail(function (ex) {
+            //        alert(ex.responseText);
+            //        // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+            //    }).always(function () {
+
+            //    });
+
+            //});
+
+
+            $(document).on("click", ".btnSave", function (e) {
+
+
+
+                e.preventDefault;
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    return;
+                }
+
+
+
+                var obj = getObject();
+
+                var objDetails = getObjectDetails();
+
+
+
+                $.post("/INInventory/INPurchaseOrderSave", { INPurchaseOrder: obj, INPurchaseOrderDetailList: objDetails }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+                        $('.btnSave').removeAttr('disabled');
+                        window.location = "/INInventory/PurchaseOrder?PurchaseOrderID=" + res.id;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+            ////var totalPRRows=0;
+            ////$(document).on("click", "#loadPurchaseDemand", function () {
+            ////
+            ////    var RequestID = $("#RequestID").val();
+            ////    if (RequestID == undefined || RequestID == null || RequestID == '' || RequestID == '0') {
+            ////        alert("Please enter request id");
+            ////        return;
+            ////    }
+
+
+            ////    var requestID = $("#RequestID").val();
+            ////    if (RequestID != undefined && RequestID != null && RequestID != '' && RequestID != '0') {
+
+            ////        $.ajax({
+            ////            url: "/INInventory/INGetPurchaseRequestForPO",
+            ////            method: "get",
+            ////            async: false,
+            ////            data: { RequestID: RequestID },
+            ////            success: function (res) {
+            ////
+            ////                if (res.status == true) {
+
+            ////                    $("#ProjectID").val(res.resObj.ProjectID);
+
+            ////                    //////// rows /////////////////
+            ////                    $(".item-list").html("");
+            ////                    $("#tbodyList").html("");
+            ////                    $(".item-list").append('<option value="">-- Select --</option>');
+
+            ////                    $.ajax({
+            ////                        url: "/INInventory/GetINPRDropdownItems",
+            ////                        method: "get",
+            ////                        async: false,
+            ////                        data: { RequestID: RequestID },
+            ////                        success: function (res) {
+            ////
+            ////                            if (res != null) {
+            ////                                totalPRRows = res.length;
+            ////                                $(res).each(function (index, element) {
+
+            ////                                    $(".item-list").append('<option value="' + element.ItemID + '">' + element.Description + '</option>');
+
+            ////                                });
+            ////                                $(".item-list").attr('selectedIndex', 0);
+
+            ////                                $("#tbodyList").html("");
+
+            ////                                var row = $('.trRowTemplate').clone();
+            ////                                $(row).removeClass("trRowTemplate");
+            ////                                $('#tbodyList').append(row);
+            ////                                $(row).find(".ddl").select2({ allowClear: true });
+
+            ////                                $("#tbodyList").append(row);
+
+            ////                            }
+            ////                        },
+            ////                        error: function (err) {
+            ////                            alert(err);
+            ////                            console.log(err);
+            ////                        },
+            ////                    });
+
+            ////                    //////////////////////////////
+            ////                }
+            ////            },
+            ////            error: function (err) {
+            ////                alert(err);
+            ////                console.log(err);
+            ////            },
+            ////        });
+
+            ////    }
+            ////});
+
+
+            $(document).on("change", "#ItemID", function () {
+
+
+                var Item = $(this).children("option:selected").val();// $(this).children("option").filter(":selected").val();
+                var text = $(this).children("option:selected").text();
+                var lastDashIndex = text.lastIndexOf("= ");
+                var balance = text.substr(lastDashIndex + 2, (text.length - lastDashIndex));
+
+                const [requestDetailID, itemID] = Item.split(',');
+
+                $(this).closest("tr").find(".itemId").val(itemID).change();
+                $(this).closest("tr").find(".requestDetailID").val(requestDetailID).change();
+
+                var currentRow = $(this).closest("tr");
+                $(currentRow).attr("Balance", balance);
+
+                $(currentRow).find("#Unit").val("");
+                $(currentRow).find("#Size").val("");
+                $(currentRow).find("#UnitPrice").val("");
+                $(currentRow).find("#DiscountedPrices").val("");
+                $(currentRow).find("#ApprovedQty").val("");
+
+                $.get("/INInventory/GetINGRNItemRow", { ItemID: itemID, RequestDetailID: requestDetailID }).done(function (res) {
+                    if (res != "") {
+
+                        debugger;
+
+                        $(currentRow).find("#Unit").val(res.Unit);
+                        $(currentRow).find("#Size").val(res.Size);
+                        $(currentRow).find("#ApprovedQty").val("");
+
+                        var totalRows = $("tr", "#tbodyList").length;
+                        var currentRowIndex = currentRow.index();
+                        var diff = totalRows - currentRowIndex;
+                        if (diff == 1) {
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find(".ddl").select2();
+                            // $(row).find(".select2.select2-container").css("width", "300px");
+
+                        }
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+
+                }).always(function () {
+
+                });
+            });
+
+            $(document).on("change", "#ProjectID", function () {
+
+                var projectID = $("#ProjectID").val();
+                if (projectID != undefined && projectID != "") {
+                    var companyID = $("#mCompanyID").val();
+                    $(".item-list").html("");
+                    $(".item-list").append('<option value="">-- Select --</option>');
+                    $.get("/INInventory/GetINGRDropdownItems", { CompanyID: companyID, ProjectID: projectID }).done(function (res) {
+                        if (res != "") {
+
+                            $(res).each(function (index, element) {
+
+                                $(".item-list").append('<option value="' + element.ItemID + '">' + element.Description + '</option>');
+
+                            });
+                            $(".item-list").attr('selectedIndex', 0);
+
+                            $("#tbodyList").html("");
+
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find(".ddl").select2();
+
+                            $("#tbodyList").append(row);
+                        }
+
+                    }).fail(function (ex) {
+                        alert(ex.responseText);
+
+                    }).always(function () {
+
+                    });
+                }
+            });
+
+        });
+
+        function hidSubmit() {
+
+            $("#btnPost").css("display", "none");
+        }
+
+        function IsValid() {
+
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($("#POStatusID").val() == "") {
+                $("#spnPOStatusIDError").show();
+                valid = false;
+            }
+
+
+            if ($("#PurchaseOrderDate").val() == "") {
+                $("#spnPurchaseOrderDateError").show();
+                valid = false;
+            }
+
+            if ($("#ProjectID").val() == "") {
+                $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            if ($("#APVendorID").val() == "" ) {
+                $("#spnAPVendorIDError").show();
+                valid = false;
+            }
+
+            if ($("#APVendorID").val() == "") {
+                $("#spnAPVendorIDError").show();
+                valid = false;
+            }
+            if ($("#PaymentTerms").val() == "") {
+                $("#spnPaymentTermsError").show();
+                valid = false;
+            }
+
+
+            if ($("#RequestID").val() == "") {
+                $("#spnRequestIDError").show();
+                valid = false;
+            }
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "" ) {
+
+                    if ($(this).find('#ApprovedQty').val() == "" || $(this).find('#ApprovedQty').val() == "0") {
+                        $(this).find('#spnApprovedQtyError').show();
+                        valid = false;
+                    }
+
+                    var apQty = $(this).find('#ApprovedQty').val() == '' ? 0: $(this).find('#ApprovedQty').val();
+                    if (parseFloat(apQty) > parseFloat($(this).attr('balance'))) {
+                        $(this).find('#spnApprovedQtyGreaterError').show();
+                        valid = false;
+                    }
+
+                    if ($(this).find('#UnitPrice').val() == "" || $(this).find('#UnitPrice').val() == "0") {
+                        $(this).find('#spnUnitPriceError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+            var rowCount = $("#tbodyList").find('tr').length;
+            if (rowCount == 1) {
+                alert("Please enter data at least one row");
+                valid = false;
+
+            }
+
+            return valid;
+        }
+
+
+        function getObject() {
+
+
+
+            var obj = {
+
+                PurchaseOrderID: $("#PurchaseOrderID").val(),
+                PurchaseOrderDate: $("#PurchaseOrderDate").val(),
+                GoodsReceiptNoteID: $("#mGoodsReceiptNoteID").val(),
+                POStatusID: $("#POStatusID").val(),
+                ProjectID: $("#ProjectID").val(),
+                APVendorID: $("#APVendorID").val(),
+                RequestID: $("#RequestID").val(),
+                PaymentTerms: $("#PaymentTerms").val(),
+                Remarks: $("#Remarks").val(),
+                ApprovedBy: $("#mApprovedBy").val(),
+                ApprovedAt: $("#mApprovedAt").val(),
+                CreatedBy: $("#mCreatedBy").val(),
+                CreatedAt: $("#mCreatedAt").val(),
+                ModifiedBy: $("#mModifiedBy").val(),
+                ModifiedAt: $("#mModifiedAt").val(),
+                CompanyID: $("#mCompanyID").val(),
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var DetailRows = [];
+
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
+                    debugger;
+                    const [requestDetailID, itemID] = $(this).find('.ddl').val().split(',');
+                    var DetailRow = {
+                        PurchaseOrderDetailID: $(this).find('#PurchaseOrderDetailID').val(),
+                        PurchaseOrderID: $(this).find('#PurchaseOrderID').val(),
+                        RequestDetailID: requestDetailID,// $(this).find('#RequestDetailID').val(),
+                        ItemID: itemID,//$(this).find('.ItemID').val(),
+                        ApprovedQty: $(this).find('#ApprovedQty').val(),
+                        //RequestedQty: $(this).find('#RequestedQty').val(),
+                        UnitPrice: $(this).find('#UnitPrice').val(),
+                        DiscountedPrice: $(this).find('#DiscountedPrice').val(),
+                        Amount: $(this).find('#Amount').val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val()
+                    }
+                    DetailRows.push(DetailRow);
+
+                }
+            });
+
+
+            return DetailRows;
+        }
+
+        function calculateTotals() {
+
+            var AmountSum = 0;
+            //var creditSum = 0;
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
+
+                    var ApprovedQty = $(this).find("#ApprovedQty").val() == '' ? 0 : $(this).find("#ApprovedQty").val();
+                    var UnitPrice = $(this).find("#UnitPrice").val() == '' ? 0 : $(this).find("#UnitPrice").val();
+                    var DiscountedPrice = $(this).find("#DiscountedPrice").val() == '' ? 0 : $(this).find("#DiscountedPrice").val();
+                    var price = (DiscountedPrice == "" || DiscountedPrice == 0) ? UnitPrice : DiscountedPrice;
+                    var Amount = parseFloat(ApprovedQty) * parseFloat(price);
+                    $(this).find("#Amount").val(Amount);
+                    AmountSum += parseFloat(Amount);
+
+                }
+            });
+
+            $("#TotalAmount").val(parseFloat(AmountSum).toFixed(2));
+        }
+
+        function approve() {
+            debugger;
+        if (confirm("Are you sure you want to approve")) {
+            var INPurchaseOrderID = $('#PurchaseOrderID').val();
+
+            $.post("/INInventory/POApprove", { INPurchaseOrderID: INPurchaseOrderID }).done(function (res) {
+
+                    if (res = true) {
+                        alert('Record Posted');
+                        $('#btnPost').css("visibility", 'hidden');
+                        //window.location.href = "/INInventory/PurchaseOrder?PurchaseOrderID=" + res.id;
+                        window.location.href = "/INInventory/PurchaseOrderList";
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () { });
+            }
+        }
+    </script>
+
+}
+

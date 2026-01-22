@@ -1,0 +1,151 @@
+﻿@model GL.ViewModels.Inventory.INPurchaseRequisitionViewModel
+@{
+    Layout = null;
+}
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Document No</label>
+                        </th>
+                        <th>
+                            <label>Remarks</label>
+                        </th>
+
+                        <th>
+                            <label>Date</label>
+                        </th>
+                        <th>
+                            <label>Project</label>
+                        </th>
+                        <th>
+                            <label>Status</label>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.INPurchaseRequisitionSearchList)
+                    {
+                        if (Model.RoleID == 4 || (Model.RoleID == 5 && item.SubmitedByKPO > 0))
+                        {
+
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RequestID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProjectDocumentNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Remarks)
+                                </td>
+
+                                <td>
+                                    @item.RequestDate.Value.ToString("dd-MMM-yyyy")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProjectName)
+                                </td>
+
+                                <td style="text-align: center; padding-right: 90px;">
+                                    @if (item.SubmitedByMD > 0)
+                                    {
+                                        <i class="fa fa-check"></i>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (item.SubmitedByKPO > 0 || item.SubmitedByMD > 0)
+                                    {
+                                        <a href="/ReportsWebForms/ReportForm.aspx?ReportName=INPurchaseRequisitionReportDownload&RequestID=@item.RequestID" target="_blank" title="Print" class="btn btn-success btn-xs"><i class="fa fa-print"></i></a>
+
+                                    }
+
+                                    @if (Model.RoleID == 4)
+                                    {
+                                        if (item.SubmitedByMD <= 0)
+                                        {
+                                            <a href="/INInventory/PurchaseRequisition/@item.RequestID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+
+                                        }
+                                    }
+                                    @if (Model.RoleID == 5)
+                                    {
+                                        if (item.SubmitedByMD <= 0)
+                                        {
+                                            <a href="/INInventory/PurchaseRequisition/@item.RequestID" title="Edit" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/INInventory/INPurchaseRequisitionUnSubmitByGM/@item.RequestID" onclick="return confirm('Are you sure you want to revert submit');" title="Revert Submit" class="btn btn-danger btn-xs"><i class="fa fa-edit"></i></a>
+                                        }
+                                    }
+
+                                    @*<a href="/Students/Delete/@item.StudentID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>*@
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+
+        $(document).on("click", ".print-report", function () {
+            debugger;
+
+            var RequestID = $(this).closest('tr').find('#RequestID').val();
+
+            var url = "/INInventory/INPurchaseRequisitionReportDownload";
+
+            $.get(url, { RequestID: RequestID }).done(function (res) {
+
+//                $(row).remove();
+                // calculateTotals();
+
+
+            }).fail(function (ex) {
+
+                alert(ex.responseText);
+
+            }).always(function () { });
+
+
+        //    let a = document.createElement('a');
+        //    a.target = '_blank';
+        //    a.href = url;
+        //    a.click();
+        });
+
+        $('#tblList').DataTable({
+            'order': [[0, "desc"]],
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+
+    
+    
+</script>

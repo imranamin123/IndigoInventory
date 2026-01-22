@@ -1,0 +1,72 @@
+﻿@model GL.ViewModels.BS.BSClassificationViewModel
+@{
+    Layout = null;
+}
+
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+            <table class="table table-striped tblDetail" id="tblList">
+                <thead>
+                    <tr>
+                        <th style="width:100px;text-align:center" class="th"><label>Det ID</label></th>
+                        <th style="text-align:left;"><label>Type</label></th>
+                        <th style="width:200px;" class="align-right"><label>Amount</label></th>
+                        <th style="width:5px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyList">
+                    @foreach (var item in Model.BSClassificationList)
+                    {
+                        <tr class="trRowTemplate">
+                            <td style="width:100px;text-align:center;">
+
+                                <input type="hidden" id="BSClassificationID" value="@item.BSClassificationDetailID" />
+                                <input type="hidden" id="BSClassificationID" value="@item.BSClassificationID" />
+                                <input type="hidden" id="TransactionID" value="@item.TransactionID" />
+
+                                <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                <label> @item.BSClassificationDetailID </label>
+                            </td>
+
+                            <td style="width:500px;text-align:left;">
+                                @Html.DropDownList("BSClassificationTypeID", new SelectList(ViewBag.BSClassificationTypes, "BSClassificationTypeID", "BSClassificationTypeName"), "-- Select --", new { @style = "width:500px;", @class = "form-control showError", @id = "BSClassificationTypeID" })
+                                <span id="spnClassificationTypeError" class="error" style="display:none;">Please enter classification</span>
+                            </td>
+                            <td style="width:200px;text-align:right;">
+                                <input type="text" id="Balance" class="form-control number decimal" value="" />
+                                <span id="spnCrError" class="error" style="display:none;">Please enter cr</span>
+                                <span id="spnCreditBothHasValueError" class="error" style="display:none;">Debit and credit can not have value in a single row</span>
+                            </td>
+
+                            <td>
+                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+
+                            </td>
+                        </tr>
+                    }    
+                </tbody>
+            </table>    `
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+</script>

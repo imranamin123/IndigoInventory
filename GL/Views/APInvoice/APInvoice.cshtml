@@ -1,0 +1,648 @@
+﻿@model GL.ViewModels.AP.APInvoiceViewModel
+
+@{
+    //Model.feeReceipt.SessionID=0;
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">AP Invoice </h2>
+                    </div>
+
+                    @if (Model.APInvoice.IsPosted == true)
+                    {
+                        <h4 style="color:red;" class="box-title">Posted </h4>
+                    }
+
+                    <input type="hidden" id="hdIsPosted" value="@Model.APInvoice.IsPosted" />
+                    <input type="hidden" id="hdCreatedAt" value="@Model.APInvoice.CreatedAt" />
+                    <input type="hidden" id="hdCreatedBy" value="@Model.APInvoice.CreatedBy" />
+                    <input type="hidden" id="hdModifiedAt" value="@Model.APInvoice.ModifiedAt" />
+                    <input type="hidden" id="hdModifiedBy" value="@Model.APInvoice.ModifiedBy" />
+                    <input type="hidden" id="hdCompanyID" value="@Model.APInvoice.CompanyID" />
+
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="UserID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.APInvoice.APInvoiceID" id="APInvoiceID">
+                        </div>
+
+                        <label for="UserID" class="col-sm-1 control-label ">Number</label>
+                        <div class="col-sm-2">
+                            <input class="form-control" value="@Model.APInvoice.APInvoiceNo" id="APInvoiceNo">
+                            <span id="spnAPInvoiceNoError" class="error" style="display:none;">Please select no</span>
+                        </div>
+
+                        <label for="APInvoiceDate" class="control-label col-sm-1 PaddingTop-5">Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" placeholder="" autocomplete="off" id="APInvoiceDate" value="@Model.APInvoice.APInvoiceDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnAPInvoiceDateError" class="error" style="display:none;">Please select invoice date</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="APVendorID" class="control-label col-sm-1 ">Vendor</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(x => x.APInvoice.APVendorID, new SelectList(ViewBag.APVendors, "APVendorID", "DisplayText"), "-- Select --", new { @class = "form-control showError", @id = "APVendorID" })
+                            <span id="spnAPVendorIDError" class="error" style="display:none;">Please select vendor</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="APInvoiceAmount" class="col-sm-1 control-label ">Amount</label>
+                        <div class="col-sm-2">
+                            <input type="number" style="text-align:right;" class="form-control" value="@Model.APInvoice.APInvoiceAmount" id="APInvoiceAmount">
+                            <span id="spnTotalAmountError" class="error" style="display:none;">Amount should be equal to Total Amount</span>
+                        </div>
+
+                        <label for="APTaxAmount" class="col-sm-1 control-label ">Tax</label>
+                        <div class="col-sm-2">
+                            <input class="form-control decimal" style="text-align:right;" value="@Model.APInvoice.APTaxAmount" id="APTaxAmount">
+                        </div>
+
+                    </div>
+
+
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/APInvoice/APInvoice" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+
+                    <div style="margin-top: 7px;">
+
+                        <table class="table table-striped tblDetail" id="tblList">
+                            <thead>
+                                <tr>
+
+
+                                    <th style="width:50px;text-align:center" class="th"><label>Det ID</label></th>
+                                    <th style="text-align:left;"><label>Account No</label></th>
+                                    <th style="width:50px;"><label style="padding-left:13px;">C1</label></th>
+                                    <th style="width: 50px;"><label style="padding-left:13px;">C2</label></th>
+                                    <th style="width: 50px;"><label style="padding-left:13px;">A3</label></th>
+                                    <th style="width:200px; text-align:right;" ><label>Amount</label></th>
+                                    @if (Model.APInvoice.IsPosted != true && Model.APInvoice.APInvoiceID > 0)
+                                    {
+                                        <th style="width:5px;"></th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyList">
+
+                                @if (Model.APInvoiceDetailRows != null && Model.APInvoiceDetailRows.Count > 0)
+                                {
+                                    int i = 0;
+                                    foreach (var item in Model.APInvoiceDetailRows)
+                                    {
+                                        <tr>
+                                            <td style="width:50px;text-align:center;">
+                                                <input type="hidden" id="APInvoiceDetailID" value="@item.APInvoiceDetailID" />
+                                                <input type="hidden" id="APInvoiceID" value="@item.APInvoiceID" />
+                                                <input type="hidden" id="GLAccountID" value="@item.GLAccountID" />
+                                                <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                                <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                                <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                                <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                                <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                                <label>@item.APInvoiceDetailID</label>
+                                            </td>
+
+                                            <td style="width:300px;">
+                                                <input type="text" class="glid" value="@item.GLAccountID" style="display:none;" />
+                                                @Html.DropDownListFor(x => x.APInvoiceDetailRows[i].GLAccountID, new SelectList(ViewBag.GLAccounts, "GLAccountID", "DisplayText"), "-- Select --", new { @class = "form-control showError  ddl", @id = "GLAccountID" })
+                                                <br /><span id="spnGLAccountError" class="error" style="display:none;">Please enter gl account</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" style="text-align:center; width:50px;" maxlength="2" id="C1" class="form-control integer" value="@item.C1" />
+
+                                            </td>
+                                            <td>
+                                                <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="C2" class="form-control integer" value="@item.C2" />
+
+                                            </td>
+                                            <td>
+                                                <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A3" class="form-control integer" value="@item.A3" />
+
+                                            </td>
+
+                                            <td>
+                                                <input type="number" id="Amount" onblur="calculateTotals()" class="form-control" style="text-align:right;" value="@item.Amount" />
+                                                <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+                                            </td>
+                                            @if (Model.APInvoice.IsPosted != true && Model.APInvoice.APInvoiceID > 0)
+                                            {
+                                                <td>
+                                                    <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                                </td>
+                                            }
+                                        </tr>
+                                        i = i + 1;
+                                    }
+                                }
+
+                            <tr>
+                                <td style="width:50px;text-align:center;">
+
+                                    <input type="hidden" id="APInvoiceDetailID" value="" />
+                                    <input type="hidden" id="APInvoiceID" value="" />
+                                    <input type="hidden" id="GLAccountID" value="" />
+                                    <input type="hidden" id="CreatedBy" value="" />
+                                    <input type="hidden" id="CreatedAt" value="" />
+                                    <input type="hidden" id="ModifiedBy" value="" />
+                                    <input type="hidden" id="ModifiedAt" value="" />
+                                    <input type="hidden" id="CompanyID" value="" />
+
+                                    <label></label>
+                                </td>
+
+                                <td style="width:300px;">
+                                    <input type="text" class="glid" value="" style="display:none;" />
+                                    @Html.DropDownList("GLAccountID", new SelectList(ViewBag.GLAccounts, "GLAccountID", "DisplayText"), "-- Select --", new { @class = "form-control showError ddl", @id = "GLAccountID" })
+                                </td>
+
+                                <td>
+                                    <input type="text" style="text-align:center; width:50px;" maxlength="2" id="C1" class="form-control integer" value="" />
+
+                                </td>
+                                <td>
+                                    <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="C2" class="form-control integer" value="" />
+
+                                </td>
+                                <td>
+                                    <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A3" class="form-control integer" value="" />
+
+                                </td>
+                                <td>
+                                    <input type="number" id="Amount" onblur="calculateTotals()" style="text-align:right;" class="form-control" value="" />
+                                    <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+                                </td>
+                                @if (Model.APInvoice.IsPosted != true && Model.APInvoice.APInvoiceID > 0)
+                                {
+                                    <td>
+                                        <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                    </td>
+                                }
+                            </tr>
+
+                            </tbody>
+                            <tfoot>
+
+                                <tr>
+                                    <td colspan="5" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
+                                    <td colspan="1"><input type="number" id="TotalAmount" style="font-size:large; text-align:right; font-weight:bold; background-color:white;" class="form-control" readonly value="0.00" /></td>
+                                    <td></td>
+                                </tr>
+
+                            </tfoot>
+
+                        </table>
+
+                    </div>
+
+                    <div class="box-footer">
+                        <div class="Actions">
+                            <a href="/APInvoice/APInvoiceList" class="btn btn-info ">Back to List</a>
+                            <a href="/APInvoice/APInvoice" class="btn btn-primary">Add</a>
+                            <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                            @if (Model.APInvoice.IsPosted == false)
+                            {
+                                <a href="#" class="btn btn-primary btnSave">Save</a>
+                            }
+                            @if (Model.APInvoice.IsPosted != true && Model.APInvoice.APInvoiceID > 0)
+                            {
+                                <a onclick="post()" id="btnPost" class=" btn btn-danger pull-right"> Post</a>
+                            }
+                            @*<a href="/ReportsWebForms/Voucher.aspx?APInvoiceID=@Model.APInvoice.APInvoiceID" class=" btn btn-success" target="_blank"> View Report</a>*@
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+
+            <input type="hidden" id="APInvoiceDetailID" value="" />
+            <input type="hidden" id="APInvoiceID" value="" />
+            <input type="hidden" id="GLAccountID" value="" />
+            <input type="hidden" id="CreatedBy" value="" />
+            <input type="hidden" id="CreatedAt" value="" />
+            <input type="hidden" id="ModifiedBy" value="" />
+            <input type="hidden" id="ModifiedAt" value="" />
+            <input type="hidden" id="CompanyID" value="" />
+
+            <label></label>
+        </td>
+
+        <td>
+            <input type="text" class="glid" value="" style="display:none;" />
+            @Html.DropDownList("GLAccountID", new SelectList(ViewBag.GLAccounts, "GLAccountID", "DisplayText"), "-- Select --", new { @class = "form-control showError ddl", @id = "GLAccountID" })
+        </td>
+
+        <td>
+            <input type="text" style="text-align:center; width:50px;" maxlength="2" id="C1" class="form-control integer" value="" />
+
+        </td>
+        <td>
+            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="C2" class="form-control integer" value="" />
+
+        </td>
+        <td>
+            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A3" class="form-control integer" value="" />
+
+        </td>
+        <td>
+            <input type="number" id="Amount" onblur="calculateTotals()" style="text-align:right;" class="form-control number decimal" value="" />
+            <span id="spnAmountError" class="error" style="display:none;">Amount should be equal to Total amount</span>
+        </td>
+        @if (Model.APInvoice.IsPosted != true && Model.APInvoice.APInvoiceID > 0)
+        {
+            <td>
+                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+            </td>
+        }
+
+    </tr>
+
+
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+
+        $('#APInvoiceDate').datepicker({
+            autoclose: true,
+            orientation: "bottom auto",  // Forces the datepicker to open downward
+            format: 'dd-M-yyyy',
+        });
+
+
+        $().ready(function () {
+
+            $('#VoucherDate').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+
+
+            $("#APVendorID").select2();
+            calculateTotals();
+
+            $("#tbodyList tr").each(function () {
+                debugger;
+                $(this).find(".ddl").select2();
+                var glID = $(this).find(".glid").val();
+                $(this).find(".ddl").val(glID).change();
+
+
+                $(this).find(".select2.select2-container").css("width", "400px");
+
+            });
+
+
+
+            var APInvoiceID = $("#APInvoiceID").val();
+            var VoucherType = $("#VoucherTypeID").children("option").filter(":selected").text()
+            //if (APInvoiceID > 0) {
+            //    $("#VoucherNumber").val(VoucherType + "-" + APInvoiceID);
+            //}
+
+
+            $(document).on("click", ".delete-row", function () {
+
+                debugger
+
+                if (confirm("Are you sure you want to delete this row")) {
+
+                    var row = $(this).closest("tr");
+                    var APInvoiceDetailID = $(this).closest("tr").find("#APInvoiceDetailID").val();
+
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() + 1) {
+                        $(row).find("#GLAccountID").val("");
+                        $(row).find("#Amount").val("");
+                    }
+                    else if (APInvoiceDetailID != undefined && APInvoiceDetailID != "" && APInvoiceDetailID > 0) {
+
+                        $.get("/APInvoice/APInvoiceDetailDelete", { id: APInvoiceDetailID }).done(function (res) {
+
+                            $(row).remove();
+                            calculateTotals();
+
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if ((APInvoiceDetailID == "" || $(APInvoiceDetailID).val() == undefined)) {
+                        var totalRows = $("#tbodyList tr").length;
+                        if (totalRows > 1) {
+
+                            $(row).remove();
+                            calculateTotals();
+                        }
+                        else {
+                            $(row).find("#GLAccountID").val("");
+                            $(row).find("#Amount").val("");
+                        }
+                    }
+                }
+            });
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+                debugger;
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    return;
+                }
+
+
+                var objAPInvoice = getObject();
+                var objAPInvoiceDetails = getObjectDetails();
+
+
+                $.post("/APInvoice/APInvoiceSave", { APInvoice: objAPInvoice, APInvoiceDetailList: objAPInvoiceDetails }).done(function (res) {
+
+                    debugger;
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+
+                        window.location = "/APInvoice/APInvoice?APInvoiceID=" + res.resObj.APInvoiceID;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+
+            $(document).on("select", "#GLAccountID", function () {
+
+                var GLAccountID = $(this).children("option").filter(":selected").val();
+            });
+
+            $(document).on("change", "#GLAccountID", function () {
+                debugger;
+                var GLAccountID = $(this).children("option:selected").val();// $(this).children("option").filter(":selected").val();
+                $(this).closest("tr").find("#GLAccountID").val(GLAccountID);
+                var currentRow = $(this).closest("tr");
+
+                var totalRows = $("tr", "#tbodyList").length;
+                var currentRowIndex = currentRow.index();
+                var diff = totalRows - currentRowIndex;
+                if (diff == 1) {
+                    var row = $('.trRowTemplate').clone();
+                    $(row).removeClass("trRowTemplate");
+                    $('#tbodyList').append(row);
+                    $(row).find(".ddl").select2();
+                    $(this).find(".select2.select2-container").css("width", "400px");
+
+                }
+            });
+
+            $(document).on("change", "#VoucherDate", function () {
+
+                var VoucherDate = $("#VoucherDate").val();
+
+                $.get("/APInvoice/GetFiscalYearSetup", { VoucherDate: VoucherDate }).done(function (res) {
+                    if (res != "")
+                        $(FiscalYear).val(res);
+                    else
+                        alert("Fiscal period does not exists against this date");
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                });
+            });
+        });
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#APInvoiceNo").val() == "") {
+                $("#spnAPInvoiceNoError").show();
+                valid = false;
+            }
+
+            if ($("#APInvoiceDate").val() == "") {
+                $("#spnAPInvoiceDateError").show();
+                valid = false;
+            }
+
+            if ($("#APVendorID").val() == "") {
+                $("#spnAPVendorIDError").show();
+                valid = false;
+            }
+
+
+            var AmountSum = $("#TotalAmount").val();
+            var HeadTotalAmount = $("#APInvoiceAmount").val();
+
+            if (parseFloat(HeadTotalAmount) !== parseFloat(AmountSum)) {
+                $("#spnTotalAmountError").show();
+                valid = false;
+            }
+
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#GLAccountID').val() != "" && $(this).find('#GLAccountID').val() > 0 && $(this).find('#GLAccountID').val() != undefined) {
+
+
+                    if ($(this).find('#Amount').val() == "" || $(this).find('#Amount').val() == "0") {
+                        $(this).find('#spnAmountError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+            // empty detail check
+            if (valid == true && $("#tbodyList tr").length == 1) {
+                valid = false;
+                alert("Please enter a row in detail");
+            }
+
+            return valid;
+        }
+
+        function calculateTotals() {
+
+            var AmountSum = 0;
+            //var creditSum = 0;
+            debugger;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#GLAccountID').val() != "" && $(this).find('#GLAccountID').val() > 0) {
+
+
+                    var Amount = $(this).find('#Amount').val() == '' ? 0 : parseFloat($(this).find('#Amount').val());
+
+                    AmountSum += parseFloat(Amount);
+                    // $("#APInvoiceAmount").val(AmountSum);
+                }
+            });
+
+            $("#TotalAmount").val(parseFloat(AmountSum).toFixed(2));
+        }
+
+
+        function getObject() {
+
+            debugger;
+
+            var obj = {
+
+                APInvoiceID: $("#APInvoiceID").val(),
+                APVendorID: $("#APVendorID").val(),
+                APInvoiceDate: $("#APInvoiceDate").val(),
+                APInvoiceNo: $("#APInvoiceNo ").val(),
+                APInvoiceAmount: $("#APInvoiceAmount").val(),
+                APTaxAmount: $("#APTaxAmount").val(),
+                IsPosted: $("#IsPosted").val(),
+
+                // hidden fields
+                CompanyID: $("#hdCompanyID").val(),
+                CreatedBy: $("#hdCreatedBy").val(),
+                CreatedAt: $("#hdCreatedAt").val(),
+                ModifiedBy: $("#hdModifiedBy").val(),
+                ModifiedAt: $("#hdModifiedAt").val(),
+
+            }
+            if (obj.IsPosted == "" | obj.IsPosted == undefined) obj.IsPosted = false;
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var DetailRows = [];
+
+            debugger;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                debugger;
+
+                if ($(this).find('#GLAccountID').val() != undefined && $(this).find('#GLAccountID').val() != "" && $(this).find('#GLAccountID').val() > 0) {
+                    var DetailRow = {
+                        APInvoiceDetailID: $(this).find('#APInvoiceDetailID').val(),
+                        APInvoiceID: $(this).find('#APInvoiceID').val(),
+                        GLAccountID: $(this).find('#GLAccountID').val(),
+                        Amount: $(this).find('#Amount').val(),
+
+                        C1: $(this).find("#C1").val(),
+                        C2: $(this).find("#C2").val(),
+                        A3: $(this).find("#A3").val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val()
+                    }
+                    DetailRows.push(DetailRow);
+                }
+            });
+
+            return DetailRows;
+        }
+
+
+
+
+        function post() {
+
+            debugger;
+
+            if (confirm("Are you sure you want to post")) {
+                var APInvoiceID = $('#APInvoiceID').val();
+
+                $.post("/Integration/IntAPInvoice", { APInvoiceID: APInvoiceID }).done(function (res) {
+
+                    if (res = true) {
+                        alert('Record Posted');
+                        $('#btnPost').css("visibility", 'hidden');
+                        window.location.reload();
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () { });
+            }
+        }
+
+    </script>
+
+}
+

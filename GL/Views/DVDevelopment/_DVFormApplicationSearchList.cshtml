@@ -1,0 +1,95 @@
+﻿
+
+
+@model GL.ViewModels.DV.ApplicationFormViewModel
+@{
+    Layout = null;
+}
+
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <p>
+                @*@Html.ActionLink("Create New", "Student")*@
+                @*<a href="/Setup/StaffAdd" class="btn btn-primary">Add</a>*@
+            </p>
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Date</label>
+                        </th>
+                        <th>
+                            <label>Project</label>
+                        </th>
+                        <th>
+                            <label>Unit</label>
+                        </th>
+                        <th>
+                            <label>Form No</label>
+                        </th>
+                        <th>
+                            <label>Applicant</label>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.DVApplicationFormSearchList)
+                    {
+                        <tr>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.ApplicationFormID,new {@id= "ApplicationFormID" })*@
+                                <label id="ApplicationFormID">@item.ApplicationFormID</label>
+                            </td>
+                            <td>
+                                @item.ApplicationFormDate.Value.ToString("dd-MMM-yyyy")
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProjectName)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UnitNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ApplicationFormNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Applicant)
+                            </td>
+
+                            <td>
+                                <a href="/DVDevelopment/ApplicationForm/@item.ApplicationFormID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+
+</script>

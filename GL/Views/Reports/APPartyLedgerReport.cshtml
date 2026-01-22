@@ -1,0 +1,159 @@
+﻿
+@{
+    //ViewBag.Title = "Trial Balance Report";
+}
+
+<h2>AP Paty Ledger</h2>
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">AP Party Ledger Report</h2>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <label class="control-label col-sm-1">Vendor</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("Vendor", new SelectList(ViewBag.APVendors, "APVendorID", "DisplayText"), "-- Select --", new { @class = "form-control showError", @id = "APVendorID" })
+                            <span id="spnAPVendorIDError" class="error" style="display:none;">Please select vendor</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-top:5px;">
+                        <label for="ToDate" class="control-label col-sm-1 PaddingTop-5">To Date</label>
+                        <div class="col-sm-2">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="ToDate" value="@ViewBag.ToDate" />
+                            </div>
+                            <span id="spnToDateError" class="error" style="display:none;">Please select To date</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="viewReport()" class=" btn btn-success"> View Report</a>
+                    <a onclick="downloadReport()" class=" btn btn-primary"> Download Report</a>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+        $().ready(function () {
+
+            $('#ToDate').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+            $("#APVendorID").select2();
+
+
+        });
+
+
+
+        function viewReport() {
+
+            if (!IsValid()) {
+                return;
+            }
+
+            debugger;
+
+            var APVendorID = $('#APVendorID').val();
+            var ToDate = $('#ToDate').val();
+
+            var url = "/ReportsWebForms/ReportForm.aspx?ReportName=APPartyLedgerReport&APVendorID=" + APVendorID + '&ToDate=' + ToDate;
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+
+            //}
+        }
+
+
+        function downloadReport() {
+
+            if (!IsValid()) {
+                return;
+            }
+
+            var APVendorID = $('#APVendorID').val();
+            var ToDate = $('#ToDate').val();
+
+            var url = "/Reports/APPartyLedgerReportDownload?APVendorID=" + APVendorID + '&ToDate=' + ToDate;
+
+
+
+            let a = document.createElement('a');
+            a.target = '_blank';
+            a.href = url;
+            a.click();
+
+        }
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($('#APVendorID').val() == '') {
+                $("#spnAPVendorIDError").show();
+                valid = false;
+            }
+
+
+            if ($('#ToDate').val() == '') {
+                $("#spnToDateError").show();
+                valid = false;
+            }
+
+            return valid;
+        }
+    </script>
+}

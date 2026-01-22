@@ -1,0 +1,258 @@
+﻿@model GL.ViewModels.Setup.FiscalYearSetupViewModel
+@{
+    ViewBag.Title = "Fiscal Year Setup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var disabled = (ViewBag.RoleID == 1 && Model.FiscalYearSetup.FiscalYear != null) ? "true" : "false";
+}
+
+
+<style>
+    .error {
+        color: red;
+        border-color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Fiscal Year Setup</h3>
+                </div>
+                <div class="tab-content">
+                    <div id="FiscalYearTabContents" class="tab-pane active fade in">
+
+                        <div class="form-horizontal">
+                            @*<input type="hidden" value="@Model.Session.SessionID" id="hdSessionID" />*@
+                            @*<input type="hidden" value="@Model.Session.SchoolID" id="hdSchoolID" />*@
+
+                            <div class="box-body">
+
+
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="CompanyID" class="col-sm-2 control-label ">Company</label>
+
+                                        <div class="col-sm-3">
+
+                                            @Html.DropDownListFor(x => x.FiscalYearSetup.CompanyID, new SelectList(ViewBag.CompanyList, "CompanyID", "Name"), "- Select Company -", new { @id = "CompanyID", @class = "form-control" })
+
+                                            @*@if (ViewBag.RoleID == 1 && Model.FiscalYearSetup.FiscalYear != null)
+                                            {
+                                                @Html.DropDownListFor(x => x.FiscalYearSetup.CompanyID, new SelectList(ViewBag.CompanyList, "CompanyID", "Name"), "- Select Company -", new { @id = "CompanyID", @disabled = "disabled", @class = "form-control" })
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(x => x.FiscalYearSetup.CompanyID, new SelectList(ViewBag.CompanyList, "CompanyID", "Name"), "- Select Company -", new { @id = "CompanyID", @class = "form-control" })
+                                            }*@
+                                            <span id="spnCompanyIDError" class="error" style="display:none;">Please select Company</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="FiscalYear" class="control-label col-sm-2 ">Fiscal Year</label>
+                                        <div class="col-sm-3">
+                                            @if (ViewBag.RoleID == 1 && Model.FiscalYearSetup.FiscalYear != null)
+                                            {
+                                                <input type="text" id="FiscalYear" disabled value="@Model.FiscalYearSetup.FiscalYear" class="form-control showError integer" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="FiscalYear" value="@Model.FiscalYearSetup.FiscalYear" class="form-control showError integer" />
+                                            }
+                                            <span id="spnFiscalYearError" class="error" style="display:none;">Please enter fiscal year</span>
+                                        </div>
+
+                                        <label for="MonthID" class="col-sm-2 control-label ">Fiscal Month</label>
+                                        <div class="col-sm-3">
+                                            @if (ViewBag.RoleID == 1 && Model.FiscalYearSetup.FiscalYear != null)
+                                            {
+                                                @Html.DropDownListFor(x => x.FiscalYearSetup.FiscalPeriod, new SelectList(ViewBag.MonthList, "MonthID", "ShortName"), "- Select Month -", new { @id = "MonthID", @disabled = "disabled", @class = "form-control " })
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(x => x.FiscalYearSetup.FiscalPeriod, new SelectList(ViewBag.MonthList, "MonthID", "ShortName"), "- Select Month -", new { @id = "MonthID", @class = "form-control " })
+                                            }
+                                            <span id="spnFiscalMonthError" class="error" style="display:none;">Please select Month</span>
+                                        </div>
+
+
+                                        <!--<label>
+                                        Active-->
+                                        @*<input type="checkbox" @(Model.Session.IsActive.GetValueOrDefault(false) ? "disabled" : "") @(Model.Session.IsActive.GetValueOrDefault(false) ? "checked" : "") id="IsActive" style="padding-top: 5px;padding-left: 24px;color:blue;">*@
+                                        <!--</label>-->
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="form-group" >
+                                    <div class="Actions">
+                                        @*<a href="/Setup/SessionsList" class="btn btn-info ">Back to List</a>*@
+                                        @*<a href="/Setup/FiscalYearSetup" class="btn btn-success">Add</a>*@
+                                        <a href="#" style="margin-left: 18px;" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                                        <a href="#" class="btn btn-primary SaveSession">Save</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="FinancialYearSetup">
+
+        $().ready(function () {
+            
+            var disabled = @disabled;
+            var isUpdated = @ViewBag.IsUpdated;
+
+            if (isUpdated == "1") {
+                $(".btn").attr("disabled", "disabled");
+            }
+            else {
+                $(".btn").removeAttr("disabled");
+            }
+
+            $(".dis").prop("disabled",@disabled)
+            var selectedCompanyID = @ViewBag.CompanyID;
+            if (selectedCompanyID != null && selectedCompanyID > 0) {
+                $("#CompanyID").val(selectedCompanyID);
+            }
+            $(".SaveSession").click(function (e) {
+                e.preventDefault;
+
+                if (IsValid() == false) {
+                    return;
+                }
+
+                
+
+                var obj = getObject();
+                var jsonData = JSON.stringify({ "fiscalYearSetup": obj });
+
+                $.ajax({
+                    url: "/Setup/FiscalYearSetupSave",
+                    type: "POST",
+                    data: jsonData,
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "JSON",
+                    success: function (res) {
+
+                        if (res.status == true) {
+                            alert("Record saved successfully!");
+                            
+
+                            //var url = "/Setup/SessionsList";
+                            //window.location = url;
+
+                        }
+                        else {
+                            alert("Error occured in saving");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        
+                        alert(errorThrown);
+                    }
+                });
+            });
+
+            $("#CompanyID").change(function (e) {
+                e.preventDefault;
+                
+                var companyID = $("#CompanyID").val();
+                if (companyID == undefined || companyID == "") {
+                    window.location = "/Setup/FiscalYearSetup";
+                    return;
+                } 
+                window.location = "/Setup/FiscalYearSetup?CompanyID=" + companyID;
+                
+               // var obj = getObject();
+
+               // var jsonData = JSON.stringify({ "fiscalYearSetup": obj });
+
+               //// var CompanyID = $("#CompanyID").val();
+
+               // $.ajax({
+               //     url: "/Setup/FiscalYearSetupLoad",
+               //     type: "POST",
+               //     data: jsonData,
+               //     contentType: "application/json; charset=UTF-8",
+               //     dataType: "JSON",
+               //     success: function (res) {
+               //         
+               //         if (res.status == true) {
+               //             $("#FiscalYear").val(res.resObj.FiscalYear);
+               //             $("#MonthID").val(res.resObj.FiscalPeriod);
+               //             //var url = "/Setup/SessionsList";
+               //             //window.location = url;
+
+               //         }
+               //         else {
+               //             alert("Error occured in saving");
+               //         }
+               //     },
+               //     error: function (jqXHR, textStatus, errorThrown) {
+               //         
+               //         alert(errorThrown);
+               //     }
+               // });
+            });
+
+        });
+
+        function IsValid() {
+            var valid = true;
+            $(".error").hide();
+
+            if ($("#FiscalYear").val() == "") {
+                $("#spnFiscalYearError").show();
+                valid = false;
+            }
+
+            if ($("#MonthID").val() == "") {
+                $("#spnFiscalMonthError").show();
+                valid = false;
+            }
+
+            if ($("#CompanyID").val() == "") {
+                $("#spnCompanyIDError").show();
+                valid = false;
+            }
+
+
+            return valid;
+        }
+
+        function getObject() {
+            var obj = {
+                FiscalYear: $("#FiscalYear").val(),
+                FiscalPeriod: $("#MonthID").val(),
+                CompanyID: $("#CompanyID").val()
+                // IsActive: $('#IsActive').is(':checked')
+            }
+            return obj;
+        }
+
+    </script>
+}
+
+
+
+

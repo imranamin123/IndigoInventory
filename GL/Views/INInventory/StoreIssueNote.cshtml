@@ -1,0 +1,673 @@
+﻿@model GL.ViewModels.Inventory.INStoreIssueNoteViewModel
+
+@{
+
+    ViewBag.Title = "Purchase Requisition";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var a = Model;
+
+    //var RoleID = Model.RoleID;
+    ////   var RequestID = Model.GoodsReceiptNote.RequestID;
+    //var SubmitedByKPO = Model.SubmitedByKPO;
+    //var SubmitedByMD = Model.SubmitedByMD;
+    //var IsNew = Model.IsNew;
+
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content-fluid">
+    @*<input type="hidden" id="SubmitedByKPO" value="@Model.GoodsReceiptNote.SubmitedByKPO" />
+        <input type="hidden" id="SubmitedAtKPO" value="@Model.GoodsReceiptNote.SubmitedAtKPO" />
+        <input type="hidden" id="SubmitedByMD" value="@Model.GoodsReceiptNote.SubmitedByMD" />
+        <input type="hidden" id="SubmitedAtMD" value="@Model.GoodsReceiptNote.SubmitedAtMD" />*@
+
+    <input type="hidden" id="mCreatedBy" value="@Model.INStoreIssueNote.CreatedBy" />
+    <input type="hidden" id="mCreatedAt" value="@Model.INStoreIssueNote.CreatedAt" />
+    <input type="hidden" id="mModifiedBy" value="@Model.INStoreIssueNote.ModifiedBy" />
+    <input type="hidden" id="mModifiedAt" value="@Model.INStoreIssueNote.ModifiedAt" />
+    <input type="hidden" id="mCompanyID" value="@Model.INStoreIssueNote.CompanyID" />
+    @* <input type="hidden" id="mDocumentNo" value="@Model.GoodsReceiptNote.DocumentNo" />*@
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal" id="header">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Store Issue Note</h2>
+                    </div>
+
+                    @if (Model.INStoreIssueNote.IsPosted.Value == true)
+                    {
+                        <h4 style="color:red; font:200;" class="box-title"> <b>Posted</b> </h4>
+                    }
+
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="UserID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control " readonly value="@Model.INStoreIssueNote.StoreIssueNoteID" id="StoreIssueNoteID">
+
+                        </div>
+                        <label for="INStoreIssueNoteDate" class="control-label col-sm-1">Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker dt" placeholder="" autocomplete="off" id="StoreIssueNoteDate" value="@Model.INStoreIssueNote.StoreIssueNoteDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnStoreIssueNoteDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+
+
+                        <label for="ProjectID" class="control-label col-sm-1 PaddingTop-5">Project</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INStoreIssueNote.ProjectID, new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --", new { @class = "form-control showError ddl", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select project</span>
+                        </div>
+
+                        <label for="StoreID" class="control-label col-sm-1 PaddingTop-5">Store</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(x => x.INStoreIssueNote.StoreID, new SelectList(ViewBag.INStores, "StoreID", "StoreName"), "-- Select --", new { @class = "form-control showError ddl", @id = "StoreID" })
+                            <span id="spnStoreIDError" class="error" style="display:none;">Please select store</span>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="Remarks" class="col-sm-1 control-label ">Remarks</label>
+                        <div class="col-sm-7">
+                            <input class="form-control" value="@Model.INStoreIssueNote.Remarks" id="Remarks">
+                            <span id="spnRemarksError" class="error" style="display:none;">Please enter remarks</span>
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLGoodsReceiptNote/GLGoodsReceiptNote" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="text-align:left;"><label>Item</label></th>
+                            <th style="width:150px;" class="align-right"><label>Size</label></th>
+                            <th style="width:150px;" class="align-right"><label>Unit</label></th>
+                            <th style="width:150px;" class="align-right"><label>Issued Qty</label></th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.INStoreIssueNoteDetailRows != null && Model.INStoreIssueNoteDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.INStoreIssueNoteDetailRows)
+                            {
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+                                        <input type="hidden" id="StoreIssueNoteDetailID" value="@item.StoreIssueNoteDetailID" />
+                                        <input type="hidden" id="StoreIssueNoteID" value="@item.StoreIssueNoteID" />
+                                        <input type="hidden" id="ItemID" value="@item.ItemID" />
+
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                        <label>@item.StoreIssueNoteDetailID</label>
+                                    </td>
+
+                                    <td style="width:300px">
+                                        <input type="text" class="itemId" value="@item.ItemID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.INStoreIssueNoteDetailRows[i].ItemID, new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly id="Size" class="form-control" placeholder="" value="@item.Size" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" readonly id="Unit" class="form-control" placeholder="" value="@item.Unit" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" style="text-align:right;" id="IssuedQty" class="form-control decimal "  onchange="hidSubmit();" value="@item.IssuedQty" />
+                                        <span id="spnIssuedQtyError" class="error" style="display:none;">Please enter issued qty</span>
+                                        <span id="spnIssuedQtyGreaterError" class="error" style="display:none;">Issued qty can not be greater than stock qty</span>
+                                    </td>
+
+                                    @if (Model.INStoreIssueNote.IsPosted.GetValueOrDefault(false) == false)
+                                    {
+                                        <td>
+                                            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                        </td>
+                                    }
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+                                <input type="hidden" id="StoreIssueNoteDetailID" value="" />
+                                <input type="hidden" id="StoreIssueNoteID" value="" />
+                                <input type="hidden" id="ItemID" value="" />
+
+                                <input type="hidden" id="CreatedBy" value="" />
+                                <input type="hidden" id="CreatedAt" value="" />
+                                <input type="hidden" id="ModifiedBy" value="" />
+                                <input type="hidden" id="ModifiedAt" value="" />
+                                <input type="hidden" id="CompanyID" value="" />
+
+                                <label></label>
+                            </td>
+
+                            <td style="width:300px">
+                                <input type="text" class="itemId" value="" style="display: none;" />
+                                <input type="text" class="requestDetailID" value="" style="display: none;" />
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </td>
+
+                            <td>
+                                <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" style="text-align:right;" id="IssuedQty" class="form-control decimal "  onchange="hidSubmit();" value="" />
+                                <span id="spnIssuedQtyError" class="error" style="display:none;">Please enter issued qty</span>
+                                <span id="spnIssuedQtyGreaterError" class="error" style="display:none;">Issued qty can not be greater than stock qty</span>
+                            </td>
+                            @if (Model.INStoreIssueNote.IsPosted.GetValueOrDefault(false) == false )
+                            {
+                                <td>
+                                    <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                </td>
+                            }
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+
+                        @*<tr>
+                            <td colspan="6" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
+                            <td colspan="2"><input type="text" id="TotalAmount" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
+                            <td></td>
+                        </tr>*@
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a href="/INInventory/StoreIssueNoteList" class="btn btn-info ">Back to List</a>
+                    <a href="/INInventory/StoreIssueNote" class="btn btn-primary">Add</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    @if (Model.INStoreIssueNote.IsPosted.GetValueOrDefault(false) == false)
+                    {
+                        <a href="#" class="btn btn-primary btnSave">Save</a>
+                    }
+                    @if (Model.INStoreIssueNote.IsPosted.GetValueOrDefault(false) != true && Model.INStoreIssueNote.StoreIssueNoteID > 0)
+                    {
+                        <a onclick="post()" id="btnPost" class=" btn btn-danger pull-right"> Post</a>
+                    }
+
+                    @if (Model.INStoreIssueNote.StoreIssueNoteID > 0)
+                    {
+                        <a href="/ReportsWebForms/ReportForm.aspx?ReportName=INStoreIssueNoteReportDownload&INStoreIssueNoteID=@Model.INStoreIssueNote.StoreIssueNoteID" target="_blank" title="Print" class="btn btn-success">Print</a>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+            <input type="hidden" id="StoreIssueNoteDetailID" value="" />
+            <input type="hidden" id="StoreIssueNoteID" value="" />
+            <input type="hidden" id="ItemID" value="" />
+
+            <input type="hidden" id="CreatedBy" value="" />
+            <input type="hidden" id="CreatedAt" value="" />
+            <input type="hidden" id="ModifiedBy" value="" />
+            <input type="hidden" id="ModifiedAt" value="" />
+            <input type="hidden" id="CompanyID" value="" />
+
+            <label></label>
+        </td>
+
+        <td style="width:300px">
+            <input type="text" class="itemId" value="" style="display: none;" />
+            <input type="text" class="requestDetailID" value="" style="display: none;" />
+            @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+        </td>
+
+        <td>
+            <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+        </td>
+
+        <td>
+            <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+        </td>
+
+        <td>
+            <input type="text" style="text-align:right;" id="IssuedQty" class="form-control decimal"  onchange="hidSubmit();" value="" />
+            <span id="spnIssuedQtyError" class="error" style="display:none;">Please enter issued qty</span>
+            <span id="spnIssuedQtyGreaterError" class="error" style="display:none;">Issued qty can not be greater than stock qty</span>
+
+        </td>
+
+        @if (Model.INStoreIssueNote.IsPosted.GetValueOrDefault(false) == false )
+        {
+            <td>
+                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+            </td>
+        }
+    </tr>
+
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="PurchaseRequisition">
+
+        $().ready(function () {
+            // $(".ddl").select2();
+            @*var roleId = @RoleID;
+            var requestID = @RequestID;*@
+
+
+            $('.dt').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+            
+
+            //if (roleId == 5) {
+            //    $('#header').find('input, select, textarea, button').prop('disabled', true);
+            //}
+
+
+            $("#tbodyList tr").each(function () {
+
+
+
+                $(this).find(".ddl").select2();
+                var itemId = $(this).find(".itemId").val();
+                var requestDetailID = $(this).find(".requestDetailID").val();
+                var value = itemId;// requestDetailID + "," + itemId;
+                $(this).find(".ddl").val(value).change();
+
+                $(this).find(".select2.select2-container").css("width", "300px");
+                
+            });
+
+            $(document).on("click", ".delete-row", function () {
+                debugger;
+                if (confirm("Are you sure you want to delete this row")) {
+
+                    var row = $(this).closest("tr");
+                    var StoreIssueNoteDetailID = $(this).closest("tr").find("#StoreIssueNoteDetailID").val();
+
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() + 1) {
+                        $(row).find("#StoreIssueNoteID").val("");
+                        $(row).find(".itemId").val("");
+                        $(row).find("#Size").val("");
+                        $(row).find("#Unit").val("");
+                        $(row).find("#IssuedQty").val("");
+                        $(row).find("#Amount").val("");
+                        $(row).find("#rem").val("");
+
+                    }
+                    else if (StoreIssueNoteDetailID != "" || $(StoreIssueNoteDetailID).val() > 0) {
+
+                        $.get("/INInventory/INStoreIssueNoteDetailDelete", { id: StoreIssueNoteDetailID }).done(function (res) {
+
+                            $(row).remove();
+                             
+
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else if ((StoreIssueNoteDetailID == "" || $(StoreIssueNoteDetailID).val() == undefined)) {
+                        var totalRows = $("#tbodyList tr").length;
+                        if (totalRows > 1) {
+
+                            $(row).remove();
+                            
+                        }
+                        else {
+                            $(row).find(".itemId").val("");
+                            $(row).find("#Size").val("");
+                            $(row).find("#Unit").val("");
+                            $(row).find("#IssuedQty").val("");
+                            $(row).find("#Amount").val("");
+                            $(row).find("#rem").val("");
+                        }
+                    }
+                }
+            });
+
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    return;
+                }
+
+                var obj = getObject();
+                var objDetails = getObjectDetails();
+
+                $.post("/INInventory/INStoreIssueNoteSave", { INStoreIssueNote: obj, INStoreIssueNoteDetailList: objDetails }).done(function (res) {
+
+                    if (res.status == true) {
+                        alert(res.resMessage);
+                        $('.btnSave').removeAttr('disabled');
+                        window.location = "/INInventory/StoreIssueNote/" + res.id;
+
+                    }
+                    else {
+                        alert(res.resMessage);
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                }).always(function () {
+                    $('.btnSave').removeAttr('disabled');
+                });
+
+            });
+
+            $(document).on("change", "#ItemID", function () {
+
+
+                var ItemId= $(this).children("option:selected").val();// $(this).children("option").filter(":selected").val();
+
+                var text = $(this).children("option:selected").text();
+                var lastDashIndex = text.lastIndexOf("= ");
+                var balance = text.substr(lastDashIndex + 2, (text.length - lastDashIndex));
+
+
+                $(this).closest("tr").find(".itemId").val(ItemId).change();
+
+                var currentRow = $(this).closest("tr");
+                $(currentRow).attr("Balance", balance);
+                
+                
+                $(currentRow).find("#IssuedQty").val("");
+                $(currentRow).find("#Unit").val("");
+                $(currentRow).find("#Size").val("");
+
+                $.get("/INInventory/GetStoreIssueNoteItemRow", { ItemID: ItemId }).done(function (res) {
+                    if (res != "") {
+
+                        $(currentRow).find("#Unit").val(res.Unit);
+                        $(currentRow).find("#Size").val(res.Size);
+
+                        var totalRows = $("tr", "#tbodyList").length;
+                        var currentRowIndex = currentRow.index();
+                        var diff = totalRows - currentRowIndex;
+                        if (diff == 1) {
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find(".ddl").select2();
+
+                        }
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+
+                }).always(function () {
+
+                });
+            });
+
+
+            $(document).on("change", "#ProjectID", function () {
+                debugger;
+                var projectID = $("#ProjectID").val();
+                if (projectID != undefined && projectID != "") {
+                    var companyID = $("#mCompanyID").val();
+                    debugger;
+                    $(".item-list").html("");
+                    $(".item-list").append('<option value="">-- Select --</option>');
+                    $.get("/INInventory/GetStoreIssueNoteDropdownItems", { CompanyID: companyID, ProjectID: projectID }).done(function (res) {
+                        debugger;
+                        if (res != "") {
+                            //$(".item-list").html("");
+                            //$(".item-list").append('<option value="">-- Select --</option>');
+                            $(res).each(function (index, element) {
+
+                                $(".item-list").append('<option value="' + element.ItemID + '">' + element.Description + '</option>');
+
+                            });
+                            $(".item-list").attr('selectedIndex', 0);
+
+                            $("#tbodyList").html("");
+
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find(".ddl").select2();
+
+                            $("#tbodyList").append(row);
+                        }
+
+                    }).fail(function (ex) {
+                        alert(ex.responseText);
+
+                    }).always(function () {
+
+                    });
+                }
+            });
+
+
+        });
+
+
+
+        function hidSubmit() {
+
+            $("#btnPost").css("display", "none");
+        }
+
+        function IsValid() {
+
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#StoreIssueNoteDate").val() == "") {
+                $("#spnStoreIssueNoteDateError").show();
+                valid = false;
+            }
+
+            if ($("#ProjectID").val() == "") {
+                $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            if ($("#StoreID").val() == "") {
+                $("#spnStoreIDError").show();
+                valid = false;
+            }
+
+            if ($("#Remarks").val() == "") {
+                $("#spnRemarksError").show();
+                valid = false;
+            }
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "" ) {
+
+                    if ($(this).find('#IssuedQty').val() == "" || $(this).find('#IssuedQty').val() == "0") {
+                        $(this).find('#spnIssuedQtyError').show();
+                        valid = false;
+                    }
+
+                    if (parseFloat($(this).find('#IssuedQty').val()) > parseFloat($(this).attr('balance'))) {
+                        $(this).find('#spnIssuedQtyGreaterError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+            var rowCount = $("#tbodyList").find('tr').length;
+            if (rowCount == 1) {
+                alert("Please enter data at least one row");
+                valid = false;
+
+            }
+
+            return valid;
+        }
+
+
+        function getObject() {
+
+
+
+            var obj = {
+
+                StoreIssueNoteID: $("#StoreIssueNoteID").val(),
+                StoreIssueNoteDate: $("#StoreIssueNoteDate").val(),
+                ProjectID: $("#ProjectID").val(),
+                StoreID: $("#StoreID").val(),
+                Remarks: $("#Remarks").val(),
+
+                CompanyID: $("#mCompanyID").val(),
+                CreatedBy: $("#mCreatedBy").val(),
+                CreatedAt: $("#mCreatedAt").val(),
+                ModifiedBy: $("#mModifiedBy").val(),
+                ModifiedAt: $("#mModifiedAt").val(),
+
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var DetailRows = [];
+
+
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
+                    const [requestDetailID, itemID] = $(this).find('.ddl').val().split(',');
+                    var DetailRow = {
+                        StoreIssueNoteDetailID: $(this).find('#StoreIssueNoteDetailID').val(),
+                        StoreIssueNoteID: $(this).find('#StoreIssueNoteID').val(),
+                        ItemID: $(this).find('.ddl').val(),
+                        IssuedQty: $(this).find('#IssuedQty').val(),
+                        Amount: $(this).find('#Amount').val(),
+                        Remarks: $(this).find('#rem').val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val()
+                    }
+                    DetailRows.push(DetailRow);
+
+                }
+            });
+
+
+            return DetailRows;
+        }
+
+
+        function post() {
+
+            if (confirm("Are you sure you want to post")) {
+                var StoreIssueNoteID = $('#StoreIssueNoteID').val();
+
+                var objDetails = getObjectDetails();
+                debugger;
+                $.post("/INInventory/INStoreIssueNotePost", { id: StoreIssueNoteID }).done(function (res) {
+
+                    if (res = true) {
+                        alert('Record Posted');
+                        $('#btnPost').css("visibility", 'hidden');
+                        window.location.reload();
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () { });
+            }
+        }
+    </script>
+
+}
+

@@ -1,0 +1,638 @@
+﻿@model GL.ViewModels.DV.DVReceiptViewModel
+
+@{
+    decimal TotalAmount = 0;
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+    <input type="hidden" id="CreatedBy" value="@Model.DVReceiptHead.CreatedBy" />
+    <input type="hidden" id="CreatedAt" value="@Model.DVReceiptHead.CreatedAt" />
+    <input type="hidden" id="ModifiedBy" value="@Model.DVReceiptHead.ModifiedBy" />
+    <input type="hidden" id="ModifiedAt" value="@Model.DVReceiptHead.ModifiedAt" />
+    <input type="hidden" id="CompanyID" value="@Model.DVReceiptHead.CompanyID" />
+
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Receipt </h2>
+                    </div>
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="DVReceiptID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" readonly value="@Model.DVReceiptHead.ReceiptID" id="DVReceiptID">
+                        </div>
+
+                        <label for="ProjectName" class="control-label col-sm-1">Project</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" readonly value="@Model.DVReceiptHead.ProjectName" id="ProjectName">
+                        </div>
+
+                        <label for="ApplicationFormID" class="control-label col-sm-1">App ID</label>
+                        <div class="col-sm-3">
+                            <input class="form-control" readonly value="@Model.DVReceiptHead.ApplicationFormID" id="ApplicationFormID">
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1">Form No</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" readonly id="ApplicationFormNo" value="@Model.DVReceiptHead.ApplicationFormNo" />
+                        </div>
+
+                        <label for="ApplicationFormDate" class="control-label col-sm-1 PaddingTop-5">Date</label>
+                        <div class="col-sm-3">
+
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control " readonly placeholder="" autocomplete="off" id="ApplicationFormDate" value="@Model.DVReceiptHead.ApplicationFormDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnApplicationFormDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+                        <label for="ApplicationFormDate" class="control-label col-sm-1 PaddingTop-5">Receipt Date</label>
+                        <div class="col-sm-3">
+
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" placeholder="" autocomplete="off" id="DVReceiptDate" value="@Model.DVReceiptHead.DVReceiptDate.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnDVReceiptDateError" class="error" style="display:none;">Please select receipt date</span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <label class="control-label col-sm-1 PaddingTop-5">Unit</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" readonly id="UnitNo" value="@Model.DVReceiptHead.UnitNo" />
+                        </div>
+
+                        <label for="UnitTypeName" class="col-sm-1 control-label ">Type</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" readonly id="UnitTypeName" value="@Model.DVReceiptHead.UnitTypeName" />
+                        </div>
+
+                        <label for="FloorNo" class="col-sm-1 control-label ">Floor</label>
+                        <div class="col-sm-2">
+                            <input class="form-control " readonly value="@Model.DVReceiptHead.FloorNo" id="FloorNo">
+                        </div>
+
+                        <label for="SQFT" class="col-sm-1 control-label ">SQFT</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVReceiptHead.SQFT" id="SQFT">
+                        </div>
+
+
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+
+                        <label for="Price" class="col-sm-1 control-label ">Price</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVReceiptHead.Price" id="Price">
+                        </div>
+
+                        <label for="Amount" class="col-sm-1 control-label ">Amount</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVReceiptHead.Amount" id="Amount">
+                        </div>
+
+                        <label for="TokenMoney" class="col-sm-1 control-label ">Token Money</label>
+                        <div class="col-sm-2">
+                            <input class="form-control integer" readonly value="@Model.DVReceiptHead.TokenMoney" id="TokenMoney">
+                        </div>
+
+                    </div>
+
+                    @if (Model.RoleID == 1 || Model.RoleID == 2)
+                    {
+                        <div class="row" style="margin-bottom:10px;">
+
+                            <label for="Varified" class="control-label col-sm-1">Verified</label>
+                            <div class="col-sm-1">
+                                <input type="checkbox" id="Varified" @(Model.DVReceiptHead.Varified.GetValueOrDefault(false) == true ? "checked" : "") style="font:bold; height:20px; width:20px;" class="control-label col-sm-2" />
+                            </div>
+                            <label for="VarifiedByName" class="col-sm-1 control-label ">Verified By</label>
+                            <div class="col-sm-3">
+                                <input type="hidden" id="VarifiedBy" value="@Model.DVReceiptHead.VarifiedBy" />
+                                <input class="form-control " readonly value="@Model.DVReceiptHead.VarifiedByName" id="VarifiedByName">
+                            </div>
+
+                            <label for="Locked" class="control-label col-sm-1">Locked</label>
+                            <div class="col-sm-1">
+                                <input type="checkbox" id="Locked" @(Model.DVReceiptHead.Locked.GetValueOrDefault(false) == true ? "checked" : "") style="font:bold; height:20px; width:20px;" />
+                            </div>
+
+                            <label for="LockedByName" class="col-sm-1 control-label ">Locked By</label>
+                            <div class="col-sm-3">
+                                <input type="hidden" id="LockedBy" value="@Model.DVReceiptHead.LockedBy" />
+                                <input class="form-control " readonly value="@Model.DVReceiptHead.LockedByName" id="LockedByName">
+                            </div>
+
+                        </div>
+                    }
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLVoucher/GLVoucher" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="width: 150px;text-align: left;"><label>Payment Type</label></th>
+                            <th style="width: 150px;text-align: left;"><label>Payment Method</label></th>
+                            <th style="width: 150px; text-align: left;"><label>Narration</label></th>
+                            <th style="width: 150px; text-align: right;"><label>Amount</label></th>
+                            <th style="width:5px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.DVReceiptDetailRows != null && Model.DVReceiptDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            TotalAmount = 0;
+                            foreach (var item in Model.DVReceiptDetailRows)
+                            {
+                                TotalAmount += item.Amount.GetValueOrDefault(0);
+
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+
+                                        <input type="hidden" id="DVReceiptDetailID" value="@item.DVReceiptDetailID" />
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+
+                                        <label id="lblSrNo">@(i+1) </label>
+                                    </td>
+
+
+                                    <td>
+                                        <input type="text" class="ddlid" value="@item.PaymentPlanTypeID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.DVReceiptDetailRows[i].PaymentPlanTypeID, new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+                                        <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="ddlPaymentMethodId" value="@item.DVPaymentMethodID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.DVReceiptDetailRows[i].DVPaymentMethodID, new SelectList(ViewBag.DVPaymentMethodList, "DVPaymentMethodID", "DVPaymentMethodDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "DVPaymentMethodID" })
+                                        <span id="spnPaymentMethodError" class="error" style="display:none;">Please enter payment method</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" style="text-align:left;" id="Narration" class="form-control" value="@item.Narration" />
+                                        <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" style="text-align:right;" onchange="calculateTotals(this)" id="Amount" class="form-control " value="@item.Amount" />
+                                        <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+                                    </td>
+
+                                    <td>
+                                        <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+                                <input type="hidden" id="DVReceiptDetailID" value="" />
+                                <label id="lblSrNo"></label>
+                            </td>
+
+                            <td>
+                                <input type="text" class="ddlid" value="" style="display:none;" />
+                                @Html.DropDownList("PaymentPlanTypeID", new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+                                <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+                            </td>
+                            <td>
+                                <input type="text" class="ddlPaymentMethodId" value="" style="display:none;" />
+                                @Html.DropDownList("DVPaymentMethodID", new SelectList(ViewBag.DVPaymentMethodList, "DVPaymentMethodID", "DVPaymentMethodDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "DVPaymentMethodID" })
+                                <span id="spnPaymentMethodError" class="error" style="display:none;">Please enter payment method</span>
+                            </td>
+
+                            <td>
+                                <input type="text" style="text-align:left;" id="Narration" class="form-control" value="" />
+                                <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+                            </td>
+                            <td>
+                                <input type="number" style="text-align:right;" onchange="calculateTotals(this)" id="Amount" class="form-control " value="" />
+                                <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+                            </td>
+
+                            <td>
+                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align:right;"><label style="font-size:20px;">Total</label></td>
+                            <td>
+                                <input type="text" id="TotalAmount" value="@TotalAmount" style="font-size:large; text-align:right; font-weight:bold;background-color:white;" class="form-control " readonly />
+                                <span id="spnTotalAmountNotEqualError" class="error" style="display:none;">Total amount is not equal to application amount</span>
+                            </td>
+                        </tr>
+
+
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a href="/DVDevelopment/ApplicationForm/@Model.DVReceiptHead.ApplicationFormID" class="btn btn-info ">Back to App</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+
+                    @if ((Model.RoleID == 1 || Model.RoleID == 2) || Model.DVReceiptHead.Varified == false)
+                    {
+                        <a href="#" class="btn btn-primary btnSave">Save</a>
+                    }
+                    @if (Model.DVReceiptHead.ReceiptID > 0)
+                    {
+                        <a onclick="viewReport()" class=" btn btn-success"> View Report</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+
+            <input type="hidden" id="DVReceiptDetailID" value="" />
+            <label id="lblSrNo"></label>
+        </td>
+
+        <td>
+            <input type="text" class="ddlid" value="" style="display:none;" />
+            @Html.DropDownList("PaymentPlanTypeID", new SelectList(ViewBag.DVPaymentPlanTypeList, "PaymentPlanTypeID", "PaymentPlanTypeDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "PaymentPlanTypeID" })
+            <span id="spnPaymentPlanTypeError" class="error" style="display:none;">Please enter payment plan type</span>
+        </td>
+        <td>
+            <input type="text" class="ddlPaymentMethodId" value="" style="display:none;" />
+            @Html.DropDownList("DVPaymentMethodID", new SelectList(ViewBag.DVPaymentMethodList, "DVPaymentMethodID", "DVPaymentMethodDesc"), "-- Select --", new { @class = "form-control showError  ddl", @id = "DVPaymentMethodID" })
+            <span id="spnPaymentMethodError" class="error" style="display:none;">Please enter payment method</span>
+        </td>
+        <td>
+            <input type="text" style="text-align:left;" id="Narration" class="form-control" value="" />
+            <span id="spnNarrationError" class="error" style="display:none;">Please enter narration</span>
+        </td>
+        <td>
+            <input type="number" style="text-align:right;" onchange="calculateTotals(this)" id="Amount" class="form-control " value="" />
+            <span id="spnAmountError" class="error" style="display:none;">Please enter amount</span>
+
+        </td>
+
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+        </td>
+
+    </tr>
+
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="DVPaymentPlan">
+    var SrNo = 0;
+
+    //$(window).on('load', function () {
+    //    calculateTotals();
+    //});
+
+    $().ready(function () {
+
+        //$(document).trigger("click");
+
+        //calculateTotals();
+        resetSrNo();
+
+        $("#tbodyList tr").each(function () {
+            var ID = $(this).find(".ddlid").val();
+            $(this).find(".ddl").val(ID).change();
+        });
+
+        function resetSrNo() {
+            SrNo = 0;
+            $("#tbodyList tr").each(function () {
+
+                var dt = $(this).find("#DVReceiptDetailDate").val();
+                if (dt != undefined && dt != '') {
+                    SrNo += 1;
+                    $(this).find("#lblSrNo").html(SrNo);
+
+                }
+            });
+        }
+
+        $(document).on("click", ".delete-row", function () {
+
+            
+
+            if (confirm("Are you sure you want to delete this row")) {
+
+                var row = $(this).closest("tr");
+                var DVReceiptDetailID = $(this).closest("tr").find("#DVReceiptDetailID").val();
+                if (DVReceiptDetailID != "" && DVReceiptDetailID != undefined && DVReceiptDetailID > 0) {
+
+
+
+                    $.post("/DVDevelopment/DVReceiptDetailDelete", { DVReceiptDetailID: DVReceiptDetailID }).done(function (res) {
+
+                        $(row).remove();
+                        calculateTotals();
+                        resetSrNo();
+
+                    }).fail(function (ex) {
+
+                        alert(ex.responseText);
+
+                    }).always(function () { });
+
+                }
+                else if (DVReceiptDetailID == "" || DVReceiptDetailID == undefined || $(DVReceiptDetailID).val() == 0) {
+                    var totalRows = $("#tbodyList tr").length;
+                    if (totalRows > 1) {
+
+                        $(row).remove();
+                        calculateTotals();
+                        resetSrNo();
+
+                    }
+                    else {
+                        $(row).find("#DVReceiptDetailID").val("");
+                        $(row).find("#Amount").val("");
+                        resetSrNo();
+                    }
+                }
+            }
+        });
+
+        $(document).on("click", ".btnSave", function (e) {
+
+            
+            e.preventDefault;
+            debugger;
+            
+            $('.btnSave').attr('disabled', 'disabled');
+
+            if (IsValid() == false) {
+                $('.btnSave').removeAttr('disabled');
+                alert("Please correct the error");
+                return;
+            }
+
+
+            var objPlan = getObject();
+            var objDetails = getObjectDetails();
+
+
+            $.post("/DVDevelopment/DVReceiptSave", { DVReceipt: objPlan, DVReceiptDetail: objDetails }).done(function (res) {
+
+                if (res.status == true) {
+                    alert(res.resMessage);
+
+                    window.location = "/DVDevelopment/ApplicationForm/" + res.resObj.ApplicationFormID; @*@Model.DVReceiptHead.ApplicationFormID"*@
+                    //window.location = "/DVDevelopment/DVReceipt?ApplicationFormID=" + res.resObj.ApplicationFormID;
+
+                }
+                else {
+                    alert(res.resMessage);
+                }
+
+            }).fail(function (ex) {
+                alert(ex.responseText);
+            }).always(function () {
+                $('.btnSave').removeAttr('disabled');
+            });
+
+        });
+
+        //$(document).on("click", function (e) {
+        //    calculateTotals();
+        //});
+
+        $(document).on("change", "#PaymentPlanTypeID", function () {
+
+            var currentRow = $(this).closest("tr");
+            var totalRows = $("tr", "#tbodyList").length;
+            var currentRowIndex = currentRow.index();
+            var diff = totalRows - currentRowIndex;
+
+            if (diff == 1) {
+                var row = $('.trRowTemplate').clone();
+                $(row).removeClass("trRowTemplate");
+                resetSrNo();
+
+                $('#tbodyList').append(row);
+
+            }
+        });
+
+    });
+
+    function addMonths(date, months) {
+        let newDate = new Date(date);
+        newDate.setMonth(newDate.getMonth() + months);
+
+        // Handle edge case where the day of the month is beyond the last day of the new month
+        if (newDate.getDate() !== date.getDate()) {
+            newDate.setDate(0); // Go to the last day of the previous month
+        }
+
+        return newDate;
+    }
+
+    function getFormatedDate(dt) {
+        var myDate = new Date(dt);
+        const yyyy = myDate.getFullYear();
+        let mm = myDate.getMonth() + 1; // Months start at 0!
+        let dd = myDate.getDate();
+
+        if (dd < 10) dd = '0' + dd;
+        if (mm < 10) mm = '0' + mm;
+
+        const month = myDate.toLocaleString('default', { month: 'short' });
+        var myDate = dd + '-' + month + '-' + yyyy;
+        return myDate;
+    }
+
+    function IsValid() {
+
+        var valid = true;
+        $(".error").hide();
+
+
+        if ($("#PaymentPlanTypeID").val() == "") {
+            $("#spnPaymentPlanTypeError").show();
+            valid = false;
+        }
+
+        if ($("#DVReceiptDate").val() == "") {
+            $("#spnDVReceiptDateError").show();
+            valid = false;
+        }
+
+
+        $("#tbodyList").find('tr').each(function (index, elem) {
+
+            if ($(this).find('#PaymentPlanTypeID').val() != "") {
+
+                if ($(this).find('#Narration').val() == "") {
+                    $(this).find('#spnNarrationError').show();
+                    valid = false;
+                }
+                
+
+                if ($(this).find('#DVPaymentMethodID').val() == "") {
+                    $(this).find('#spnPaymentMethodError').show();
+                    valid = false;
+                }
+
+                if ($(this).find('#Amount').val() == "" || parseFloat($(this).find('#Amount').val()) == "0") {
+                    $(this).find('#spnAmountError').show();
+                    valid = false;
+                }
+            }
+        });
+
+
+        // empty detail check
+        if (valid == true && $("#tbodyList tr").length == 1) {
+            valid = false;
+            alert("Please enter a row in detail");
+        }
+
+        return valid;
+    }
+
+    function calculateTotals() {
+
+        var AmountSum = 0;
+
+
+        $("#tbodyList").find('tr').each(function (index, elem) {
+
+            if ($(this).find('#PaymentPlanTypeID').val() != "") {
+
+
+                var Amount = $(this).find('#Amount').val() == '' ? 0 : parseFloat($(this).find('#Amount').val());
+                $(this).find('#Amount').val(Amount.toFixed(2));
+
+                AmountSum += parseFloat(Amount);
+            }
+        });
+
+        $("#TotalAmount").val(AmountSum.toFixed(2));
+    }
+
+    function getObject() {
+        
+        var obj = {
+
+            DVReceiptID: $("#DVReceiptID").val(),
+            ApplicationFormID: $("#ApplicationFormID").val(),
+            DVReceiptDate: $("#DVReceiptDate").val(),
+            Varified: ($("#Varified").is(":checked") ? true : false),
+            VarifiedBy: $("#VarifiedBy").val(),
+            Locked: ($("#Locked").is(":checked") ? true : false),
+            LockedBy: $("#LockedBy").val(),
+
+            // hidden fields
+            CreatedBy: $("#CreatedBy").val(),
+            CreatedAt: $("#CreatedAt").val(),
+            ModifiedBy: $("#ModifiedBy").val(),
+            ModifiedAt: $("#ModifiedAt").val(),
+            CompanyID: $("#CompanyID").val(),
+        }
+
+        return obj;
+    }
+
+
+    function getObjectDetails() {
+        var DetailRows = [];
+
+        $("#tbodyList").find('tr').each(function (index, elem) {
+
+            if ($(this).find('#PaymentPlanTypeID').val() != "") {
+                var DetailRow = {
+                    DVReceiptDetailID: $(this).find('#DVReceiptDetailID').val(),
+                    DVReceiptID: $(this).find('#DVReceiptID').val(),
+                    PaymentPlanTypeID: $(this).find('#PaymentPlanTypeID').val(),
+                    DVPaymentMethodID: $(this).find('#DVPaymentMethodID').val(),
+                    Narration: $(this).find('#Narration').val(),
+                    Amount: $(this).find('#Amount').val(),
+
+                    //hidden fields
+                    CreatedBy: $(this).find('#CreatedBy').val(),
+                    CreatedAt: $(this).find('#CreatedAt').val(),
+                    ModifiedBy: $(this).find('#ModifiedBy').val(),
+                    ModifiedAt: $(this).find('#ModifiedAt').val(),
+                    CompanyID: $(this).find('#CompanyID').val(),
+                }
+                DetailRows.push(DetailRow);
+            }
+        });
+
+        return DetailRows;
+    }
+
+
+    function viewReport() {
+
+        var DVReceiptID = $('#DVReceiptID').val();
+        var url = "/ReportsWebForms/ReportForm.aspx?ReportName=DVReceiptID=" + DVReceiptID;
+        let a = document.createElement('a');
+        a.target = '_blank';
+        a.href = url;
+        a.click();
+}
+
+    </script>
+
+}
+

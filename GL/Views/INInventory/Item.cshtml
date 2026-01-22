@@ -1,0 +1,348 @@
+﻿
+@model GL.ViewModels.Inventory.INItemViewModel
+
+@{
+    ViewBag.Title = "Item";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string Freeze = "0";
+    if (Model.INItem != null)
+    {
+        if (Model.INItem.Freeze == true)
+        {
+            Freeze = "1";
+        }
+        else
+        {
+            Freeze = "0";
+        }
+    }
+}
+
+
+
+<style>
+    .error {
+        border-color: red;
+    }
+
+    .datepicker.dropdown-menu {
+        top: 100% !important; /* Ensure it opens downwards */
+        bottom: auto !important; /* Remove any conflicting upward positioning */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Item</h3>
+                </div>
+
+                <input type="hidden" id="hdCreatedAt" value="@Model.INItem.CreatedAt" />
+                <input type="hidden" id="hdCreatedBy" value="@Model.INItem.CreatedBy" />
+                <input type="hidden" id="hdModifiedAt" value="@Model.INItem.ModifiedAt" />
+                <input type="hidden" id="hdModifiedBy" value="@Model.INItem.ModifiedBy" />
+                <input type="hidden" id="hdCompanyID" value="@Model.INItem.CompanyID" />
+
+
+                <div class="form-horizontal">
+
+                    <div class="box-body">
+
+                        <div class="row" style="margin-bottom:10px;">
+                            <label for="UserID" class="col-sm-2 control-label ">ID</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" readonly value="@Model.INItem.ItemID" id="ItemID">
+                            </div>
+
+                            <label for="ItemCode" class="col-sm-2 control-label ">Item Code</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" readonly value="@Model.INItem.ItemCode" id="ItemCode">
+                                <span id="spnItemCodeError" class="error" style="display:none;">Please enter item code</span>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-bottom:10px;">
+
+                            <label for="GroupID" class="control-label col-sm-2 PaddingTop-5">Group</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.INItem.GroupID, new SelectList(ViewBag.INGroupList, "GroupID", "Name"), "-- Select --", new { @class = "form-control showError ddl", @id = "GroupID" })
+                                <span id="spnGroupIDError" class="error" style="display:none;">Please enter item group</span>
+                            </div>
+
+                            <label for="CategoryID" class="control-label col-sm-2 PaddingTop-5">Category</label>
+                            <div class="col-sm-4">
+                                @*<select id="CategoryID" class = "form-control showError ddl">
+                    <option>-- Select --</option>
+                </select>*@
+
+                                @Html.DropDownListFor(x => x.INItem.CategoryID, new SelectList(ViewBag.INCategoryList, "CategoryID", "Name"), "-- Select --", new { @class = "form-control showError ddl", @id = "CategoryID", @name = "CategoryID" })
+                                <span id="spnCategoryError" class="error" style="display:none;">Please enter item category</span>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row" style="margin-bottom:10px;">
+
+                            <label for="SizeID" class="control-label col-sm-2 PaddingTop-5">Size</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.INItem.SizeID, new SelectList(ViewBag.INSizeList, "SizeID", "Name"), "-- Select --", new { @class = "form-control showError ddl", @id = "SizeID" })
+                                <span id="spnSizeIDError" class="error" style="display:none;">Please enter item size</span>
+                            </div>
+
+                            <label for="UOMID" class="control-label col-sm-2 PaddingTop-5">UOM</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.INItem.UOMID, new SelectList(ViewBag.INUnitOfMeasurementList, "UOMID", "Name"), "-- Select --", new { @class = "form-control showError ddl", @id = "UOMID" })
+                                <span id="spnUOMIDError" class="error" style="display:none;">Please enter unit of measure</span>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-bottom:10px;">
+                            <label for="Description" class="col-sm-2 control-label ">Description</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" value="@Model.INItem.Description" autocomplete="on" id="Description">
+                                <span id="spnDescriptionError" class="error" style="display:none;">Please enter Description</span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-sm-12 form-group">
+                            <div class="col-sm-8">
+                                <div class="checkbox">
+                                    <label class="control-label  offset-sm-4">
+                                        <input type="checkbox" id="Freeze" value="@Model.INItem.Freeze" class=" showError"> Freeze
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group col-sm-12">
+                            <div class="Actions">
+                                <a href="/INInventory/ItemList" class="btn btn-info ">Back to List</a>
+                                <a href="#" class="btn btn-default " onclick="location.reload();">Cancel</a>
+                                @*<a class="btn btn-danger GLAccountDelete">Delete</a>*@
+                                <a href="#" class="btn btn-primary save">Save</a>
+                                <br /><br />
+                                @if (ViewBag.username == "super" || ViewBag.username == "1")
+                                {
+                                    using (Html.BeginForm("Upload", "INInventory", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                    {
+                                        <input type="file" name="file" accept=".csv" />
+                                        <input type="submit" value="Upload" class="btn btn-primary" />
+                                    }
+                                    <br />
+                                    using (Html.BeginForm("MergeFromINItemToProjectItem", "INInventory"))
+                                    {
+                                        <input type="submit" value="Merge" class="btn btn-success" />
+                                    }
+
+                                    if (TempData["Msg"] != null)
+                                    {
+                                        <div class="alert alert-dismissible alert-info">
+                                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                            <h4>@TempData["Msg"].ToString()</h4>
+                                        </div>
+                                    }
+                                }
+
+
+                                @*<form asp-action="/INInventory/Upload" enctype="multipart/form-data" method="post">
+            <input type="file" name="file" accept=".csv" />
+            <button type="submit">Upload</button>
+        </form>*@
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+
+
+    $().ready(function () {
+
+        $(".ddl").select2();
+
+        var freeze = @Freeze;
+        if (freeze == "1")
+            $('#Freeze')[0].checked = true;
+
+        else
+            $('#Freeze')[0].checked = false;
+
+
+        $(".save").click(function (e) {
+                e.preventDefault;
+
+                if (IsValid() == false) {
+                    return;
+                }
+
+                var obj = getObject();
+                var jsonData = JSON.stringify({ "INItem": obj });
+
+                $.ajax({
+                    url: "/INInventory/INItemSave",
+                    type: "POST",
+                    data: jsonData,
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "JSON",
+                    success: function (res) {
+                        debugger;
+                        if (res.status == true) {
+                            alert("Record saved successfully!");
+                            var url = "/INInventory/Item/" + res.id;
+                            window.location = url;
+
+                        }
+                        else if (res.status == false) {
+                            alert(res.resMessage);
+                        }
+                        
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+
+                        alert(errorThrown);
+                    }
+                });
+            });
+
+
+        $(document).on("change", "#GroupID", function (e) {
+
+            debugger;
+
+            e.preventDefault;
+            var groupID = $('#GroupID').val();
+
+            if (groupID == "" || groupID == undefined) return;
+
+            $.post("/INInventory/GetCategoryListByGroupID", { GroupID: groupID }).done(function (result) {
+
+
+                $("#CategoryID").html("");
+
+                var options = '';
+                options = options + '<option value="">' + "--Select--" + '</option> ';
+                //$("#CategoryID").trigger("change");
+                $("select#CategoryID")[0].selectedIndex = 0;
+
+
+
+                for (var i = 0; i < result.length; i++) {
+                    options = options + '<option value="' + result[i].CategoryID + '">' + result[i].Name + '</option> ';
+                }
+
+                $("#CategoryID").append(options);
+            }).fail(function (ex) {
+                alert(ex.responseText);
+                // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+            }).always(function () { });
+        });
+    });
+
+        function IsValid() {
+            var valid = true;
+            $(".error").hide();
+
+            //if ($("#ItemCode").val() == "") {
+            //    $("#spnItemCodeError").show();
+            //    valid = false;
+            //}
+
+            if ($("#GroupID").val() == "") {
+                $("#spnGroupIDError").show();
+                valid = false;
+            }
+
+            if ($("#SizeID").val() == "") {
+                $("#spnSizeIDError").show();
+                valid = false;
+            }
+
+            if ($("#CategoryID").val() == "") {
+                $("#spnCategoryError").show();
+                valid = false;
+            }
+
+            if ($("#UOMID").val() == "") {
+                $("#spnUOMIDError").show();
+                valid = false;
+            }
+
+            if ($("#Description").val() == "") {
+                $("#spnDescriptionError").show();
+                valid = false;
+            }
+
+
+            return valid;
+        }
+
+        function getObject() {
+
+            var freeze = false;
+            debugger;
+
+            if ($('#Freeze').is(":checked")) {
+                freeze = true;
+            }
+            else {
+                freeze = false;
+            }
+
+            var obj = {
+
+                ItemID: $("#ItemID").val(),
+                ItemCode: $("#ItemCode").val(),
+                Description: $("#Description").val(),
+
+                ISALastRate: $("#ISALastRate").val(),
+                ISAQtyInHand: $("#ISAQtyInHand").val(),
+                IBALastRate: $("#IBALastRate").val(),
+                IBAQtyInHand: $("#IBAQtyInHand").val(),
+                ISAOpeningQty: $("#ISAOpeningQty").val(),
+
+                SizeID: $("#SizeID ").val(),
+                UOMID: $("#UOMID").val(),
+                GroupID: $("#GroupID").val(),
+                CategoryID: $("#CategoryID").val(),
+                Freeze: freeze,
+
+                // hidden fields
+                CompanyID: $("#hdCompanyID").val(),
+                CreatedBy: $("#hdCreatedBy").val(),
+                CreatedAt: $("#hdCreatedAt").val(),
+                ModifiedBy: $("#hdModifiedBy").val(),
+                ModifiedAt: $("#hdModifiedAt").val(),
+
+            }
+
+
+            return obj;
+
+        }
+
+    </script>
+}
+

@@ -1,0 +1,40 @@
+﻿@model GL.ViewModels.Setup.GLAccountViewModel
+
+@{
+    ViewBag.Title = "GL Account List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<link rel="stylesheet" href="~/admin-lte/dist/css/skins/_all-skins.min.css">*@
+
+
+<section class="container">
+    <div class="row">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">GL Account List</h3>
+            </div>
+            <div class="box-body">
+                <div class="col-sm-12" style="overflow:auto;">
+                    <p>
+                        <a href="/GLAccount/GLAccount" class="btn btn-primary">Add</a>
+                    </p>
+                    <div id="ListGrid">
+                        @Html.Partial("_GLAccountList", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script class="ListClass">
+
+        $().ready(function () {
+            $('#tblGLAccountList').DataTable();
+        });
+    </script>
+
+}
+

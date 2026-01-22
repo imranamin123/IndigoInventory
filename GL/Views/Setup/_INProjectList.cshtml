@@ -1,0 +1,64 @@
+﻿@model  GL.ViewModels.Setup.INProjectViewModel
+
+
+<table class="table" id="tblList">
+    <thead>
+        <tr>
+            <th><label>ID</label></th>
+            <th>
+                <label>Name</label>
+            </th>
+            <th>
+                <label>Description</label>
+            </th>
+            <th>
+                <label>Posted</label>
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.INProjectList)
+        {
+            <tr>
+                <td>
+                    <input type="hidden" id="CompanyID" />
+                    @Html.DisplayFor(modelItem => item.ProjectID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectDescription)
+                </td>
+
+                <td style="text-align: center; padding-right: 90px;">
+                    @if (item.Posted == true)
+                    {
+                        <i class="fa fa-check"></i>
+                    }
+                </td>
+
+
+                <td>
+                    <a href="/Setup/INProject/@item.ProjectID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                    @*<a href="/Setup/CompanyDelete/@item.CompanyID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@*@section scripts{
+        @Scripts.Render("~/bundles/jqueryval")
+        <script id="ListCompany">
+
+            $().ready(function () {
+                $('#tblCompanyList').DataTable();
+            });
+        </script>
+
+    }*@
+

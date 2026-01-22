@@ -1,0 +1,811 @@
+﻿@model GL.ViewModels.BKBankTrans.BKBankTransViewModel
+
+@{
+    //Model.feeReceipt.SessionID=0;
+    List<GL.EF.GLAccount> gl = ViewBag.GLAccounts;
+}
+
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="container-fluid">
+
+
+    <div  >
+        <div class="box box-info" style="width: 100%; overflow-x: scroll;">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Bank Transaction </h2>
+                        
+                        @if (Model.BKBankTran.IsPosted == true)
+                        {
+                            <br /><br />
+                            <h4 style="color:red;" class="box-title">Posted </h4>
+                        }
+
+                        <input type="hidden" id="MCreatedBy" value="@Model.BKBankTran.CreatedBy" />
+                        <input type="hidden" id="MCreatedAt" value="@Model.BKBankTran.CreatedAt" />
+                        <input type="hidden" id="MModifiedBy" value="@Model.BKBankTran.ModifiedBy" />
+                        <input type="hidden" id="MModifiedAt" value="@Model.BKBankTran.ModifiedAt" />
+                        <input type="hidden" id="MCompanyID" value="@Model.BKBankTran.CompanyID" />
+                        @*<input type="hidden" id="MIsPosted" value="@Model.BKBankTran.IsPosted" />*@
+                        @Html.Hidden("MIsPosted",Model.BKBankTran.IsPosted)
+
+                    </div>
+                    <br />
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="BankTransID" class="col-sm-1 control-label ">ID</label>
+                        <div class="col-sm-4">
+                            <input class="form-control integer" readonly value="@Model.BKBankTran.BankTransID" id="BankTransID">
+
+                        </div>
+
+                    </div>
+                    <div class="row" style="margin-bottom:10px;">
+                        <label for="CompanyID" class="control-label col-sm-1 ">Company</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(x => x.BKBankTran.CompanyID, new SelectList(ViewBag.Companies, "CompanyID", "Name"), "-- Select --", new { @class = "form-control showError mddl", @id = "CompanyID" })
+                            <span id="spnCompanyIDError" class="error" style="display:none;">Please select a company</span>
+                        </div>
+
+                        <label class="control-label col-sm-1">Bank</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(x => x.BKBankTran.BankID, new SelectList(ViewBag.Banks, "BankID", "BankName"), "-- Select --", new { @class = "form-control showError mddl", @id = "BankID" })
+                            <span id="spnBankIDError" class="error" style="display:none;">Please select a bank</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="control-label col-sm-1">Trans Code</label>
+                        <div class="col-sm-4">
+                            @*@Html.DropDownListFor(x => x.BKBankTran.BankTransCode, new SelectList(ViewBag.Banks, "BankID", "BankName"), "-- Select --", new { @class = "form-control showError", @id = "BankID" })*@
+                            <input type="text" readonly class="form-control" id="BankTransCode" value="@Model.BKBankTran.BankTransCode" />
+                            @*<span id="spnBankIDError" class="error" style="display:none;">Please select a bank</span>*@
+                        </div>
+
+                        <label for="TransDate" class="control-label col-sm-1 PaddingTop-5">Date</label>
+                        <div class="col-sm-4">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="TransDate" value="@Model.BKBankTran.TransDate.Value.ToString("dd-MMM-yyyy")" />
+                            </div>
+                            <span id="spnTransDateError" class="error" style="display:none;">Please select date</span>
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        @*<a href="/GLVoucher/GLVoucher" class="btn btn-primary">Add</a>*@
+
+                    </div>
+                    <!-- /.box-footer -->
+                    @*</form>*@
+
+                </div>
+            </div>
+
+            <div style="margin-top: 7px;">
+
+                <table class="table table-striped tblDetail" id="tblList">
+                    <thead>
+                        <tr>
+
+
+                            <th style="width:50px;text-align:center" class="th"><label>ID</label></th>
+                            <th style="width:100px;text-align:left;"><label>Trans Type</label></th>
+                            @*<th style="width: 150px;text-align: left;"><label>Desciption</label></th>*@
+                            <th style="width: 150px;text-align: left;"><label>Vendor</label></th>
+                            <th style="width: 100px;text-align: left;"><label>Post</label></th>
+                            <th style="width: 670px; text-align: left;"><label>Document Ref</label></th>
+
+                            <th style="width:40px;" class="align-right"><label>A1</label></th>
+                            <th style="width:40px;" class="align-right"><label>A2</label></th>
+                            <th style="width:40px;" class="align-right"><label>A3</label></th>
+
+                            <th style="width:150px; text-align:right;" class="align-right"><label>Dr</label></th>
+                            <th style="width: 150px; text-align: right;" class="align-right"><label>Cr</label></th>
+                            <th style="width:5px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyList">
+
+                        @if (Model.GLBKBankTransDetailRows != null && Model.GLBKBankTransDetailRows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.GLBKBankTransDetailRows)
+                            {
+                                <tr>
+                                    <td style="width:50px;text-align:center;">
+                                        <input type="hidden" id="BankTransDetID" value="@item.BankTransDetID" />
+                                        <input type="hidden" id="BankTransID" value="@item.BankTransID" />
+                                        <input type="hidden" id="CreatedBy" value="@item.CreatedBy" />
+                                        <input type="hidden" id="CreatedAt" value="@item.CreatedAt" />
+                                        <input type="hidden" id="ModifiedBy" value="@item.ModifiedBy" />
+                                        <input type="hidden" id="ModifiedAt" value="@item.ModifiedAt" />
+                                        <input type="hidden" id="CompanyID" value="@item.CompanyID" />
+
+                                        <label>@item.BankTransDetID</label>
+                                    </td>
+
+                                    <td style="width:100px;">
+                                        <input type="text" class="BankTransTypeID" value="@item.BankTransTypeID" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.GLBKBankTransDetailRows[i].BankTransTypeID, new SelectList(ViewBag.BKBankTransTypes, "BankTransTypeID", "BankTransTypeName"), "-- Select --", new { @style = "width:133px;padding-top:2px;padding-left:1px;", @class = "form-control showError  ddl", @id = "BankTransTypeID" })
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="APVendorID" value="@item.APVendorID" style="display:none;" />
+                                        @Html.DropDownList("APVendorID", new SelectList(ViewBag.APVendors, "APVendorID", "DisplayText"), "-- Select --", new { @style="width:133px", @class = "form-control showError ven", @id = "APVendorID" })
+                                    </td>
+                                    <td>
+                                        <input type="text" class="IsPost" value="@item.IsPost" style="display:none;" />
+                                        @Html.DropDownListFor(x => x.GLBKBankTransDetailRows[i].IsPost, new SelectList(ViewBag.IsPost, "Value", "Text"), "-- Select --", new { @style = "width:133px;padding-top:2px;padding-left:1px;", @class = "form-control showError ddlIsPost", @id = "IsPost" })
+
+                                    </td>
+                                    <td>
+                                        <input type="text" style=" text-align:left;" id="DocumentRef" class="form-control " value="@item.DocumentRef" />
+                                        <span id="spnDocumentRefError" class="error" style="display:none;">Please enter document ref</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" style="text-align: center; width: 50px; " maxlength="2" id="A1" class="form-control integer" value="@item.A1" />
+
+                                    </td>
+                                    <td>
+                                        <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A2" class="form-control integer" value="@item.A2" />
+
+                                    </td>
+                                    <td>
+                                        <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A3" class="form-control integer" value="@item.A3" />
+
+                                    </td>
+                                    <td>
+                                        <input type="text" id="Dr" onblur="calculateTotals()" class="form-control number decimal" value="@item.Dr" />
+                                        <span id="spnDrError" class="error" style="display:none;">Please enter dr</span>
+
+                                    </td>
+                                    <td>
+                                        <input type="text" id="Cr" onblur="calculateTotals()" class="form-control number decimal" value="@item.Cr" />
+                                        <span id="spnCrError" class="error" style="display:none;">Please enter Cr</span>
+                                        <span id="spnCrBothHasValueError" class="error" style="display:none;">Debit and credit can not have value in a single row</span>
+                                    </td>
+
+                                    <td>
+                                        <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                        @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+
+                    <tr>
+                        <td style="width:50px;text-align:center;">
+                            <input type="hidden" id="BankTransDetID" value="" />
+                            <input type="hidden" id="BankTransID" value="" />
+                            <input type="hidden" id="CreatedBy" value="" />
+                            <input type="hidden" id="CreatedAt" value="" />
+                            <input type="hidden" id="ModifiedBy" value="" />
+                            <input type="hidden" id="ModifiedAt" value="" />
+                            <input type="hidden" id="CompanyID" value="" />
+
+                            <label></label>
+                        </td>
+
+                        <td style="width:100px;">
+                            @Html.DropDownList("BankTransTypeID", new SelectList(ViewBag.BKBankTransTypes, "BankTransTypeID", "BankTransTypeName"), "-- Select --", new { @style = "width:133px;", @class = "form-control showError ddl", @id = "BankTransTypeID" })
+                        </td>
+                        <td>
+                            @*<input type="text" style="text-align:left;" readonly id="TransDescription" class="form-control" value="" />*@
+                            @Html.DropDownList("APVendorID", new SelectList(ViewBag.APVendors, "APVendorID", "DisplayText"), "-- Select --", new { @class = "form-control showError ven", @id = "APVendorID" })
+                        </td>
+                        <td>
+                            <input type="text" class="IsPost" value="" style="display:none;" />
+                            @Html.DropDownList("IsPost", new SelectList(ViewBag.IsPost, "Value", "Text"), "-- Select --", new { @style = "width:133px;padding-top:2px;padding-left:1px;", @class = "form-control showError ", @id = "IsPost" })
+                        </td>
+
+                        <td>
+                            <input type="text" style="text-align: left;" id="DocumentRef" class="form-control " value="" />
+                            <span id="spnDocumentRefError" class="error" style="display:none;">Please enter document ref</span>
+                        </td>
+                        <td>
+                            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A1" class="form-control integer" value="" />
+
+                        </td>
+                        <td>
+                            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A2" class="form-control integer" value="" />
+
+                        </td>
+                        <td>
+                            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A3" class="form-control integer" value="" />
+
+                        </td>
+                        <td>
+                            <input type="text" id="Dr" onblur="calculateTotals()" class="form-control number decimal" value="" />
+                            <span id="spnDrError" class="error" style="display:none;">Please enter debit</span>
+                        </td>
+                        <td>
+                            <input type="text" id="Cr" onblur="calculateTotals()" class="form-control number decimal" value="" />
+                            <span id="spnCrError" class="error" style="display:none;">Please enter credit</span>
+                            <span id="spnCrBothHasValueError" class="error" style="display:none;">Debit and credit can not have value in a single row</span>
+                        </td>
+
+                        <td>
+                            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+
+                        </td>
+                    </tr>
+
+                    </tbody>
+                    <tfoot>
+
+                        <tr>
+
+                            <td colspan="7" style="text-align:right;"><label style="font-size:20px;">Total</label></td>
+                            <td colspan="1" style="text-align:right;"><label style="font-size:20px;">Dr</label></td>
+                            <td colspan="2"><input type="text" id="DrTotal" style="font-size:large; font-weight:bold; background-color:white;" class="form-control integer number" readonly value="0" /></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="8" style="text-align:right;"><label style="font-size:20px;">Cr</label></td>
+                            <td colspan="2"><input type="text" id="CrTotal" style="font-size:large; font-weight:bold;background-color:white;" class="form-control integer number" readonly value="0" /></td>
+                        </tr>
+
+                        <tr style="text-align:right">
+                            <td colspan="6">
+                                <span id="spnDebitCreditNotEqualError" class="error" style="display:none;">Total debit and total credit are not equal</span>
+                            </td>
+                        </tr>
+
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a href="/BKBankTrans/BKBankTranList" class="btn btn-info ">Back to List</a>
+                    <a href="/BKBankTrans/BKBankTran" class="btn btn-primary">Add</a>
+                    <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                    <a href="#" class="btn btn-primary btnSave">Save</a>
+                    @if (Model.BKBankTran.IsPosted != true && ViewBag.IsPostCount > 0)
+                    {
+                        <a onclick="post()" id="btnPost" class=" btn btn-danger pull-right" style="display:none;"> Post</a>
+                    }
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+</section>
+<table style="display:none;">
+    <tr class="trRowTemplate">
+        <td style="width:50px;text-align:center;">
+            <input type="hidden" id="BankTransDetID" value="" />
+            <input type="hidden" id="BankTransID" value="" />
+            <input type="hidden" id="CreatedBy" value="" />
+            <input type="hidden" id="CreatedAt" value="" />
+            <input type="hidden" id="ModifiedBy" value="" />
+            <input type="hidden" id="ModifiedAt" value="" />
+            <input type="hidden" id="CompanyID" value="" />
+
+            <label></label>
+        </td>
+
+        <td>@Html.DropDownList("BankTransTypeID", new SelectList(ViewBag.BKBankTransTypes, "BankTransTypeID", "BankTransTypeName"), "-- Select --", new { @style = "width:133px;", @class = "form-control showError", @id = "BankTransTypeID" })</td>
+
+        <td>
+
+            @Html.DropDownList("APVendorID", new SelectList(ViewBag.APVendors, "APVendorID", "DisplayText"), "-- Select --", new { @class = "form-control showError ven", @id = "APVendorID" })
+            @*<input type="text" style="text-align:left;" id="TransDescription" class="form-control " value="" />
+            <span id="spnTransDescriptionError" class="error" style="display:none;">Please enter description</span>*@
+        </td>
+        <td>
+            <input type="text" class="IsPost" value="" style="display:none;" />
+            @Html.DropDownList("IsPost", new SelectList(ViewBag.IsPost, "Value", "Text"), "-- Select --", new { @style = "width:133px;padding-top:2px;padding-left:1px;", @class = "form-control showError ", @id = "IsPost" })
+        </td>
+
+        <td>
+            <input type="text" style="text-align:left;" id="DocumentRef" class="form-control " value="" />
+            <span id="spnDocumentRefError" class="error" style="display:none;">Please enter document ref</span>
+        </td>
+        <td>
+            <input type="text" style="text-align:center; width:50px;" maxlength="2" id="A1" class="form-control integer" value="" />
+
+        </td>
+        <td>
+            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A2" class="form-control integer" value="" />
+
+        </td>
+        <td>
+            <input type="text" style="text-align: center; width: 50px;" maxlength="2" id="A3" class="form-control integer" value="" />
+
+        </td>
+        <td>
+            <input type="text" id="Dr" class="form-control number decimal" value="" />
+            <span id="spnDrError" class="error" style="display:none;">Please enter dr</span>
+        </td>
+        <td>
+            <input type="text" id="Cr" class="form-control number decimal" value="" />
+            <span id="spnCrError" class="error" style="display:none;">Please enter cr</span>
+            <span id="spnCreditBothHasValueError" class="error" style="display:none;">Debit and credit can not have value in a single row</span>
+
+        </td>
+
+        <td>
+            <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+
+        </td>
+    </tr>
+
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script id="GLAccounts">
+        $().ready(function () {
+            $(this).find(".mddl").select2();
+
+            $('#TransDate').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+
+            calculateTotals();
+
+            var enablePost = 0;
+
+            $("#tbodyList tr").each(function () {
+                $(this).find(".ddl").select2();
+                var BankTransTypeID = $(this).find(".BankTransTypeID").val();
+                $(this).find(".ddl").val(BankTransTypeID).change();
+                $(this).find(".ddl").trigger("change");
+
+
+                var APVendorID = $(this).find(".APVendorID").val();
+                $(this).find(".ven").val(APVendorID).change();
+                $(this).find(".ven").trigger("change");
+                $(this).find(".ven").select2();
+
+                
+
+                var IsPost = $(this).find(".IsPost").val();
+                if (IsPost == "") IsPost = 0;
+                if (IsPost == 1) enablePost += 1;
+
+                $(this).find(".ddlIsPost").val(IsPost).change();
+                $(this).find(".ddlIsPost").trigger("change");
+
+            });
+            if (enablePost > 0)
+                $('#btnPost').show();
+            else
+                $('#btnPost').hide();
+
+
+
+
+            $(document).on("click", ".delete-row", function () {
+
+
+                if (confirm("Are you sure you want to delete this row")) {
+                    var row = $(this).closest("tr");
+                    var BankTransDetID = $(this).closest("tr").find("#BankTransDetID").val();
+                    if (BankTransDetID != "" || $(BankTransDetID).val() > 0) {
+
+                        $.get("/BKBankTrans/BKBankTransDetailDelete", { id: BankTransDetID }).done(function (res) {
+
+                            $(row).remove();
+                            calculateTotals();
+
+                        }).fail(function (ex) {
+
+                            alert(ex.responseText);
+
+                        }).always(function () { });
+
+                    }
+                    else {
+                        $(row).remove();
+                        calculateTotals();
+                    }
+                }
+            });
+
+            $(document).on("click", ".btnSave", function (e) {
+
+                e.preventDefault;
+
+                $('.btnSave').attr('disabled', 'disabled');
+
+                if (IsValid() == false) {
+                    $('.btnSave').removeAttr('disabled');
+                    alert("Please correct the error");
+                    return;
+                }
+
+
+                
+
+                var objBKBankTrans = getObject();
+                var objBKBankTransDetails = getObjectDetails();
+
+                // check if band exist
+                var CompanyID = $("#CompanyID").val();
+                var BankID = $("#BankID").val();
+                var TransDate = $("#TransDate").val();
+                var BankTransID = $("#BankTransID ").val();
+
+
+                if (CompanyID != "" && BankID != "" && TransDate != "") {
+                    $.post("/BKBanKTrans/IsBKBankTranExist", { CompanyID: CompanyID, BankTransID: BankTransID, BankID: BankID, TransDate: TransDate }).done(function (res) {
+
+                        if (res != null && res.id > 0) {
+                            alert("Transactions already exists for this bank in this date");
+                            $('.btnSave').removeAttr('disabled');
+                        }
+                        else {
+                            
+
+
+                            $.post("/BKBankTrans/BKBankTranSave", { BKBankTrans: objBKBankTrans, BKBankTransDetailList: objBKBankTransDetails }).done(function (res) {
+
+                                if (res.status == true) {
+                                    alert(res.resMessage);
+
+
+
+                                    window.location = "/BKBankTrans/BKBankTran?BKBankTranID=" + res.id;
+
+                                }
+                                else {
+                                    alert(res.resMessage);
+                                }
+
+                            }).fail(function (ex) {
+                                alert(ex.responseText);
+                                // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
+                            }).always(function () { });
+
+
+
+                        }
+                    }).fail(function (ex) {
+
+                        alert(ex.responseText);
+
+                    }).always(function () {
+                    });
+                }
+
+            });
+
+
+            $(document).on("change", "#BankTransTypeID", function () {
+
+                var BankTransTypeID = $(this).children("option").filter(":selected").val();
+                var TransDescription = $(this).closest("tr").find("#TransDescription");
+                $(this).closest("tr").find("#BankTransTypeID").val(BankTransTypeID);
+                var currentRow = $(this).closest("tr");
+                $.get("/BKBankTrans/GetBankTransTypeDescription", { id: BankTransTypeID }).done(function (res) {
+                    if (res != "") {
+
+                        $(TransDescription).val(res);
+                        var totalRows = $("tr", "#tbodyList").length;
+                        var currentRowIndex = currentRow.index();
+                        var diff = totalRows - currentRowIndex;
+                        if (diff == 1) {
+                            var row = $('.trRowTemplate').clone();
+                            $(row).removeClass("trRowTemplate");
+                            $('#tbodyList').append(row);
+                            $(row).find("#BankTransTypeID").select2();
+                            //$(this).find(".select2-selection.select2-selection--single").css("width", "100px");
+                            //$(this).find(".select2.select2-container.select2-container--default").css("width", "100px");
+                            $(this).find(".select2.select2-container").css("min-width", "100px");
+                            $(this).find(".select2.select2-container").css("max-width", "100px");
+                            $(this).find(".select2-selection.select2-selection--single").css("padding-top", "2px");
+                            $(this).find(".select2-selection.select2-selection--single").css("padding-left", "1px");
+
+
+                        }
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                    //
+                    //var totalRows = $("tr", "#tbodyList").length;
+                    //var index = $(this).closest("tr").index();
+                    //var row = $('.trRowTemplate').clone();
+                    //$(row).removeClass("trRowTemplate");
+                    //$('#tbodyList').append(row);
+
+                });
+            });
+
+            $(document).on("change", "#VoucherDate", function () {
+
+                //var GLAccountID = $(this).children("option").filter(":selected").val();
+                //var description = $(this).closest("tr").find("#Description");
+                var VoucherDate = $("#VoucherDate").val();
+
+                $.get("/GLVoucher/GetFiscalYearSetup", { VoucherDate: VoucherDate }).done(function (res) {
+                    if (res != "")
+                        $(FiscalYear).val(res);
+                    else
+                        alert("Fiscal period does not exists against this date");
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                });
+            });
+
+
+            $(document).on("change", "#CompanyID", function () {
+                IsBankTransExist();
+            });
+
+            $(document).on("change", "#BankID", function () {
+                IsBankTransExist();
+            });
+
+            $(document).on("change", "#TransDate", function () {
+                IsBankTransExist();
+            });
+
+        });
+
+        function calculateTotals() {
+
+            var DrSum = 0;
+            var CrSum = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#BankTransDetID').val() != "" && $(this).find('#BankTransDetID').val() > 0) {
+
+
+                    var Dr = $(this).find('#Dr').val() == '' ? 0 : parseFloat($(this).find('#Dr').val());
+                    var Cr = $(this).find('#Cr').val() == '' ? 0 : parseFloat($(this).find('#Cr').val());
+
+                    DrSum += parseFloat(Dr);
+                    CrSum += parseFloat(Cr);
+
+                }
+            });
+
+            $("#DrTotal").val(DrSum);
+            $("#CrTotal").val(CrSum);
+            var DrCrDiff = DrSum - CrSum;
+            $("#DrCrDiff").val(DrCrDiff);
+        }
+
+        function IsBankTransExist() {
+
+
+
+            var CompanyID = $("#CompanyID").val();
+            var BankID = $("#BankID").val();
+            var TransDate = $("#TransDate").val();
+            var BankTransID = $("#BankTransID ").val();
+
+
+            if (CompanyID != "" && BankID != "" && TransDate != "") {
+                $.post("/BKBanKTrans/IsBKBankTranExist", { CompanyID: CompanyID, BankTransID: BankTransID, BankID: BankID, TransDate: TransDate }).done(function (res) {
+
+                    if (res != null && res.id > 0)
+                        alert("Transactions already exists for this bank in this date");
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () {
+                });
+            }
+
+        }
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+
+            if ($("#CompanyID").val() == "") {
+                $("#spnCompanyIDError").show();
+                valid = false;
+            }
+
+            if ($("#BankID").val() == "") {
+                $("#spnBankIDError").show();
+                valid = false;
+            }
+
+            if ($("#TransDate").val() == "") {
+                $("#spnTransDateError").show();
+                valid = false;
+            }
+
+
+            var drSum = 0;
+            var crSum = 0;
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+
+                if ($(this).find('#BankTransTypeID').val() != "" && $(this).find('#BankTransTypeID').val() > 0) {
+
+
+                    if ($(this).find('#DocumentRef').val() == "") {
+                        $(this).find('#spnDocumentRefError').show();
+                        valid = false;
+                    }
+
+                    var Dr = $(this).find('#Dr').val() == '' ? 0 : parseFloat($(this).find('#Dr').val());
+                    var Cr = $(this).find('#Cr').val() == '' ? 0 : parseFloat($(this).find('#Cr').val());
+
+                    drSum += parseFloat(Dr);
+                    crSum += parseFloat(Cr);
+
+                    $(this).find('#Cr').val(Cr);
+                    $(this).find('#Cr').val(Cr);
+
+
+                    if (Dr == 0 && Cr == 0) {
+                        $(this).find('#spnDrError').show();
+                        $(this).find('#spnCrError').show();
+                        valid = false;
+                    }
+
+                    if (Dr != 0 && Cr != 0) {
+                        $(this).find('#spnCrBothHasValueError').show();
+                        valid = false;
+                    }
+
+                }
+            });
+
+            //if (drSum != crSum) {
+            //    $("#spnDebitCreditNotEqualError").show();
+            //    valid = false;
+            //}
+            //else {
+            //    $("#spnDebitCreditNotEqualError").hide();
+            //}
+            ////});
+
+            // empty detail check
+            if (valid == true && $("#tbodyList tr").length == 1)
+            {
+                valid = false;
+                alert("Please enter a row in detail");
+            }
+
+            return valid;
+        }
+
+
+    function getObject() {
+        debugger;
+            var obj = {
+
+                BankTransID: $("#BankTransID").val(),
+                BankID: $("#BankID").val(),
+                TransDate: $("#TransDate").val(),
+                IsPosted: $("#MIsPosted").val(), 
+                // hidden fields
+                CompanyID: $("#MCompanyID").val(),
+                CreatedBy: $("#MCreatedBy").val(),
+                CreatedAt: $("#MCreatedAt").val(),
+                ModifiedBy: $("#MModifiedBy").val(),
+                ModifiedAt: $("#MModifiedAt").val(),
+
+            }
+
+            return obj;
+        }
+
+
+        function getObjectDetails() {
+            var BKBankTransDetailRows = [];
+
+            
+
+            $("#tbodyList").find('tr').each(function (index, elem) {
+                
+                if ($(this).find('#BankTransTypeID').val() != "" && $(this).find('#BankTransTypeID').val() > 0) {
+                    var BKBankTransDetailRow = {
+
+                        BankTransDetID: $(this).find('#BankTransDetID').val(),
+                        BankTransID: $(this).find('#BankTransID').val(),
+                        BankTransTypeID: $(this).find('#BankTransTypeID').val(),
+                        TransDescription: $(this).find('#TransDescription').val(),
+                        DocumentRef: $(this).find('#DocumentRef').val(),
+                        IsPost: $(this).find('#IsPost').val(),
+                        APVendorID: $(this).find('#APVendorID').val(),
+
+                        A1: $(this).find('#A1').val(),
+                        A2: $(this).find('#A2').val(),
+                        A3: $(this).find('#A3').val(),
+
+                        Dr: $(this).find('#Dr').val(),
+                        Cr: $(this).find('#Cr').val(),
+
+                        //hidden fields
+                        CompanyID: $(this).find('#CompanyID').val(),
+                        CreatedBy: $(this).find('#CreatedBy').val(),
+                        CreatedAt: $(this).find('#CreatedAt').val(),
+                        ModifiedBy: $(this).find('#ModifiedBy').val(),
+                        ModifiedAt: $(this).find('#ModifiedAt').val(),
+                        CompanyID: $(this).find('#CompanyID').val()
+                    }
+                    BKBankTransDetailRows.push(BKBankTransDetailRow);
+                }
+            });
+
+            return BKBankTransDetailRows;
+        }
+
+        function post() {
+            
+            if (confirm("Are you sure you want to post")) {
+                
+                /////////////////////////////
+                var valid = false;
+                $("#tbodyList").find('tr').each(function (index, elem) {
+                    if ($(this).find('#BankTransTypeID').val() != "" && $(this).find('#BankTransTypeID').val() > 0) {
+                        let IsPost = $(this).find(".ddlIsPost").val();
+                        if (IsPost == "1")
+                            valid = true;
+                    }
+                });
+                if (valid == false) {
+                    alert("Please mark post at least one entry");
+                    return;
+                }
+                /////////////////////////////
+
+                var BankTransID = $('#BankTransID').val();
+
+                $.post("/Integration/IntBankTransactionVoucher", { bkBankTransID: BankTransID }).done(function (res) {
+
+                    if (res = true) {
+                        alert('Record Posted');
+                        $('#btnPost').css("visibility", 'hidden');
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () { });
+            }
+        }
+
+</script>
+
+}
+

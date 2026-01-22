@@ -1,0 +1,174 @@
+﻿
+@model GL.ViewModels.Setup.INProjectViewModel
+
+@{
+    ViewBag.Title = "Class";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .error {
+        color: red;
+        border-color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Horizontal Form -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Project Form</h3>
+                </div>
+
+
+                <div class="form-horizontal">
+                    @if (Model.INProject.Posted == true)
+                    {
+                        <h4 style="color:red; font:200;padding-left:10px;" class="box-title"> <b>Posted</b> </h4>
+                    }
+
+
+                    <input type="hidden" value="@Model.INProject.CompanyID" id="hdCompanyID" />
+                    <input type="hidden" value="@Model.INProject.ProjectID" id="hdProjectID" />
+
+                    <div class="box-body">
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-10">
+                                <label for="ProjectName" class="control-label col-sm-2">Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text" id="ProjectName" value="@Model.INProject.ProjectName" class="form-control showError" />
+                                    <span id="spnProjectNameError" class="error" style="display:none;">Please enter project name</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-10">
+                                <label for="ProjectDescription" class="control-label col-sm-2">Description</label>
+                                <div class="col-sm-8">
+                                    <input type="text" id="ProjectDescription" value="@Model.INProject.ProjectDescription" class="form-control showError" />
+                                    <span id="spnProjectDescriptionError" class="error" style="display:none;">Please enter project description</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <div class="Actions">
+                                <a href="/Setup/INProjectList" class="btn btn-info ">Back to List</a>
+                                <a href="#" class="btn btn-default" onclick="location.reload();">Cancel</a>
+                                <a href="#" class="btn btn-primary save">Save</a>
+                                @if (Model.INProject.Posted.GetValueOrDefault(false) == false && Model.INProject.ProjectID > 0)
+                                {
+                                    <a onclick="post()" id="btnPost" class=" btn btn-danger pull-right"> Post</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="Projects">
+
+        $().ready(function () {
+            $(".save").click(function (e) {
+                e.preventDefault;
+
+                if (IsValid() == false) {
+                    return;
+                }
+
+                var obj = getObject();
+                var jsonData = JSON.stringify({ "INProject": obj });
+
+                $.ajax({
+                    url: "/Setup/INProjectSave",
+                    type: "POST",
+                    data: jsonData,
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "JSON",
+                    success: function (res) {
+
+                        if (res.status == true) {
+                            alert("Record saved successfully!");
+                            var url = "/Setup/INProjectList";
+                            window.location = url;
+
+                        }
+                        else {
+                            alert("Error occured in saving");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            });
+        });
+
+        function post() {
+
+            debugger;
+
+            if (confirm("Are you sure you want to post")) {
+                var projectID = $('#hdProjectID').val();
+
+                //var objDetails = getObjectDetails();
+
+                $.post("/Setup/INProjectPost", { ProjectID: projectID }).done(function (res) {
+
+                    if (res = true) {
+                        alert('Record Posted');
+                        $('#btnPost').css("visibility", 'hidden');
+                        window.location.reload();
+                    }
+
+                }).fail(function (ex) {
+
+                    alert(ex.responseText);
+
+                }).always(function () { });
+            }
+        }
+
+        function IsValid() {
+            var valid = true;
+            $(".error").hide();
+
+            if ($("#ProjectName").val() == "") {
+                $("#spnProjectNameError").show();
+                valid = false;
+            }
+
+            if ($("#ProjectDescription").val() == "") {
+                $("#spnProjectDescriptionError").show();
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        function getObject() {
+            var obj = {
+                CompanyID: $("#hdCompanyID").val(),
+                ProjectID: $("#hdProjectID").val(),
+                ProjectName: $("#ProjectName").val(),
+                ProjectDescription: $("#ProjectDescription").val()
+            }
+            return obj;
+        }
+       
+
+    </script>
+}
+

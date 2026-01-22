@@ -1,0 +1,89 @@
+﻿@model GL.ViewModels.Setup.SecUserViewModel
+@{
+    Layout = null;
+}
+<div class="box box-info">
+    <div class="box-body">
+        <div class="col-sm-12" style="overflow:auto;">
+
+            <p>
+                @*@Html.ActionLink("Create New", "Student")*@
+                @*<a href="/Setup/StaffAdd" class="btn btn-primary">Add</a>*@
+            </p>
+            <table class="table" id="tblList">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>ID</label>
+                        </th>
+                        <th>
+                            <label>Company</label>
+                        </th>
+                        <th>
+                            <label>Username</label>
+                        </th>
+                        <th>
+                            <label>Name</label>
+                        </th>
+                        <th>
+                            <label>Role</label>
+                        </th>
+
+                        <th>
+                            <label>Status</label>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.SecUserSearchList)
+                    {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UsersID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CompanyName)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.username)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RoleName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td>
+                            <a href="/Setup/SecUser/@item.UsersID" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                            @*<a href="/Students/Delete/@item.StudentID" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this record ?');"><i class="fa fa-times"></i></a>*@
+
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<script>
+    $().ready(function () {
+        $('#tblList').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
+
+    });
+</script>
