@@ -12,7 +12,8 @@ create procedure [dbo].[spINPurchaseOrderSearchList]
 	@CompanyID int,
 	@UserID int = NULL,
 	@FromDate date = NULL,
-	@ToDate date = NULL
+	@ToDate date = NULL,
+	@ItemID bigint = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -29,11 +30,13 @@ BEGIN
 		END 'Approved', 
 		po.CompanyID
 	FROM dbo.INPurchaseOrder po
+	INNER JOIN INPurchaseOrderDetail pod ON po.PurchaseOrderID = pod.PurchaseOrderID
 	INNER JOIN INProject p ON po.ProjectID = p.ProjectID
 
 	WHERE po.CompanyID = @CompanyID AND
 		(po.CreatedBy = @UserID OR @UserID IS NULL) AND
 		(CAST(po.PurchaseOrderDate as date) >= @FromDate OR @FromDate IS NULL) AND
-		(CAST(po.PurchaseOrderDate as date) <= @ToDate OR @ToDate IS NULL)
+		(CAST(po.PurchaseOrderDate as date) <= @ToDate OR @ToDate IS NULL) AND
+		(pod.ItemID = @ItemID OR @ItemID IS NULL)
 	ORDER BY po.PurchaseOrderDate DESC
 END

@@ -13,12 +13,13 @@ CREATE procedure [dbo].[spINStoreTransferNoteSearchList]
 	@CompanyID int,
 	@UserID int = NULL,
 	@FromDate date = NULL,
-	@ToDate date = NULL
+	@ToDate date = NULL,
+	@ItemID bigint = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	SELECT 
+	SELECT DISTINCT
 		stn.StoreTransferNoteID,
 		stn.StoreTransferNoteDate,
 		pF.ProjectName 'PrjectFrom',
@@ -40,20 +41,21 @@ BEGIN
 		--ISNULL(grn.IsPosted,0) 'IsPosted',
 		stn.CompanyID
 	FROM dbo.INStoreTransferNote stn
+	INNER JOIN INStoreTransferNoteDetail stnd ON stn.StoreTransferNoteID = stnd.StoreTransferNoteID
 	INNER JOIN INProject pF ON stn.FromProjectID = pF.ProjectID
 	INNER JOIN INProject pT ON stn.ToProjectID = pT.ProjectID
 
 	WHERE stn.CompanyID = @CompanyID AND
 		(stn.CreatedBy = @UserID OR @UserID IS NULL) AND
 		(CAST(stn.StoreTransferNoteDate as date) >= @FromDate OR @FromDate IS NULL) AND
-		(CAST(stn.StoreTransferNoteDate as date) <= @ToDate OR @ToDate IS NULL)
+		(CAST(stn.StoreTransferNoteDate as date) <= @ToDate OR @ToDate IS NULL) AND
+		(stnd.ItemID = @ItemID OR @ItemID IS NULL)
 	ORDER BY stn.StoreTransferNoteDate DESC
 END
 
 GO
 
 exec spINStoreTransferNoteSearchList 1,59
-select * from INStoreTransferNote
 
 
 

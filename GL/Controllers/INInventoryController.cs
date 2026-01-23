@@ -51,19 +51,12 @@ namespace GL.Controllers
                                 CompanyID = item.CompanyID,
                                 ProjectID = 1,
                                 ItemID = item.ItemID,
-                                //LastRate = item.ISALastRate,
-
-                                //OpeningQty = item.ISAOpeningQty,
-                                //QtyInHand = item.ISAQtyInHand,
                             };
                             var projectItemIBA = new INProjectItem()
                             {
                                 CompanyID = item.CompanyID,
                                 ProjectID = 2,
                                 ItemID = item.ItemID,
-                                //LastRate = item.IBALastRate,
-                                //OpeningQty = 0,
-                                //QtyInHand = item.IBAQtyInHand
                             };
 
                             db.INProjectItems.AddOrUpdate(projectItemISA);
@@ -105,7 +98,6 @@ namespace GL.Controllers
 
             try
             {
-                //var items new List<INItem>();
 
                 using (var reader = new StreamReader(file.InputStream))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -127,13 +119,6 @@ namespace GL.Controllers
                                     db.SaveChanges();
                                 }
 
-                                ////var inItem =  db.INItems.Where(x => x.ItemID == item.ItemID && (x.ISAOpeningQty ?? 0) == 0).FirstOrDefault();
-                                ////if (inItem != null)
-                                ////{
-                                ////    inItem.ISAOpeningQty = item.ISAOpeningQty;
-                                ////    db.INItems.AddOrUpdate(inItem);
-                                ////    db.SaveChanges();
-                                ////}
                             }
                             transaction.Commit();
                         }
@@ -152,7 +137,6 @@ namespace GL.Controllers
                 TempData["Msg"] = "Error: " + ex.Message;
             }
             return RedirectToAction("Item");
-            //return View();
         }
 
         [HttpGet]
@@ -217,9 +201,6 @@ namespace GL.Controllers
 
                     model.INItem.ItemID = 0;
                     model.INItem.ItemCode = 0;
-                    //model.INItem.ISALastRate = 0;
-                    //model.INItem.ISAQtyInHand = 0;
-                    //model.INItem.ISAOpeningQty = 0;
 
                     model.INItem.UOMID = 0;
                     model.INItem.Freeze = false;
@@ -289,7 +270,6 @@ namespace GL.Controllers
                 {
                     res.status = true;
                     res.id = INItem.ItemID;
-                    // res.resObj = INItem;
                     res.resMessage = "Record saved successfully!";
                 }
                 else
@@ -336,11 +316,11 @@ namespace GL.Controllers
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
                 INPurchaseRequisitionViewModel model = new INPurchaseRequisitionViewModel();
-                // DALDropdowns dalDropdowns = new DALDropdowns();
 
-                // ViewBag.INGroupList = new DALDropdowns().INGroupList(LoginUser.CompanyID);
                 ViewBag.roleid = LoginUser.RoleID;
                 ViewBag.username = LoginUser.username;
+                ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
+
                 return View(model);
             }
             catch (Exception ex)
@@ -349,18 +329,18 @@ namespace GL.Controllers
             }
         }
         [HttpPost]
-        public ActionResult PurchaseRequisitionSearchList(DateTime? RequestDateFrom, DateTime? RequestDateTo)
+        public ActionResult PurchaseRequisitionSearchList(DateTime? RequestDateFrom, DateTime? RequestDateTo, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             INPurchaseRequisitionViewModel model = new INPurchaseRequisitionViewModel();
 
             if (LoginUser.username == "ind.umer" || LoginUser.username == "ind.shafeeq")
             {
-                model.INPurchaseRequisitionSearchList = new DALInventory().GetINPurchaseRequisitionSearchPurchaseHeadList(LoginUser.CompanyID, null, RequestDateFrom, RequestDateTo);
+                model.INPurchaseRequisitionSearchList = new DALInventory().GetINPurchaseRequisitionSearchPurchaseHeadList(LoginUser.CompanyID, null, RequestDateFrom, RequestDateTo, ItemID);
             }
             else
             {
-                model.INPurchaseRequisitionSearchList = new DALInventory().GetINPurchaseRequisitionSearchList(LoginUser.CompanyID, LoginUser.UsersID, RequestDateFrom, RequestDateTo);
+                model.INPurchaseRequisitionSearchList = new DALInventory().GetINPurchaseRequisitionSearchList(LoginUser.CompanyID, LoginUser.UsersID, RequestDateFrom, RequestDateTo,ItemID);
             }
             model.RoleID = LoginUser.RoleID;
             return View("_PurchaseRequisitionSearchListRows", model);
@@ -419,14 +399,10 @@ namespace GL.Controllers
         [HttpGet]
         private ActionResult INPurchaseRequisitionReportDownload(int RequestID)
         {
-            // CrystalReportViewer1.ToolPanelView = CrystalDecisions.Web.ToolPanelViewType.None;
             var report = new rptINPurchaseRequisition();
-            //Nullable<int> RequestID = Convert.ToInt32(Request.QueryString["RequestID"]);
-
             var PurchaseRequisitions = new GLEntities().spRptINPurchaseRequisition(RequestID);
 
             var PurchaseRequisitionData = (
-
                 from v in PurchaseRequisitions
                 select new spRptINPurchaseRequisitionModel
                 {
@@ -486,11 +462,6 @@ namespace GL.Controllers
             reportDocument.Dispose();
             return new EmptyResult();
 
-            //  reportQueue.Enqueue(report);
-
-            //report.SetDataSource(PurchaseRequisitionData);
-            //CrystalReportViewer1.ReportSource = report;
-            //CrystalReportViewer1.RefreshReport();
         }
 
         [HttpPost]
@@ -503,7 +474,6 @@ namespace GL.Controllers
 
                 bool result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
 
-                //res.resObj = glVoucher;
                 res.id = RequestID;
                 res.status = true;
                 res.resMessage = "Record submitted successfully!";
@@ -522,10 +492,8 @@ namespace GL.Controllers
         {
             try
             {
-
                 bool result = new DALInventory().INPurchaseRequisitionUnSubmitByGM(id);
 
-                //res.resObj = glVoucher;
                 return RedirectToAction("PurchaseRequisitionList");
             }
             catch (Exception ex)
@@ -553,13 +521,11 @@ namespace GL.Controllers
                 }
                 else
                 {
-                    //INPurchaseRequisition.CompanyID = LoginUser.CompanyID;
                     INPurchaseRequisition.ModifiedAt = DateTime.Now;
                     INPurchaseRequisition.ModifiedBy = LoginUser.UsersID;
                 }
 
 
-                //  bool result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
                 if (INPurchaseRequisition.DocumentNo.GetValueOrDefault(0) == 0)
                 {
                     INPurchaseRequisition.DocumentNo = dal.NextDocumentNumberByProject(INPurchaseRequisition.ProjectID.GetValueOrDefault(0));
@@ -589,7 +555,6 @@ namespace GL.Controllers
                             }
                             else
                             {
-                                //item.CompanyID = LoginUser.CompanyID;
                                 item.ModifiedBy = LoginUser.UsersID;
                                 item.ModifiedAt = DateTime.Now;
                             }
@@ -599,7 +564,6 @@ namespace GL.Controllers
                     }
                     // end save details
 
-                    //res.resObj = glVoucher;
                     res.id = INPurchaseRequisition.RequestID;
                     res.status = true;
                     res.resMessage = "Record save successfully!";
@@ -627,7 +591,6 @@ namespace GL.Controllers
 
             try
             {
-                //GLVoucherViewModel model = new GLVoucherViewModel();
 
                 new DALInventory().INPurchaseRequisitionDetailDelete(id);
                 return RedirectToAction("PurchaseRequisition");
@@ -672,7 +635,6 @@ namespace GL.Controllers
                 ViewBag.INStores = dalDropdowns.INStoreList(LoginUser.CompanyID);
 
                 List<spINGRNItemsDropdown_Result> INItems = new List<spINGRNItemsDropdown_Result>();
-                ////  ViewBag.INItems = dalDropdowns.GetINGRItemsDropdown(LoginUser.CompanyID);//  dalDropdowns.INItemsList(LoginUser.CompanyID);
                 ViewBag.APVendors = dalDropdowns.GLAPVendorsListWithCode(LoginUser.CompanyID);
                 List<spINGRNItemsDropdown_Result> remainingINItems = new List<spINGRNItemsDropdown_Result>();
                 if (id != null || id > 0)
@@ -682,8 +644,6 @@ namespace GL.Controllers
                     model.INGoodsReceiptNoteDetailRows = new DALInventory().GetINGoodsReceiptNoteDetailRows(id.GetValueOrDefault(0));
 
                     INItems = dalDropdowns.GetINGRItemsDropdown(LoginUser.CompanyID, model.INGoodsReceiptNote.ProjectID.GetValueOrDefault(0));
-                    //// remove other items with 0 quantity
-                    ////List<spINGRNItemsDropdown_Result> remainingINItems = new List<spINGRNItemsDropdown_Result>();
 
                     foreach (var item in INItems)
                     {
@@ -749,7 +709,6 @@ namespace GL.Controllers
         {
             try
             {
-                //GLVoucherViewModel model = new GLVoucherViewModel();
 
                 new DALInventory().INGoodsReceiptNoteDetailDelete(id);
                 return RedirectToAction("PurchaseRequisition");
@@ -768,14 +727,12 @@ namespace GL.Controllers
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
                 INGoodsReceiptNoteViewModel model = new INGoodsReceiptNoteViewModel();
-                // DALDropdowns dalDropdowns = new DALDropdowns();
 
-                // ViewBag.INGroupList = new DALDropdowns().INGroupList(LoginUser.CompanyID);
                 ViewBag.roleid = LoginUser.RoleID;
                 ViewBag.username = LoginUser.username;
-                //TempData["username"] = LoginUser.username;
                 ViewBag.Pending = Pending;
-                
+                ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
+
                 return View(model);
             }
             catch (Exception ex)
@@ -784,14 +741,14 @@ namespace GL.Controllers
             }
         }
         [HttpPost]
-        public ActionResult GoodsReceiptNoteSearchList(DateTime? FromDate, DateTime? ToDate, int? Pending=0)
+        public ActionResult GoodsReceiptNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, int? Pending=0)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             INGoodsReceiptNoteViewModel model = new INGoodsReceiptNoteViewModel();
-
+            
             if (LoginUser.username == "ind.umer" || LoginUser.username == "ind.shafeeq")
             {
-                model.INGoodsReceiptNoteSearchList = new DALInventory().GetINGoodsReceiptNotePurchaseHeadSearchList(LoginUser.CompanyID, null, FromDate, ToDate, Pending);
+                model.INGoodsReceiptNoteSearchList = new DALInventory().GetINGoodsReceiptNotePurchaseHeadSearchList(LoginUser.CompanyID, null, FromDate, ToDate,ItemID, Pending);
                 
                 if(Pending == 1)
                     model.username = LoginUser.username;
@@ -800,10 +757,12 @@ namespace GL.Controllers
             }
             else
             {
-                model.INGoodsReceiptNoteSearchList = new DALInventory().GetINGoodsReceiptNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate);
+                model.INGoodsReceiptNoteSearchList = new DALInventory().GetINGoodsReceiptNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
             }
 
             model.RoleID = LoginUser.RoleID;
+
+            
 
             return View("_GoodsReceiptNoteSearchListRows", model);
 
@@ -894,10 +853,6 @@ namespace GL.Controllers
                 spINPurchaseOrderDetailRow.RequestedQty = 0;
                 spINPurchaseOrderDetailRow.ApprovedQty = item.ReceivedQty;
                 spINPurchaseOrderDetailRow.UnitPrice = item.Rate;
-                //spINPurchaseOrderDetailRow.CreatedBy = item.Amount;
-                //spINPurchaseOrderDetailRow.CreatedAt = item.Amount;
-                //spINPurchaseOrderDetailRow.ModifiedBy = item.Amount;
-                //spINPurchaseOrderDetailRow.ModifiedAt = item.Amount;
                 spINPurchaseOrderDetailRow.CompanyID = item.CompanyID;
 
                 model.INPurchaseOrderDetailRows.Add(spINPurchaseOrderDetailRow);
@@ -945,7 +900,6 @@ namespace GL.Controllers
 
                 bool result = new DALInventory().INGoodsReceiptNoteUnPost(id);
 
-                //res.resObj = glVoucher;
                 return RedirectToAction("GoodsReceiptNoteList");
             }
             catch (Exception ex)
@@ -974,21 +928,11 @@ namespace GL.Controllers
                 }
                 else
                 {
-                    //INPurchaseRequisition.CompanyID = LoginUser.CompanyID;
                     INGoodsReceiptNote.ModifiedAt = DateTime.Now;
                     INGoodsReceiptNote.ModifiedBy = LoginUser.UsersID;
                 }
 
-                //  result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
-                //if (INGoodsReceiptNote.DocumentNo.GetValueOrDefault(0) == 0)
-                //{
-                //    INGoodsReceiptNote.DocumentNo = dal.NextDocumentNumberByProject(INGoodsReceiptNote.ProjectID.GetValueOrDefault(0));
-                //    var ProjectName = dal.GetProjectNameByID(INGoodsReceiptNote.ProjectID.GetValueOrDefault(0)).ProjectName;
-                //    INGoodsReceiptNote.ProjectDocumentNo = ProjectName + "-" + INGoodsReceiptNote.DocumentNo.ToString().PadLeft(4, '0');
-                //}
-
                 result = new DALInventory().INGoodsReceiptNoteSave(INGoodsReceiptNote);
-
 
                 if (result == true)
                 {
@@ -1054,6 +998,7 @@ namespace GL.Controllers
                 INStoreIssueNoteViewModel model = new INStoreIssueNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
+                ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
                 ViewBag.INGroupList = new DALDropdowns().INGroupList(LoginUser.CompanyID);
 
                 return View(model);
@@ -1065,12 +1010,12 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreIssueNoteSearchList(DateTime? FromDate, DateTime? ToDate)
+        public ActionResult StoreIssueNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             INStoreIssueNoteViewModel model = new INStoreIssueNoteViewModel();
 
-            model.INStoreIssueNoteSearchList = new DALInventory().GetINStoreIssueNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate);
+            model.INStoreIssueNoteSearchList = new DALInventory().GetINStoreIssueNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
             model.RoleID = LoginUser.RoleID;
             return View("_StoreIssueNoteSearchListRows", model);
 
@@ -1103,9 +1048,6 @@ namespace GL.Controllers
                     foreach (var item in INItems)
                     {
                         var itemId = item.ItemID;
-                        // string[] parts = itemId.Split(',');
-                        // string requestDetailID = parts.Length > 0 ? parts[0] : null;
-                        //string itemID = parts.Length > 1 ? parts[1] : null;
 
                         foreach (var issue in model.INStoreIssueNoteDetailRows)
                         {
@@ -1372,6 +1314,7 @@ namespace GL.Controllers
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
                 ViewBag.INGroupList = new DALDropdowns().INGroupList(LoginUser.CompanyID);
+                ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
 
                 return View(model);
             }
@@ -1382,12 +1325,12 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreReturnNoteSearchList(DateTime? FromDate, DateTime? ToDate)
+        public ActionResult StoreReturnNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             INStoreReturnNoteViewModel model = new INStoreReturnNoteViewModel();
 
-            model.INStoreReturnNoteSearchList = new DALInventory().GetINStoreReturnNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate);
+            model.INStoreReturnNoteSearchList = new DALInventory().GetINStoreReturnNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID );
             model.RoleID = LoginUser.RoleID;
             return View("_StoreReturnNoteSearchListRows", model);
 
@@ -1403,40 +1346,14 @@ namespace GL.Controllers
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
                 ViewBag.Projects = dalDropdowns.INProjectsList(LoginUser.CompanyID);
-                //ViewBag.INRequestTypes = dalDropdowns.INRequestTypesList(LoginUser.CompanyID);
                 ViewBag.INStores = dalDropdowns.INStoreList(LoginUser.CompanyID);
                 ViewBag.INItems = dalDropdowns.INItemsList(LoginUser.CompanyID);
-
-                //List<spINItemsDropdown_Result> INItems = new List<spINItemsDropdown_Result>(); //dalDropdowns.StoreReturnNoteItemsDropdownItemsDropdown(LoginUser.CompanyID);
-                //List<spINStoreReturnNoteItemsDropdown_Result> remainingINItems = new List<spINStoreReturnNoteItemsDropdown_Result>();
 
                 if (id != null || id > 0)
                 {
                     model.INStoreReturnNote = new DALInventory().INStoreReturnNote(id.GetValueOrDefault(0));
                     model.INStoreReturnNoteDetailRows = new DALInventory().GetINStoreReturnNoteDetailRows(id.GetValueOrDefault(0));
 
-                    ////INItems = dalDropdowns.StoreReturnNoteItemsDropdownItemsDropdown(model.INStoreReturnNote.ProjectID.GetValueOrDefault(0), LoginUser.CompanyID);
-
-                    ////foreach (var item in INItems)
-                    ////{
-                    ////    var itemId = item.ItemID;
-                    ////    // string[] parts = itemId.Split(',');
-                    ////    // string requestDetailID = parts.Length > 0 ? parts[0] : null;
-                    ////    //string itemID = parts.Length > 1 ? parts[1] : null;
-
-                    ////    foreach (var issue in model.INStoreReturnNoteDetailRows)
-                    ////    {
-                    ////        if (issue.ItemID == Convert.ToInt64(itemId))
-                    ////        {
-                    ////            remainingINItems.Add(item);
-
-                    ////        }
-                    ////        if (issue.ItemID != Convert.ToInt64(itemId) && item.Balance > 0)
-                    ////        {
-                    ////            remainingINItems.Add(item);
-                    ////        }
-                    ////    }
-                    ////}
                 }
                 else
                 {
@@ -1457,7 +1374,6 @@ namespace GL.Controllers
 
                     model.INStoreReturnNoteDetailRows = new List<spINStoreReturnNoteDetailRows_Result>();
                 }
-                //ViewBag.INItems = remainingINItems.Count == 0 ? INItems.Where(x => x.Balance > 0).ToList() : remainingINItems;
                 model.RoleID = LoginUser.RoleID;
 
                 return View(model);
@@ -1467,21 +1383,6 @@ namespace GL.Controllers
                 throw ex;
             }
         }
-
-
-        //[HttpGet]
-        //public JsonResult GetStoreReturnNoteDropdownItems(int CompanyID, int ProjectID)
-        //{
-        //    try
-        //    {
-        //        List<spINStoreReturnNoteItemsDropdown_Result> INStoreReturnNoteDropdownItems = new DALDropdowns().GetINStoreIssueNoteItemsDropdown(ProjectID, CompanyID);
-        //        return Json(INStoreReturnNoteDropdownItems, JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
 
         [HttpGet]
         public JsonResult GetStoreReturnNoteItemRow(long ItemID)
@@ -1702,27 +1603,6 @@ namespace GL.Controllers
 
         }
 
-        //[HttpGet]
-        //public ActionResult INStoreIssueNoteRevert(long id)
-        //{
-        //    try
-        //    {
-        //        var LoginUser = (spLoginUser_Result)Session["LoginUser"];
-
-        //        GL.Models.response res = new GL.Models.response();
-        //        bool result = false;
-        //        DALInventory dal = new DALInventory();
-
-        //        dal.GRNUnPost(id);
-
-        //        return RedirectToAction("GoodsReceiptNoteList", "INInventory");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-
         [HttpPost]
         public JsonResult StoreTransferNoteReceive(int StoreTransferNoteID)
         {
@@ -1771,6 +1651,7 @@ namespace GL.Controllers
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
                 INStoreTransferNoteViewModel model = new INStoreTransferNoteViewModel();
+                ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
                 // DALDropdowns dalDropdowns = new DALDropdowns();
 
                 // ViewBag.INGroupList = new DALDropdowns().INGroupList(LoginUser.CompanyID);
@@ -1784,12 +1665,12 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreTransferNoteSearchList(DateTime? FromDate, DateTime? ToDate)
+        public ActionResult StoreTransferNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             INStoreTransferNoteViewModel model = new INStoreTransferNoteViewModel();
 
-            model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate);
+            model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
             model.RoleID = LoginUser.RoleID;
             return View("_StoreTransferNoteSearchListRows", model);
 
@@ -1982,6 +1863,7 @@ namespace GL.Controllers
 
                 // ViewBag.INGroupList = new DALDropdowns().INGroupList(LoginUser.CompanyID);
                 ViewBag.username = LoginUser.username;
+                ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
                 return View(model);
             }
             catch (Exception ex)
@@ -1991,7 +1873,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult PurchaseOrderSearchList(DateTime? FromDate, DateTime? ToDate)
+        public ActionResult PurchaseOrderSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             var model = new INPurchaseOrderViewModel();
@@ -2000,14 +1882,15 @@ namespace GL.Controllers
             {
                 ViewBag.username = "ind.shafeeq";
                 //model.INPurchaseOrderSearchList = new DALInventory().GetINPurchaseOrderSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate);
-                model.INPurchaseOrderSearchList = new DALInventory().GetINPurchaseOrderSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate);
+                model.INPurchaseOrderSearchList = new DALInventory().GetINPurchaseOrderSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
             }
             else
             {
-                model.INPurchaseOrderSearchList = new DALInventory().GetINPurchaseOrderSearchListForInventory(LoginUser.CompanyID, null, FromDate, ToDate).Where(x => x.Approved > 0).ToList();
+                model.INPurchaseOrderSearchList = new DALInventory().GetINPurchaseOrderSearchListForInventory(LoginUser.CompanyID, null, FromDate, ToDate, ItemID).Where(x => x.Approved > 0).ToList();
             }
             
             model.RoleID = LoginUser.RoleID;
+            ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
             return View("_PurchaseOrderListRows", model);
         }
 

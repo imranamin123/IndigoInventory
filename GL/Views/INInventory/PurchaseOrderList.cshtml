@@ -46,6 +46,12 @@
 
                         </div>
 
+                        <div class="row" style="margin-bottom:10px;">
+                            <label for="ItemID" class="control-label col-sm-2">Item</label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </div>
+                        </div>
 
                         <!-- /.box-body -->
                         <div class="box-footer">

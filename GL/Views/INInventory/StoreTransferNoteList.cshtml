@@ -44,6 +44,12 @@
 
                         </div>
 
+                        <div class="row" style="margin-bottom:10px;">
+                            <label for="ItemID" class="control-label col-sm-2">Item</label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </div>
+                        </div>
 
                         <!-- /.box-body -->
                         <div class="box-footer">
@@ -76,7 +82,7 @@
 
         $().ready(function () {
 
-            //$(".ddl").select2();
+            $(".ddl").select2();
             search();
 
             $('.dt').datepicker({
@@ -101,8 +107,9 @@
 
             var FromDate = $("#FromDate").val();
             var ToDate = $("#ToDate").val();
+            var ItemID = $("#ItemID").val();
 
-            $.post("/INInventory/StoreTransferNoteSearchList", { FromDate: FromDate, ToDate: ToDate }).done(function (res) {
+            $.post("/INInventory/StoreTransferNoteSearchList", { FromDate: FromDate, ToDate: ToDate, ItemID: ItemID }).done(function (res) {
 
                 $("#ListRows").empty();
                 $("#ListRows").html(res);

@@ -262,7 +262,7 @@ namespace GL.DAL
             }
         }
 
-        public List<spINPurchaseRequisitionSearchList_Result> GetINPurchaseRequisitionSearchList(int CompanyID, int? UserID, DateTime? RequestDateFrom, DateTime? RequestDateTo)
+        public List<spINPurchaseRequisitionSearchList_Result> GetINPurchaseRequisitionSearchList(int CompanyID, int? UserID, DateTime? RequestDateFrom, DateTime? RequestDateTo, long? ItemID)
         {
             try
             {
@@ -270,7 +270,7 @@ namespace GL.DAL
 
                 if (user != null && user.RoleID == 5) UserID = null;
 
-                List<spINPurchaseRequisitionSearchList_Result> INPurchaseRequisitionGetSearchList = db.spINPurchaseRequisitionSearchList(CompanyID, UserID, RequestDateFrom, RequestDateTo).ToList();
+                List<spINPurchaseRequisitionSearchList_Result> INPurchaseRequisitionGetSearchList = db.spINPurchaseRequisitionSearchList(CompanyID, UserID, RequestDateFrom, RequestDateTo, ItemID).ToList();
 
                 return INPurchaseRequisitionGetSearchList;
             }
@@ -280,12 +280,12 @@ namespace GL.DAL
             }
         }
 
-        public List<spINPurchaseRequisitionSearchList_Result> GetINPurchaseRequisitionSearchPurchaseHeadList(int CompanyID, int? UserID, DateTime? RequestDateFrom, DateTime? RequestDateTo)
+        public List<spINPurchaseRequisitionSearchList_Result> GetINPurchaseRequisitionSearchPurchaseHeadList(int CompanyID, int? UserID, DateTime? RequestDateFrom, DateTime? RequestDateTo, long? ItemID)
         {
             try
             {
 
-                List<spINPurchaseRequisitionSearchList_Result> INPurchaseRequisitionGetSearchList = db.spINPurchaseRequisitionSearchList(CompanyID, UserID, RequestDateFrom, RequestDateTo).Where(x => x.SubmitedByKPO > 0).ToList();
+                List<spINPurchaseRequisitionSearchList_Result> INPurchaseRequisitionGetSearchList = db.spINPurchaseRequisitionSearchList(CompanyID, UserID, RequestDateFrom, RequestDateTo, ItemID).Where(x => x.SubmitedByKPO > 0).ToList();
 
                 return INPurchaseRequisitionGetSearchList;
             }
@@ -515,45 +515,7 @@ namespace GL.DAL
         }
 
 
-        //public DVProject GetProjectNameByID(int ProjectID)
-        //{
-        //    try
-        //    {
-        //        var dvProject = db.DVProjects.Where(x => x.ProjectID == ProjectID).FirstOrDefault();//  db.INPurchaseRequisitions.Where(x => x.ProjectID == ProjectID).Max(x => (long?)x.DocumentNo);
-
-        //        return dvProject;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-
-        //public Int64 NextDocumentNumberByProject(int ProjectID)
-        //{
-        //    try
-        //    {
-        //        var maxNo = db.INPurchaseRequisitions.Where(x => x.ProjectID == ProjectID).Max(x => (long?)x.DocumentNo);
-        //        long NextNo = 0;
-        //        var maxItem = maxNo.HasValue ? db.INPurchaseRequisitions.FirstOrDefault(x => x.DocumentNo == maxNo) : null;
-        //        if (maxItem != null)
-        //        {
-        //            NextNo = maxItem.DocumentNo.GetValueOrDefault(0) + 1;
-        //        }
-        //        else
-        //        {
-        //            NextNo = 1;
-        //        }
-
-        //        return NextNo;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-
-        public List<spINGoodsReceiptNoteSearchList_Result> GetINGoodsReceiptNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate)
+        public List<spINGoodsReceiptNoteSearchList_Result> GetINGoodsReceiptNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             try
             {
@@ -561,7 +523,7 @@ namespace GL.DAL
 
                 if (user != null && user.RoleID == 5) UserID = null;
 
-                List<spINGoodsReceiptNoteSearchList_Result> INGoodsReceiptNoteSearchList = db.spINGoodsReceiptNoteSearchList(CompanyID, UserID, FromDate, ToDate).ToList();
+                List<spINGoodsReceiptNoteSearchList_Result> INGoodsReceiptNoteSearchList = db.spINGoodsReceiptNoteSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).ToList();
 
                 return INGoodsReceiptNoteSearchList;
             }
@@ -572,14 +534,14 @@ namespace GL.DAL
         }
 
 
-        public List<spINGoodsReceiptNoteSearchList_Result> GetINGoodsReceiptNotePurchaseHeadSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, int? Pending = 0)
+        public List<spINGoodsReceiptNoteSearchList_Result> GetINGoodsReceiptNotePurchaseHeadSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate,long? ItemID, int? Pending = 0)
         {
             try
             {
                 var INGoodsReceiptNoteSearchList = new List<spINGoodsReceiptNoteSearchList_Result>();
                 if (Pending == 0)
                 {
-                    INGoodsReceiptNoteSearchList = db.spINGoodsReceiptNoteSearchList(CompanyID, UserID, FromDate, ToDate).Where(x => x.IsPosted == true).ToList();
+                    INGoodsReceiptNoteSearchList = db.spINGoodsReceiptNoteSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).Where(x => x.IsPosted == true).ToList();
                 }
                 else
                 {
@@ -954,7 +916,7 @@ namespace GL.DAL
 
         #region StoreIssueNote
 
-        public List<spINStoreIssueNoteSearchList_Result> GetINStoreIssueNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate)
+        public List<spINStoreIssueNoteSearchList_Result> GetINStoreIssueNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             try
             {
@@ -962,7 +924,7 @@ namespace GL.DAL
 
                 if (user != null) UserID = null;
 
-                List<spINStoreIssueNoteSearchList_Result> INStoreIssueNoteSearchList = db.spINStoreIssueNoteSearchList(CompanyID, UserID, FromDate, ToDate).ToList();
+                List<spINStoreIssueNoteSearchList_Result> INStoreIssueNoteSearchList = db.spINStoreIssueNoteSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).ToList();
 
                 return INStoreIssueNoteSearchList;
             }
@@ -1135,7 +1097,7 @@ namespace GL.DAL
 
         #region StoreReturnNote
 
-        public List<spINStoreReturnNoteSearchList_Result> GetINStoreReturnNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate)
+        public List<spINStoreReturnNoteSearchList_Result> GetINStoreReturnNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             try
             {
@@ -1143,7 +1105,7 @@ namespace GL.DAL
 
                 if (user != null) UserID = null;
 
-                List<spINStoreReturnNoteSearchList_Result> INStoreReturnNoteSearchList = db.spINStoreReturnNoteSearchList(CompanyID, UserID, FromDate, ToDate).ToList();
+                List<spINStoreReturnNoteSearchList_Result> INStoreReturnNoteSearchList = db.spINStoreReturnNoteSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).ToList();
 
                 return INStoreReturnNoteSearchList;
             }
@@ -1428,7 +1390,7 @@ namespace GL.DAL
         }
 
 
-        public List<spINStoreTransferNoteSearchList_Result> GetINStoreTransferNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate)
+        public List<spINStoreTransferNoteSearchList_Result> GetINStoreTransferNoteSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             try
             {
@@ -1436,7 +1398,7 @@ namespace GL.DAL
 
                 if (user != null && user.RoleID == 5) UserID = null;
 
-                List<spINStoreTransferNoteSearchList_Result> INStoreTransferNoteSearchList = db.spINStoreTransferNoteSearchList(CompanyID, UserID, FromDate, ToDate).ToList();
+                List<spINStoreTransferNoteSearchList_Result> INStoreTransferNoteSearchList = db.spINStoreTransferNoteSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).ToList();
 
                 return INStoreTransferNoteSearchList;
             }
@@ -1613,14 +1575,14 @@ namespace GL.DAL
 
         #region PurchaseOrder
 
-        public List<spINPurchaseOrderSearchList_Result> GetINPurchaseOrderSearchListForInventory(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate)
+        public List<spINPurchaseOrderSearchList_Result> GetINPurchaseOrderSearchListForInventory(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, long? ItemID )
         {
             try
             {
 
                 UserID = null;
 
-                List<spINPurchaseOrderSearchList_Result> INPurchaseOrderSearchList = db.spINPurchaseOrderSearchList(CompanyID, UserID, FromDate, ToDate).ToList();
+                List<spINPurchaseOrderSearchList_Result> INPurchaseOrderSearchList = db.spINPurchaseOrderSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).ToList();
 
                 return INPurchaseOrderSearchList;
             }
@@ -1631,7 +1593,7 @@ namespace GL.DAL
         }
 
 
-        public List<spINPurchaseOrderSearchList_Result> GetINPurchaseOrderSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate)
+        public List<spINPurchaseOrderSearchList_Result> GetINPurchaseOrderSearchList(int CompanyID, int? UserID, DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             try
             {
@@ -1639,7 +1601,7 @@ namespace GL.DAL
 
                 if (user != null && user.RoleID == 5) UserID = null;
 
-                List<spINPurchaseOrderSearchList_Result> INPurchaseOrderSearchList = db.spINPurchaseOrderSearchList(CompanyID, UserID, FromDate, ToDate).ToList();
+                List<spINPurchaseOrderSearchList_Result> INPurchaseOrderSearchList = db.spINPurchaseOrderSearchList(CompanyID, UserID, FromDate, ToDate, ItemID).ToList();
 
                 return INPurchaseOrderSearchList;
             }

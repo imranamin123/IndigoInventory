@@ -49,7 +49,7 @@
                         <h2 class="box-title">Store Return Note</h2>
                     </div>
 
-                    @if (Model.INStoreReturnNote.IsPosted == true)
+                    @if (Model.INStoreReturnNote.IsPosted.GetValueOrDefault(false) == true)
                     {
                         <h4 style="color:red; font:200;" class="box-title"> <b>Posted</b> </h4>
                     }

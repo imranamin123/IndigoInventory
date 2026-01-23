@@ -56,7 +56,7 @@
                             <input type="text" id="myInput" disabled>
                         </div>*@
 
-                    @if (Model.INGoodsReceiptNote.IsPosted == true)
+                    @if (Model.INGoodsReceiptNote.IsPosted.GetValueOrDefault(false) == true)
                     {
                         <h4 style="color:red; font:200;" class="box-title"> <b>Posted</b> </h4>
                     }

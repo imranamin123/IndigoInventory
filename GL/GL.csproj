@@ -622,6 +622,9 @@
     <Compile Include="EF\spBKBankTransDetailRows_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spBKBankTransSearchList1_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spBKBankTransSearchList_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

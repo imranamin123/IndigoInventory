@@ -13,13 +13,14 @@ CREATE procedure [dbo].[spINPurchaseRequisitionSearchList]
 	@CompanyID int,
 	@UserID int = NULL,
 	@RequestDateFrom date = NULL,
-	@RequestDateTo date = NULL
+	@RequestDateTo date = NULL,
+	@ItemID bigint = NULL
 AS
 BEGIN
 	
 	SET NOCOUNT ON;
 
-	SELECT 
+	SELECT DISTINCT
 		pr.RequestID, 
 		pr.RequestDate, 
 		p.ProjectName,
@@ -30,17 +31,20 @@ BEGIN
 		ISNULL(pr.SubmitedByMD,0) 'SubmitedByMD',
 		ISNULL(pr.SubmitedAtMD,0) 'SubmitedAtMD'
 	FROM INPurchaseRequisition pr
---	INNER JOIN INStore s ON pr.ToStoreID = s.StoreID
+	INNER JOIN INPurchaseRequisitionDetail prd  ON pr.RequestID = prd.RequestID
 	INNER JOIN INProject p ON pr.ProjectID = p.ProjectID
 	WHERE pr.CompanyID = @CompanyID AND
 		(pr.CreatedBy = @UserID OR @UserID IS NULL) AND
 		(CAST(pr.RequestDate as date) >= @RequestDateFrom OR @RequestDateFrom IS NULL) AND
-		(CAST(pr.RequestDate as date) <= @RequestDateTo OR @RequestDateTo IS NULL)
+		(CAST(pr.RequestDate as date) <= @RequestDateTo OR @RequestDateTo IS NULL) AND
+		(prd.ItemID = @ItemID OR @ItemID IS NULL)
+
 	ORDER BY pr.RequestDate DESC
 END
 
 GO
 
-exec spINPurchaseRequisitionSearchList 1
+exec spINPurchaseRequisitionSearchList 1,null,null,null,741
+SELECT * from INPurchaseRequisitionDetail 
 
 

@@ -46,36 +46,22 @@
 
                         </div>
 
-                        @*<div class="row" style="margin-bottom:10px;">
-            <label for="ItemCode" class="col-sm-1 control-label">Code</label>
-            <div class="col-sm-4">
-                <input class="form-control" id="ItemCode">
-            </div>
-            <label for="GroupID" class="control-label col-sm-1 PaddingTop-5">Group</label>
-
-            <div class="col-sm-4">
-                @Html.DropDownList("GroupID", new SelectList(ViewBag.INGroupList, "GroupID", "Name"), "-- Select --", new { @class = "form-control showError ddl", @id = "GroupID" })
-            </div>
-
-        </div>
-
-        <div class="row" style="margin-bottom:10px;">
-            <label for="Name" class="col-sm-1 control-label">Name</label>
-            <div class="col-sm-9">
-                <input class="form-control" id="Name">
-            </div>
-
-        </div>*@
+                        <div class="row" style="margin-bottom:10px;">
+                            <label for="ItemID" class="control-label col-sm-2">Item</label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </div>
+                        </div>
 
                         <!-- /.box-body -->
-                    <div class="box-footer">
-                        @if (ViewBag.roleid == 4 && !(ViewBag.username == "ind.umer" || ViewBag.username == "ind.shafeeq"))
-                        {
-                            <a href="/INInventory/PurchaseRequisition" class="btn btn-primary">Add</a>
+                        <div class="box-footer">
+                            @if (ViewBag.roleid == 4 && !(ViewBag.username == "ind.umer" || ViewBag.username == "ind.shafeeq"))
+                            {
+                                <a href="/INInventory/PurchaseRequisition" class="btn btn-primary">Add</a>
 
-                        }
-                        <button class="btn btn-info pull-right" onclick="search()">Search</button>
-                    </div>
+                            }
+                            <button class="btn btn-info pull-right" onclick="search()">Search</button>
+                        </div>
                         <!-- /.box-footer -->
                         @*</form>*@
 
@@ -101,7 +87,7 @@
 
         $().ready(function () {
             search();
-            //$(".ddl").select2();
+            $(".ddl").select2();
 
             $('.dt').datepicker({
                 autoclose: true,
@@ -122,18 +108,12 @@
 
         function search() {
 
-            //var obj = getSearchObject();
-
-            debugger;
-
-            //var ItemCode = $("#ItemCode").val();
-            //var Name = $("#Name").val();
-            //var GroupID = $("#GroupID").val() == "" ? null : $("#GroupID").val();
 
             var RequestDateFrom = $("#RequestDateFrom").val();
             var RequestDateTo = $("#RequestDateTo").val();
+            var ItemID = $("#ItemID").val();
 
-            $.post("/INInventory/PurchaseRequisitionSearchList", { RequestDateFrom: RequestDateFrom, RequestDateTo: RequestDateTo }).done(function (res) {
+            $.post("/INInventory/PurchaseRequisitionSearchList", { RequestDateFrom: RequestDateFrom, RequestDateTo: RequestDateTo, ItemID: ItemID }).done(function (res) {
 
                 $("#ListRows").empty();
                 $("#ListRows").html(res);

@@ -13,12 +13,13 @@ CREATE procedure [dbo].[spINStoreReturnNoteSearchList]
 	@CompanyID int,
 	@UserID int = NULL,
 	@FromDate date = NULL,
-	@ToDate date = NULL
+	@ToDate date = NULL,
+	@ItemID bigint = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	SELECT 
+	SELECT DISTINCT
 		note.StoreReturnNoteID,
 		note.StoreReturnNoteDate,
 		p.ProjectName,
@@ -26,12 +27,14 @@ BEGIN
 		note.IsPosted,
 		note.CompanyID
 	FROM dbo.INStoreReturnNote note
+	INNER JOIN INStoreReturnNoteDetail det ON note.StoreReturnNoteID = det.StoreReturnNoteID
 	INNER JOIN INProject p ON note.ProjectID = p.ProjectID
 
 	WHERE note.CompanyID = @CompanyID AND
 		(note.CreatedBy = @UserID OR @UserID IS NULL) AND
 		(CAST(note.StoreReturnNoteDate as date) >= @FromDate OR @FromDate IS NULL) AND
-		(CAST(note.StoreReturnNoteDate as date) <= @ToDate OR @ToDate IS NULL)
+		(CAST(note.StoreReturnNoteDate as date) <= @ToDate OR @ToDate IS NULL) AND
+		(det.ItemID = @ItemID OR @ItemID IS NULL)
 	ORDER BY note.StoreReturnNoteDate DESC
 END
 
