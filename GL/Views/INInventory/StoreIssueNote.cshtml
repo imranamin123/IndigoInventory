@@ -444,6 +444,26 @@
                 var lastDashIndex = text.lastIndexOf("= ");
                 var balance = text.substr(lastDashIndex + 2, (text.length - lastDashIndex));
 
+                debugger;
+                var row = $(this).closest("tr");
+                var isDuplicateItemId = isDuplicateItem(ItemId);
+                if (isDuplicateItemId == true) {
+                    alert("Item already exists");
+                    $(row).find("#select2-ItemID-container").html('');
+                    if ($("#tbodyList tr").length == $(this).closest('tr').index() + 1) {
+                        $(row).find("#StoreIssueNoteID").val("");
+                        $(row).find(".itemId").val("");
+                        $(row).find(".ddl").val("");
+                        $(row).find("#Size").val("");
+                        $(row).find("#Unit").val("");
+                        $(row).find("#IssuedQty").val("");
+                        $(row).find("#Amount").val("");
+                        $(row).find("#rem").val("");
+
+                    }
+                    return;
+                }
+
 
                 $(this).closest("tr").find(".itemId").val(ItemId).change();
 
@@ -524,7 +544,17 @@
 
         });
 
+        function isDuplicateItem(itemId) {
+            var isDuplidate = false;
+            $("#tbodyList").find('tr').each(function (index, elem) {
+                var itemId2 = $(this).find(".itemId").val() == '' ? 0 : $(this).find(".itemId").val();
+                if (itemId2 == itemId) {
 
+                    isDuplidate = true;
+                }
+            });
+            return isDuplidate;
+        }
 
         function hidSubmit() {
 
