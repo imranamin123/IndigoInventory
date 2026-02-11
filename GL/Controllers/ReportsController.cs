@@ -571,7 +571,7 @@ namespace GL.Controllers
                 ).ToList();
 
                 var INItemStockData = spRptINItemStockModelList
-                    .Where(x =>  x.OpeningQty != 0 || x.ReceivedQty != 0 || x.TransferQty != 0 || x.IssuedQty != 0 || x.ReturnQty != 0 || x.ClosingQty != 0 || x.Rate != 0)
+                    .Where(x => x.OpeningQty != 0 || x.ReceivedQty != 0 || x.TransferQty != 0 || x.IssuedQty != 0 || x.ReturnQty != 0 || x.ClosingQty != 0 || x.Rate != 0)
                     .ToList();
 
                 #region 
@@ -1001,7 +1001,7 @@ namespace GL.Controllers
                         workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
                         workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
                     }
-                        // Export as Excel file
+                    // Export as Excel file
                     var stream = new MemoryStream();
                     excelPackage.SaveAs(stream);
                     stream.Position = 0;
@@ -2087,6 +2087,185 @@ namespace GL.Controllers
             }
         }
 
+        public ActionResult INStoreIssueNoteHistoryDataReport()
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            DALDropdowns dal = new DALDropdowns();
+            ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
+            ViewBag.CompanyID = LoginUser.CompanyID;
+            //ViewBag.Units = new List<DVUnit>();
+            ViewBag.FromDate = null;// DateTime.UtcNow.ToString("dd-MMM-yyyy");
+            ViewBag.ToDate = null;// DateTime.UtcNow.ToString("dd-MMM-yyyy");
+            return View();
+        }
+        public ActionResult DownloadINStoreIssueNoteHistoryReportExcel(int ProjectID, DateTime? FromDate, DateTime? ToDate)
+        {
+            // EPPlus license context (required in newer versions)
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Store Issue Note History");
+
+                var db = new GLEntities();
+
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                var spRptINStoreIssueNoteHistoryDataList = db.spRptINStoreIssueNoteHistoryData(LoginUser.CompanyID, ProjectID, FromDate, ToDate).ToList();
+                // ====== Final projection ======
+                var spRptINStoreIssueNoteHistoryDataModel = (
+                   from v in spRptINStoreIssueNoteHistoryDataList
+                   select new spRptINStoreIssueNoteHistoryDataModel
+                   {
+                       Company = v.Company,
+                       ProjectName = v.ProjectName,
+                       Group = v.Group,
+                       Category = v.Category,
+                       ItemID = v.ItemID.GetValueOrDefault(0),
+                       Item = v.Item,
+                       Size = v.Size,
+                       UOM = v.UOM,
+                       LastRate = v.LastRate.GetValueOrDefault(0),
+                       IssuedQty = v.IssuedQty.GetValueOrDefault(0),
+                       TotalAmount = v.LastRate.GetValueOrDefault(0) * v.IssuedQty.GetValueOrDefault(0)
+                   }).ToList();
+
+
+                ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+                using (var excelPackage = new ExcelPackage())
+                {
+                    if (spRptINStoreIssueNoteHistoryDataModel.Count > 0)
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Store Issue Note History");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = spRptINStoreIssueNoteHistoryDataList.Max(x => x.Company).ToString();
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 10].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.Font.Bold = true;
+
+                        rowNo++;
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Item Issuance Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 10].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 10].Style.Font.Bold = true;
+
+
+
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Project";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 2].Value = spRptINStoreIssueNoteHistoryDataModel.Max(x => x.ProjectName).ToString();
+
+                        workSheet.Cells[rowNo, 9].Value = "From Date";
+                        workSheet.Cells[rowNo, 9].Style.Font.Bold = true;
+                        if (FromDate != null)
+                        {
+                            workSheet.Cells[rowNo, 10].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                            rowNo++;
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 10].Value = "N/A";
+                            rowNo++;
+                        }
+
+                        workSheet.Cells[rowNo, 9].Value = "To Date";
+                        workSheet.Cells[rowNo, 9].Style.Font.Bold = true;
+                        if (ToDate != null)
+                        {
+                            workSheet.Cells[rowNo, 10].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                            rowNo++;
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 10].Value = "N/A";
+                            rowNo++;
+                        }
+
+
+                        rowNo++;
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Group";
+                        workSheet.Cells[rowNo, 3].Value = "Category";
+                        workSheet.Cells[rowNo, 4].Value = "Item ID";
+                        workSheet.Cells[rowNo, 5].Value = "Item Description";
+                        workSheet.Cells[rowNo, 6].Value = "Size";
+                        workSheet.Cells[rowNo, 7].Value = "UOM";
+                        workSheet.Cells[rowNo, 8].Value = "IssuedQty";
+                        workSheet.Cells[rowNo, 9].Value = "Rate";
+                        workSheet.Cells[rowNo, 10].Value = "Total Amount";
+
+
+                        workSheet.Cells[rowNo, 1, rowNo, 10].Style.Font.Bold = true;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in spRptINStoreIssueNoteHistoryDataModel)
+                        {
+                            rowNo++;
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            //worksheet.Cells[rowNo, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                            workSheet.Cells[rowNo, 2].Value = row.Group;
+                            workSheet.Cells[rowNo, 3].Value = row.Category;
+                            workSheet.Cells[rowNo, 4].Value = row.ItemID;
+                            workSheet.Cells[rowNo, 5].Value = row.Item;
+                            workSheet.Cells[rowNo, 6].Value = row.Size;
+                            workSheet.Cells[rowNo, 7].Value = row.UOM;
+                            workSheet.Cells[rowNo, 8].Value = row.IssuedQty;
+                            workSheet.Cells[rowNo, 9].Value = row.LastRate;
+                            workSheet.Cells[rowNo, 10].Value = row.TotalAmount;
+                        }
+
+                        workSheet.Cells[8, 10, rowNo, 10].Style.Numberformat.Format = "#,##0";
+                        worksheet.Cells[8, 10, rowNo, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 20;
+                        workSheet.Column(3).Width = 20;
+                        workSheet.Column(4).Width = 20;
+                        workSheet.Column(5).Width = 20;
+                        workSheet.Column(6).Width = 20;
+                        workSheet.Column(7).Width = 20;
+                        workSheet.Column(8).Width = 20;
+                        workSheet.Column(9).Width = 20;
+                        workSheet.Column(10).Width = 20;
+                    }
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Store Issue Note History");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
+                    }
+
+
+                        // Export as Excel file
+                        var stream = new MemoryStream();
+                        excelPackage.SaveAs(stream);
+                        stream.Position = 0;
+                        string fileName = "StoreIssueNoteHistoryReport.xlsx";
+                        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                        return File(stream, contentType, fileName);
+
+                    }
+
+                }
+            }
+
         public ActionResult INPurchaseRequisitionHistoryDataReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
@@ -2490,6 +2669,170 @@ namespace GL.Controllers
             }
         }
 
+        public ActionResult APVendorListReport()
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            DALDropdowns dal = new DALDropdowns();
+            ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
+            ViewBag.CompanyID = LoginUser.CompanyID;
+            ViewBag.FromDate = null;
+            ViewBag.ToDate = null;
+            return View();
+        }
+        public ActionResult DownloadAPVendorListReportExcel(DateTime? FromDate, DateTime? ToDate)
+        {
+            // EPPlus license context (required in newer versions)
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Vendor List Report");
+
+                var db = new GLEntities();
+
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                var spRptVendorList = db.spRptVendorList(LoginUser.CompanyID, FromDate, ToDate).ToList();
+                // ====== Final projection ======
+                var spRptVendorListModel = (
+                   from v in spRptVendorList
+                   select new spRptVendorListModel
+                   {
+                       Company = v.Company,
+                       APVendorName = v.APVendorName,
+                       Address = v.Address,
+                       APVendorCategoryName = v.APVendorCategoryName,
+                       BankDetails= v.BankDetails,
+                       ContactNumber = v.ContactNumber,
+                       ContactPerson = v.ContactPerson,
+                       Email = v.Email,
+                       CreatedAt=v.CreatedAt.Value,
+                   }).ToList();
+
+
+                ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+                using (var excelPackage = new ExcelPackage())
+                {
+                    if (spRptVendorListModel.Count > 0)
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Vendor List History");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = spRptVendorListModel.Max(x => x.Company).ToString();
+                        workSheet.Cells[rowNo, 1, 2, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 9].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 9].Style.Font.Bold = true;
+
+                        rowNo++;
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Vendor List Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 9].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 9].Style.Font.Bold = true;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 8].Value = "From Date";
+                        workSheet.Cells[rowNo, 8].Style.Font.Bold = true;
+                        if (FromDate != null)
+                        {
+                            workSheet.Cells[rowNo, 9].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                            rowNo++;
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 9].Value = "N/A";
+                            rowNo++;
+                        }
+
+                        workSheet.Cells[rowNo, 8].Value = "To Date";
+                        workSheet.Cells[rowNo, 8].Style.Font.Bold = true;
+                        if (ToDate != null)
+                        {
+                            workSheet.Cells[rowNo, 9].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                            rowNo++;
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 9].Value = "N/A";
+                            rowNo++;
+                        }
+
+
+                        rowNo++;
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Created Date";
+                        workSheet.Cells[rowNo, 3].Value = "Vendor Name";
+                        workSheet.Cells[rowNo, 4].Value = "Contact Person";
+                        workSheet.Cells[rowNo, 5].Value = "Bank Details";
+                        workSheet.Cells[rowNo, 6].Value = "Category";
+                        workSheet.Cells[rowNo, 7].Value = "Contact No";
+                        workSheet.Cells[rowNo, 8].Value = "Email";
+                        workSheet.Cells[rowNo, 9].Value = "Address";
+
+                        workSheet.Cells[rowNo, 1, rowNo, 9].Style.Font.Bold = true;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in spRptVendorListModel)
+                        {
+                            rowNo++;
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            workSheet.Cells[rowNo, 2].Value = row.CreatedAt.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 3].Value = row.APVendorName;
+                            workSheet.Cells[rowNo, 4].Value = row.ContactPerson;
+                            workSheet.Cells[rowNo, 5].Value = row.BankDetails;
+                            workSheet.Cells[rowNo, 6].Value = row.APVendorCategoryName;                            
+                            workSheet.Cells[rowNo, 7].Value = row.ContactNumber;
+                            workSheet.Cells[rowNo, 8].Value = row.Email;
+                            workSheet.Cells[rowNo, 9].Value = row.Address;
+                        }
+
+                        //worksheet.Cells[8, 10, rowNo, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 20;
+                        workSheet.Column(3).Width = 30;
+                        workSheet.Column(4).Width = 30;
+                        workSheet.Column(5).Width = 30;
+                        workSheet.Column(6).Width = 30;
+                        workSheet.Column(7).Width = 30;
+                        workSheet.Column(8).Width = 30;
+                        workSheet.Column(9).Width = 40;
+                    }
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Vendor List Report");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
+                    }
+
+
+                    // Export as Excel file
+                    var stream = new MemoryStream();
+                    excelPackage.SaveAs(stream);
+                    stream.Position = 0;
+                    string fileName = "VendorListReport.xlsx";
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    return File(stream, contentType, fileName);
+
+                }
+
+            }
+        }
 
         #endregion
 
@@ -2498,95 +2841,4 @@ namespace GL.Controllers
     }
 }
 
-
-
-
-//////var items = db.INItems.Where(x => x.CompanyID == CompanyID).ToList();
-
-//////var spRptINItemStockModelList =
-//////    (from i in items
-//////     join grn in resultGRN on i.ItemID equals grn.ItemID into gj
-//////     from grn in gj.DefaultIfEmpty()
-//////     join sin in resultSIN on i.ItemID equals sin.ItemID into sj
-//////     from sin in sj.DefaultIfEmpty()
-//////     join stnIn in resultSTNIn on i.ItemID equals stnIn.ItemID into stnIj
-//////     from stnIn in stnIj.DefaultIfEmpty()
-//////     join stnOut in resultSTNOut on i.ItemID equals stnOut.ItemID into stnOj
-//////     from stnOut in stnOj.DefaultIfEmpty()
-//////     select new spRptINItemStockModel
-//////     {
-//////         ProjectID = ProjectID,
-//////         ItemID = i.ItemID,
-//////         Description = i.Description,
-//////         GroupName = i.INGroup.Name,
-//////         CategoryName = i.INCategory.Name,
-//////         SizeName = (i.SizeID != null) ? db.INSizes.Where(x => x.SizeID == i.SizeID).FirstOrDefault().Name : string.Empty,
-//////         UOM = db.INUnitOfMeasurements.Where(x => x.UOMID == i.UOMID).FirstOrDefault().Name,
-//////         ProjectName = db.DVProjects.Where(x => x.ProjectID == ProjectID).FirstOrDefault().ProjectName,
-//////         CompanyName = db.Companies.Where(x => x.CompanyID == i.CompanyID).FirstOrDefault().Name,
-//////         FromDate = FromDate.GetValueOrDefault(new DateTime()),
-//////         ToDate = ToDate.GetValueOrDefault(new DateTime()),
-//////         Rate = ProjectID == 1 ? i.ISALastRate.GetValueOrDefault(0) : i.IBALastRate.GetValueOrDefault(0),
-//////         ISAOpeningQty = i.ISAOpeningQty ?? 0,
-//////         OpeningQty = openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID) == null
-//////                        ? 0
-//////                        : openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID).OpeningQty + (i.ISAOpeningQty ?? 0),
-
-//////         ReceivedQty = (grn == null ? 0 : grn.TotalReceivedQty),
-//////         IssuedQty = (sin == null ? 0 : sin.TotalIssuedQty),
-
-//////         //Net transfers (In - Out) in a single field
-//////         TransferQty = (stnIn == null ? 0 : stnIn.TotalReceivedQty)
-//////                     - (stnOut == null ? 0 : stnOut.TotalIssuedQty),
-
-//////         ClosingQty = ((grn == null ? 0 : grn.TotalReceivedQty)
-//////                     + (stnIn == null ? 0 : stnIn.TotalReceivedQty))
-//////                     - ((sin == null ? 0 : sin.TotalIssuedQty)
-//////                     + (stnOut == null ? 0 : stnOut.TotalIssuedQty)),
-//////         ClosingAmount = (
-//////             ((grn == null ? 0 : grn.TotalReceivedQty)
-//////            + (stnIn == null ? 0 : stnIn.TotalReceivedQty))
-//////           - ((sin == null ? 0 : sin.TotalIssuedQty)
-//////            + (stnOut == null ? 0 : stnOut.TotalIssuedQty))
-//////         ) * (ProjectID == 1 ? i.ISALastRate.GetValueOrDefault(0) : i.IBALastRate.GetValueOrDefault(0))
-//////     }).ToList();
-
-//////////// add opening ////////
-
-//////foreach (var item in spRptINItemStockModelList)
-//////{
-//////    foreach (var op in openingQty)
-//////    {
-//////        if (item.ProjectID == op.ProjectID && item.ItemID == op.ItemID)
-//////        {
-//////            item.OpeningQty = op.OpeningQty;
-//////        }
-//////    }
-//////}
-
-/////////////////////////////////
-
-//////var INItemStockData = (
-
-//////  from v in spRptINItemStockModelList
-//////  select new spRptINItemStockModel
-//////  {
-//////      CompanyName = v.CompanyName,
-//////      ProjectName = v.ProjectName,
-//////      GroupName = v.GroupName,
-//////      CategoryName = v.CategoryName,
-//////      ItemID = v.ItemID,
-//////      Description = v.Description,
-//////      SizeName = v.SizeName,
-//////      UOM = v.UOM,
-//////      FromDate = v.FromDate,
-//////      ToDate = v.ToDate,
-//////      OpeningQty = v.OpeningQty + v.ISAOpeningQty,
-//////      TransferQty = v.TransferQty,
-//////      ReceivedQty = v.ReceivedQty,
-//////      IssuedQty = v.IssuedQty,
-//////      Rate = v.Rate,
-//////      ClosingQty = v.OpeningQty + v.ClosingQty,
-//////      ClosingAmount = (v.OpeningQty + v.ClosingQty) * v.Rate //(v.OpeningQty + v.ClosingAmount) * v.Rate
-//////  }).ToList();
 

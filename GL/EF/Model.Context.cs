@@ -1292,5 +1292,43 @@ namespace GL.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGoodsReceiptNoteDetailRows_Result>("spINGoodsReceiptNoteDetailRows", goodsReceiptNoteIDParameter);
         }
+    
+        public virtual ObjectResult<spRptINStoreIssueNoteHistoryData_Result> spRptINStoreIssueNoteHistoryData(Nullable<int> companyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINStoreIssueNoteHistoryData_Result>("spRptINStoreIssueNoteHistoryData", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
+        }
+    
+        public virtual ObjectResult<spRptVendorList_Result> spRptVendorList(Nullable<int> companyID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptVendorList_Result>("spRptVendorList", companyIDParameter, fromDateParameter, toDateParameter);
+        }
     }
 }

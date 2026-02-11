@@ -1278,30 +1278,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_INItem_INSize">
-          <End Role="INSize" Type="Self.INSize" Multiplicity="0..1" />
-          <End Role="INItem" Type="Self.INItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="INSize">
-              <PropertyRef Name="SizeID" />
-            </Principal>
-            <Dependent Role="INItem">
-              <PropertyRef Name="SizeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_INItem_INUnitOfMeasurement">
-          <End Role="INUnitOfMeasurement" Type="Self.INUnitOfMeasurement" Multiplicity="0..1" />
-          <End Role="INItem" Type="Self.INItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="INUnitOfMeasurement">
-              <PropertyRef Name="UOMID" />
-            </Principal>
-            <Dependent Role="INItem">
-              <PropertyRef Name="UOMID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_INProjectItem_INItem">
           <End Role="INItem" Type="Self.INItem" Multiplicity="0..1" />
           <End Role="INProjectItem" Type="Self.INProjectItem" Multiplicity="*" />
@@ -1767,9 +1743,6 @@
         <Function Name="spINGRNItemsForPODropdown" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="GoodsReceiptNoteID" Type="bigint" Mode="In" />
         </Function>
-        <Function Name="spINItemsDropdown" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="CompanyID" Type="int" Mode="In" />
-        </Function>
         <Function Name="spINItemSearchList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ItemCode" Type="varchar" Mode="In" />
           <Parameter Name="GroupID" Type="int" Mode="In" />
@@ -1914,6 +1887,12 @@
         <Function Name="spRptINStoreIssueNote" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StoreIssueNoteID" Type="int" Mode="In" />
         </Function>
+        <Function Name="spRptINStoreIssueNoteHistoryData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CompanyID" Type="int" Mode="In" />
+          <Parameter Name="ProjectID" Type="int" Mode="In" />
+          <Parameter Name="FromDate" Type="date" Mode="In" />
+          <Parameter Name="ToDate" Type="date" Mode="In" />
+        </Function>
         <Function Name="spRptINStoreReturnNote" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StoreReturnNoteID" Type="int" Mode="In" />
         </Function>
@@ -1937,6 +1916,11 @@
         </Function>
         <Function Name="spRptPaymentPlan" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="PaymentPlanID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="spRptVendorList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CompanyID" Type="int" Mode="In" />
+          <Parameter Name="FromDate" Type="date" Mode="In" />
+          <Parameter Name="ToDate" Type="date" Mode="In" />
         </Function>
         <Function Name="spSecurityGetModuleIdsByUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserID" Type="int" Mode="In" />
@@ -2114,14 +2098,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_INItem_INGroup" Association="Self.FK_INItem_INGroup">
             <End Role="INGroup" EntitySet="INGroup" />
-            <End Role="INItem" EntitySet="INItem" />
-          </AssociationSet>
-          <AssociationSet Name="FK_INItem_INSize" Association="Self.FK_INItem_INSize">
-            <End Role="INSize" EntitySet="INSize" />
-            <End Role="INItem" EntitySet="INItem" />
-          </AssociationSet>
-          <AssociationSet Name="FK_INItem_INUnitOfMeasurement" Association="Self.FK_INItem_INUnitOfMeasurement">
-            <End Role="INUnitOfMeasurement" EntitySet="INUnitOfMeasurement" />
             <End Role="INItem" EntitySet="INItem" />
           </AssociationSet>
           <AssociationSet Name="FK_INProjectItem_INItem" Association="Self.FK_INProjectItem_INItem">
@@ -3851,7 +3827,18 @@
             <Parameter Name="ItemID" Mode="In" Type="Int64" />
           </FunctionImport>
           <FunctionImport Name="spINGoodsReceiptNoteDetailRows" ReturnType="Collection(GLModel.spINGoodsReceiptNoteDetailRows_Result)">
-            <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int32" />
+          <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="spRptINStoreIssueNoteHistoryData" ReturnType="Collection(GLModel.spRptINStoreIssueNoteHistoryData_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="ProjectID" Mode="In" Type="Int32" />
+            <Parameter Name="FromDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ToDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="spRptVendorList" ReturnType="Collection(GLModel.spRptVendorList_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="FromDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ToDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           </EntityContainer>
         <ComplexType Name="spAPInvoiceDetailRows_Result">
@@ -5767,6 +5754,30 @@
           <Property Type="Int32" Name="ModifiedBy" Nullable="true" />
           <Property Type="DateTime" Name="ModifiedAt" Nullable="true" Precision="23" />
           <Property Type="Int32" Name="CompanyID" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="spRptINStoreIssueNoteHistoryData_Result">
+          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="Group" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Category" Nullable="true" MaxLength="50" />
+          <Property Type="Int64" Name="ItemID" Nullable="true" />
+          <Property Type="String" Name="Item" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
+          <Property Type="Decimal" Name="LastRate" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="IssuedQty" Nullable="true" Precision="38" Scale="4" />
+        </ComplexType>
+        <ComplexType Name="spRptVendorList_Result">
+          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="APVendorID" Nullable="false" />
+          <Property Type="String" Name="APVendorName" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="ContactPerson" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="BankDetails" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="APVendorCategoryName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ContactNumber" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Address" Nullable="true" MaxLength="500" />
+          <Property Type="DateTime" Name="CreatedAt" Nullable="true" Precision="23" />
         </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
@@ -8384,14 +8395,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spINItemsDropdown" FunctionName="GLModel.Store.spINItemsDropdown">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spINItemsDropdown_Result">
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="spINStoreReturnNoteItemRow" FunctionName="GLModel.Store.spINStoreReturnNoteItemRow">
             <ResultMapping>
               <ComplexTypeMapping TypeName="GLModel.spINStoreReturnNoteItemRow_Result">
@@ -8570,6 +8573,38 @@
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
                 <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spRptINStoreIssueNoteHistoryData" FunctionName="GLModel.Store.spRptINStoreIssueNoteHistoryData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spRptINStoreIssueNoteHistoryData_Result">
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="Group" ColumnName="Group" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Item" ColumnName="Item" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="UOM" ColumnName="UOM" />
+                <ScalarProperty Name="LastRate" ColumnName="LastRate" />
+                <ScalarProperty Name="IssuedQty" ColumnName="IssuedQty" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spRptVendorList" FunctionName="GLModel.Store.spRptVendorList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spRptVendorList_Result">
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
+                <ScalarProperty Name="APVendorName" ColumnName="APVendorName" />
+                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
+                <ScalarProperty Name="BankDetails" ColumnName="BankDetails" />
+                <ScalarProperty Name="APVendorCategoryName" ColumnName="APVendorCategoryName" />
+                <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

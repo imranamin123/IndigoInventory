@@ -841,6 +841,9 @@
     <Compile Include="EF\spRptINPurchaseRequisition_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spRptINStoreIssueNoteHistoryData_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spRptINStoreIssueNote_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -866,6 +869,9 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\spRptPaymentPlan_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptVendorList_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\spSecurityGetModuleIdsByUser_Result.cs">
@@ -909,12 +915,14 @@
     <Compile Include="Models\spRptINPurchaseOrderReportModel.cs" />
     <Compile Include="Models\spRptINPurchaseRequisitionHistoryDataModel.cs" />
     <Compile Include="Models\spRptINPurchaseRequisitionModel.cs" />
+    <Compile Include="Models\spRptINStoreIssueNoteHistoryDataModel.cs" />
     <Compile Include="Models\spRptINStoreIssueNoteReportModel.cs" />
     <Compile Include="Models\spRptINStoreReturnNoteReportModel.cs" />
     <Compile Include="Models\spRptINStoreTransferNoteModel.cs" />
     <Compile Include="Models\spRptMemberPaymentPlanStatus_AllUnits_Model.cs" />
     <Compile Include="Models\spRptMemberPaymentPlanStatus_PaymentPlan.cs" />
     <Compile Include="Models\spRptPaymentPlan.cs" />
+    <Compile Include="Models\spRptVendorListModel.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportsWebForms\ReportForm.aspx.cs">
@@ -10151,6 +10159,8 @@
     <Content Include="Views\INInventory\StoreReturnNoteList.cshtml" />
     <Content Include="Views\INInventory\_StoreReturnNoteSearchListRows.cshtml" />
     <Content Include="Views\INInventory\StoreReturnNote.cshtml" />
+    <Content Include="Views\Reports\INStoreIssueNoteHistoryDataReport.cshtml" />
+    <Content Include="Views\Reports\APVendorListReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="admin-lte\bower_components\bootstrap-colorpicker\.github\" />

@@ -103,7 +103,7 @@ namespace GL.Controllers
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var itemsCSV = csv.GetRecords<INItemModel>().ToList();
-                    var itemsCSVWithOB = itemsCSV.Where(x => x.Rate > 0).ToList();
+                    var itemsCSVWithOB = itemsCSV.ToList();
                     using (var transaction = db.Database.BeginTransaction())
                     {
                         try
@@ -1670,7 +1670,8 @@ namespace GL.Controllers
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             INStoreTransferNoteViewModel model = new INStoreTransferNoteViewModel();
 
-            model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
+            //model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
+            model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, null, FromDate, ToDate, ItemID);
             model.RoleID = LoginUser.RoleID;
             return View("_StoreTransferNoteSearchListRows", model);
 
