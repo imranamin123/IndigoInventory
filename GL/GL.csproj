@@ -826,6 +826,9 @@
     <Compile Include="EF\spRptINGoodsReceiptNote_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spRptINItemList_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spRptINItemStock_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -871,6 +874,9 @@
     <Compile Include="EF\spRptPaymentPlan_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spRptPendingCompleteDemands_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spRptVendorList_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -910,6 +916,7 @@
     <Compile Include="Models\spRptGeneralLedgerOBModel.cs" />
     <Compile Include="Models\spRptINGoodsReceiptNoteHistoryDataModel.cs" />
     <Compile Include="Models\spRptINGoodsReceiptNoteReport.cs" />
+    <Compile Include="Models\spRptINItemListModel.cs" />
     <Compile Include="Models\spRptINItemStockModel.cs" />
     <Compile Include="Models\spRptINPORevertHistoryDataModel.cs" />
     <Compile Include="Models\spRptINPurchaseOrderReportModel.cs" />
@@ -922,6 +929,7 @@
     <Compile Include="Models\spRptMemberPaymentPlanStatus_AllUnits_Model.cs" />
     <Compile Include="Models\spRptMemberPaymentPlanStatus_PaymentPlan.cs" />
     <Compile Include="Models\spRptPaymentPlan.cs" />
+    <Compile Include="Models\spRptPendingCompleteDemandsModel.cs" />
     <Compile Include="Models\spRptVendorListModel.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -10161,6 +10169,8 @@
     <Content Include="Views\INInventory\StoreReturnNote.cshtml" />
     <Content Include="Views\Reports\INStoreIssueNoteHistoryDataReport.cshtml" />
     <Content Include="Views\Reports\APVendorListReport.cshtml" />
+    <Content Include="Views\Reports\INItemListReport.cshtml" />
+    <Content Include="Views\Reports\INPendingCompleteDemandsReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="admin-lte\bower_components\bootstrap-colorpicker\.github\" />

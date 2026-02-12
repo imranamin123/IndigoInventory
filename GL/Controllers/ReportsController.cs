@@ -2252,19 +2252,19 @@ namespace GL.Controllers
                     }
 
 
-                        // Export as Excel file
-                        var stream = new MemoryStream();
-                        excelPackage.SaveAs(stream);
-                        stream.Position = 0;
-                        string fileName = "StoreIssueNoteHistoryReport.xlsx";
-                        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    // Export as Excel file
+                    var stream = new MemoryStream();
+                    excelPackage.SaveAs(stream);
+                    stream.Position = 0;
+                    string fileName = "StoreIssueNoteHistoryReport.xlsx";
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-                        return File(stream, contentType, fileName);
-
-                    }
+                    return File(stream, contentType, fileName);
 
                 }
+
             }
+        }
 
         public ActionResult INPurchaseRequisitionHistoryDataReport()
         {
@@ -2705,11 +2705,11 @@ namespace GL.Controllers
                        APVendorName = v.APVendorName,
                        Address = v.Address,
                        APVendorCategoryName = v.APVendorCategoryName,
-                       BankDetails= v.BankDetails,
+                       BankDetails = v.BankDetails,
                        ContactNumber = v.ContactNumber,
                        ContactPerson = v.ContactPerson,
                        Email = v.Email,
-                       CreatedAt=v.CreatedAt.Value,
+                       CreatedAt = v.CreatedAt.Value,
                    }).ToList();
 
 
@@ -2739,29 +2739,29 @@ namespace GL.Controllers
 
                         rowNo++;
 
-                        workSheet.Cells[rowNo, 8].Value = "From Date";
-                        workSheet.Cells[rowNo, 8].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 1].Value = "From Date";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
                         if (FromDate != null)
                         {
-                            workSheet.Cells[rowNo, 9].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 2].Value = FromDate.Value.ToString("dd-MMM-yyyy");
                             rowNo++;
                         }
                         else
                         {
-                            workSheet.Cells[rowNo, 9].Value = "N/A";
+                            workSheet.Cells[rowNo, 2].Value = "N/A";
                             rowNo++;
                         }
 
-                        workSheet.Cells[rowNo, 8].Value = "To Date";
-                        workSheet.Cells[rowNo, 8].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 1].Value = "To Date";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
                         if (ToDate != null)
                         {
-                            workSheet.Cells[rowNo, 9].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 2].Value = ToDate.Value.ToString("dd-MMM-yyyy");
                             rowNo++;
                         }
                         else
                         {
-                            workSheet.Cells[rowNo, 9].Value = "N/A";
+                            workSheet.Cells[rowNo, 2].Value = "N/A";
                             rowNo++;
                         }
 
@@ -2790,7 +2790,7 @@ namespace GL.Controllers
                             workSheet.Cells[rowNo, 3].Value = row.APVendorName;
                             workSheet.Cells[rowNo, 4].Value = row.ContactPerson;
                             workSheet.Cells[rowNo, 5].Value = row.BankDetails;
-                            workSheet.Cells[rowNo, 6].Value = row.APVendorCategoryName;                            
+                            workSheet.Cells[rowNo, 6].Value = row.APVendorCategoryName;
                             workSheet.Cells[rowNo, 7].Value = row.ContactNumber;
                             workSheet.Cells[rowNo, 8].Value = row.Email;
                             workSheet.Cells[rowNo, 9].Value = row.Address;
@@ -2825,6 +2825,350 @@ namespace GL.Controllers
                     excelPackage.SaveAs(stream);
                     stream.Position = 0;
                     string fileName = "VendorListReport.xlsx";
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    return File(stream, contentType, fileName);
+
+                }
+
+            }
+        }
+
+        public ActionResult INItemListReport()
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            DALDropdowns dal = new DALDropdowns();
+            ViewBag.FromDate = null;
+            ViewBag.ToDate = null;
+            return View();
+        }
+        public ActionResult DownloadINItemListReportExcel(DateTime? FromDate, DateTime? ToDate)
+        {
+            // EPPlus license context (required in newer versions)
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Item List Report");
+
+                var db = new GLEntities();
+
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                var spRptINItemList = db.spRptINItemList(LoginUser.CompanyID, FromDate, ToDate).ToList();
+                // ====== Final projection ======
+                var spRptINItemListData = (
+                   from v in spRptINItemList
+                   select new spRptINItemListModel
+                   {
+                       Company = v.Company,
+                       Category = v.Category,
+                       CreatedAt = v.CreatedAt.Value,
+                       Group = v.Group,
+                       ItemDescription = v.ItemDescription,
+                       ItemID = v.ItemID,
+                       Size = v.Size,
+                       UOM = v.UOM
+
+                   }).ToList();
+
+
+                ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+                using (var excelPackage = new ExcelPackage())
+                {
+                    if (spRptINItemListData.Count > 0)
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Item List");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = spRptINItemListData.Max(x => x.Company).ToString();
+                        workSheet.Cells[rowNo, 1, 2, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 8].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 8].Style.Font.Bold = true;
+
+                        rowNo++;
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Item List Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 8].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 8].Style.Font.Bold = true;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "From Date";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        if (FromDate != null)
+                        {
+                            workSheet.Cells[rowNo, 2].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                            rowNo++;
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 2].Value = "N/A";
+                            rowNo++;
+                        }
+
+                        workSheet.Cells[rowNo, 1].Value = "To Date";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        if (ToDate != null)
+                        {
+                            workSheet.Cells[rowNo, 2].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                            rowNo++;
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 2].Value = "N/A";
+                            rowNo++;
+                        }
+
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Created Date";
+                        workSheet.Cells[rowNo, 3].Value = "Group";
+                        workSheet.Cells[rowNo, 4].Value = "Category";
+                        workSheet.Cells[rowNo, 5].Value = "Item ID";
+                        workSheet.Cells[rowNo, 6].Value = "Item Description";
+                        workSheet.Cells[rowNo, 7].Value = "Size";
+                        workSheet.Cells[rowNo, 8].Value = "UOM";
+
+                        workSheet.Cells[rowNo, 1, rowNo, 8].Style.Font.Bold = true;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in spRptINItemListData)
+                        {
+                            rowNo++;
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            workSheet.Cells[rowNo, 2].Value = row.CreatedAt.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 3].Value = row.Group;
+                            workSheet.Cells[rowNo, 4].Value = row.Category;
+                            workSheet.Cells[rowNo, 5].Value = row.ItemID.ToString();
+                            workSheet.Cells[rowNo, 6].Value = row.ItemDescription;
+                            workSheet.Cells[rowNo, 7].Value = row.Size;
+                            workSheet.Cells[rowNo, 8].Value = row.UOM;
+                        }
+
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 20;
+                        workSheet.Column(3).Width = 30;
+                        workSheet.Column(4).Width = 30;
+                        workSheet.Column(5).Width = 30;
+                        workSheet.Column(6).Width = 30;
+                        workSheet.Column(7).Width = 10;
+                        workSheet.Column(8).Width = 10;
+                    }
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Vendor List Report");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
+                    }
+
+
+                    // Export as Excel file
+                    var stream = new MemoryStream();
+                    excelPackage.SaveAs(stream);
+                    stream.Position = 0;
+                    string fileName = "ItemListReport.xlsx";
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    return File(stream, contentType, fileName);
+
+                }
+
+            }
+        }
+
+
+        public ActionResult INPendingCompleteDemandsReport()
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            DALDropdowns dal = new DALDropdowns();
+            ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
+            ViewBag.FromDate = null;
+            ViewBag.ToDate = null;
+            return View();
+        }
+        public ActionResult DownloadINPendingCompleteDemandsExcel(int PendingComplete, int? ProjectID, DateTime? FromDate, DateTime? ToDate)
+        {
+            // EPPlus license context (required in newer versions)
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Pending Complete Demands List Report");
+
+                var db = new GLEntities();
+
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                List<spRptPendingCompleteDemands_Result> spRptPendingCompleteDemandsList = null;
+                if (PendingComplete == 0)
+                {
+                    spRptPendingCompleteDemandsList = db.spRptPendingCompleteDemands(ProjectID, LoginUser.CompanyID, FromDate, ToDate).ToList();
+                }
+                else if (PendingComplete == 1)
+                {
+                    spRptPendingCompleteDemandsList = db.spRptPendingCompleteDemands(ProjectID, LoginUser.CompanyID, FromDate, ToDate).Where(x => x.Balance < x.RequestedQty).ToList();
+                }
+                else if (PendingComplete == 2)
+                {
+                    spRptPendingCompleteDemandsList = db.spRptPendingCompleteDemands(ProjectID, LoginUser.CompanyID, FromDate, ToDate).Where(x => x.Balance == x.RequestedQty).ToList();
+                }
+
+                // ====== Final projection ======
+                var PendingCompleteDemandsData = (
+                       from v in spRptPendingCompleteDemandsList
+                       select new spRptPendingCompleteDemandsModel
+                       {
+                           Company = v.Company,
+                           Balance = v.Balance.GetValueOrDefault(0),
+                           ProjectID = v.ProjectID.GetValueOrDefault(0),
+                           ProjectName = v.ProjectName,
+                           RequestDate = v.RequestDate.Value,
+                           RequestedQty = v.RequestedQty.GetValueOrDefault(0),
+                           RequestID = v.RequestID
+
+                       }).ToList();
+
+
+                ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+                using (var excelPackage = new ExcelPackage())
+                {
+                    if (PendingCompleteDemandsData.Count > 0)
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Item List");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = PendingCompleteDemandsData.Max(x => x.Company).ToString();
+                        workSheet.Cells[rowNo, 1, 2, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 7].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 7].Style.Font.Bold = true;
+
+                        rowNo++;
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Pending Complete Demands List Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 7].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.Font.Bold = true;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "From Date";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        if (FromDate != null)
+                        {
+                            workSheet.Cells[rowNo, 2].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 2].Value = "N/A";
+                        }
+
+                        workSheet.Cells[rowNo, 6].Value = "Status";
+                        if (PendingComplete == 0)
+                        {
+                            workSheet.Cells[rowNo, 7].Value = "All";
+                        }
+                        else if (PendingComplete == 1)
+                        {
+                            workSheet.Cells[rowNo, 7].Value = "Pending";
+                        }
+                        else if (PendingComplete == 2)
+                        {
+                            workSheet.Cells[rowNo, 7].Value = "Complete";
+                        }
+                        workSheet.Cells[rowNo, 6].Style.Font.Bold = true;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "To Date";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        if (ToDate != null)
+                        {
+                            workSheet.Cells[rowNo, 2].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 2].Value = "N/A";
+                        }
+
+
+                        rowNo++;
+
+
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Project";
+                        workSheet.Cells[rowNo, 3].Value = "Requested Date";
+                        workSheet.Cells[rowNo, 4].Value = "Request ID";
+                        workSheet.Cells[rowNo, 5].Value = "Requested Qty";
+                        workSheet.Cells[rowNo, 6].Value = "Balance";
+                        workSheet.Cells[rowNo, 7].Value = "Percentage";
+
+                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 5, rowNo, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in PendingCompleteDemandsData)
+                        {
+                            rowNo++;
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            workSheet.Cells[rowNo, 2].Value = row.ProjectName;
+                            workSheet.Cells[rowNo, 3].Value = row.RequestDate.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 4].Value = row.RequestID.ToString();
+                            workSheet.Cells[rowNo, 5].Value = row.RequestedQty;
+                            workSheet.Cells[rowNo, 6].Value = row.Balance;
+                            workSheet.Cells[rowNo, 7].Value = decimal.Round(row.Balance / row.RequestedQty * 100, 2);
+                        }
+
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 10;
+                        workSheet.Column(3).Width = 20;
+                        workSheet.Column(4).Width = 10;
+                        workSheet.Column(5).Width = 20;
+                        workSheet.Column(6).Width = 10;
+                        workSheet.Column(7).Width = 10;
+
+                    }
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Vendor List Report");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 7].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 7].Style.Font.Bold = true;
+                    }
+
+
+                    // Export as Excel file
+                    var stream = new MemoryStream();
+                    excelPackage.SaveAs(stream);
+                    stream.Position = 0;
+                    string fileName = "PendingCompleteDemandsReport.xlsx";
                     string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                     return File(stream, contentType, fileName);

@@ -1,0 +1,134 @@
+﻿
+@{
+    ViewBag.Title = "Item List Report";
+}
+
+<h2>Item List Report</h2>
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Item List Report</h2>
+                    </div>
+                    <br />
+  
+                    <div class="row" style="margin-top:5px;">
+                        <label for="FromDate" class="control-label col-sm-2 PaddingTop-5">From Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="FromDate" value="@ViewBag.FromDate" />
+                            </div>
+                            <span id="spnFromDateError" class="error" style="display:none;">Please select from date</span>
+                        </div>
+
+                        <label for="ToDate" class="control-label col-sm-2 PaddingTop-5">To Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="ToDate" value="@ViewBag.ToDate" />
+                            </div>
+                            <span id="spnToDateError" class="error" style="display:none;">Please select to date</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="downloadReport()" class=" btn btn-success"> Download Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="ItemList">
+        $().ready(function () {
+
+            $('.date-picker').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+           // $("#UnitID").select2();
+
+
+
+        });
+
+
+
+        function downloadReport() {
+            if (IsValid()) {
+                //var projectID = $('#ProjectID').val();
+                var fromDate = $('#FromDate').val();
+                var toDate = $('#ToDate').val();
+
+                var url = "/Reports/DownloadINItemListReportExcel"
+                    + "?FromDate=" + fromDate
+                    + "&ToDate=" + toDate;
+
+                window.location.href = url; // 🔽 this will download the Excel
+            }
+        }
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+           
+            //if ($('#FromDate').val() == '') {
+            //    $("#spnFromDateError").show();
+            //    valid = false;
+            //}
+
+            //if ($('#ToDate').val() == '') {
+            //    $("#spnToDateError").show();
+            //    valid = false;
+            //}
+
+            return valid;
+        }
+    </script>
+}
+

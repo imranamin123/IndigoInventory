@@ -1,0 +1,159 @@
+﻿
+@{
+    ViewBag.Title = "Pending Complete Demands Report";
+}
+
+<h2>Pending Complete Demands Report</h2>
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Pending Complete Demands Report</h2>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <label class="control-label col-sm-2">Project</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --",
+                            new { @class = "form-control showError", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select a project</span>
+                        </div>
+
+                        <label class="control-label col-sm-2">Pending/Completed</label>
+                        <div class="col-sm-3">
+                            <select class="form-control showError" id="Pending-Complete">
+                                <option value="0" >-- All --</option>
+                                <option value="1">-- Pending --</option>
+                                <option value="2">-- Completed --</option>
+                            </select>
+                            <span id="spnPendingCompleteError" class="error" style="display:none;">Please select a pending/complete</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-top:5px;">
+                        <label for="FromDate" class="control-label col-sm-2 PaddingTop-5">From Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="FromDate" value="@ViewBag.FromDate" />
+                            </div>
+                            <span id="spnFromDateError" class="error" style="display:none;">Please select from date</span>
+                        </div>
+
+                        <label for="ToDate" class="control-label col-sm-2 PaddingTop-5">To Date</label>
+                        <div class="col-sm-3">
+                            <div class="input-group ">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control date-picker" autocomplete="off" id="ToDate" value="@ViewBag.ToDate" />
+                            </div>
+                            <span id="spnToDateError" class="error" style="display:none;">Please select to date</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="downloadReport()" class=" btn btn-success"> Download Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+        $().ready(function () {
+
+            $('.date-picker').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+           // $("#UnitID").select2();
+
+
+
+        });
+
+
+
+        function downloadReport() {
+            if (IsValid()) {
+                var pendingComplete = $('#Pending-Complete').val();
+                var projectID = $('#ProjectID').val();
+                var fromDate = $('#FromDate').val();
+                var toDate = $('#ToDate').val();
+
+                var url = "/Reports/DownloadINPendingCompleteDemandsExcel?PendingComplete=" + pendingComplete
+                    + "&ProjectID=" + projectID
+                    + "&FromDate=" + fromDate
+                    + "&ToDate=" + toDate;
+
+                window.location.href = url; // 🔽 this will download the Excel
+            }
+        }
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($('#ProjectID').val() == '') {
+                $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            //if ($('#FromDate').val() == '') {
+            //    $("#spnFromDateError").show();
+            //    valid = false;
+            //}
+
+            //if ($('#ToDate').val() == '') {
+            //    $("#spnToDateError").show();
+            //    valid = false;
+            //}
+
+            return valid;
+        }
+    </script>
+}
+

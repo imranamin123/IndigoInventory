@@ -28,7 +28,7 @@
                         <h2 class="box-title">Vendor List Report</h2>
                     </div>
                     <br />
-                    <div class="row">
+                    @*<div class="row">
                         <label class="control-label col-sm-2">Project</label>
                         <div class="col-sm-3">
                             @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --",
@@ -37,7 +37,7 @@
                         </div>
 
 
-                    </div>
+                    </div>*@
 
                     <div class="row" style="margin-top:5px;">
                         <label for="FromDate" class="control-label col-sm-2 PaddingTop-5">From Date</label>
@@ -108,7 +108,7 @@
 
         function downloadReport() {
             if (IsValid()) {
-                var projectID = $('#ProjectID').val();
+                //var projectID = $('#ProjectID').val();
                 var fromDate = $('#FromDate').val();
                 var toDate = $('#ToDate').val();
 

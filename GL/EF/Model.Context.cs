@@ -1330,5 +1330,43 @@ namespace GL.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptVendorList_Result>("spRptVendorList", companyIDParameter, fromDateParameter, toDateParameter);
         }
+    
+        public virtual ObjectResult<spRptINItemList_Result> spRptINItemList(Nullable<int> comapnyID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
+        {
+            var comapnyIDParameter = comapnyID.HasValue ?
+                new ObjectParameter("ComapnyID", comapnyID) :
+                new ObjectParameter("ComapnyID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemList_Result>("spRptINItemList", comapnyIDParameter, fromDateParameter, toDateParameter);
+        }
+    
+        public virtual ObjectResult<spRptPendingCompleteDemands_Result> spRptPendingCompleteDemands(Nullable<int> comapnyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
+        {
+            var comapnyIDParameter = comapnyID.HasValue ?
+                new ObjectParameter("ComapnyID", comapnyID) :
+                new ObjectParameter("ComapnyID", typeof(int));
+    
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptPendingCompleteDemands_Result>("spRptPendingCompleteDemands", comapnyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
+        }
     }
 }
