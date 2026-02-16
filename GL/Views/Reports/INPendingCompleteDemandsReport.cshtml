@@ -39,9 +39,9 @@
                         <label class="control-label col-sm-2">Pending/Completed</label>
                         <div class="col-sm-3">
                             <select class="form-control showError" id="Pending-Complete">
-                                <option value="0" >-- All --</option>
-                                <option value="1">-- Pending --</option>
-                                <option value="2">-- Completed --</option>
+                                <option value="Completed">-- Completed --</option>
+                                <option value="Incomplete">-- Incomplete --</option>
+                                <option value="Pending">-- Pending --</option>
                             </select>
                             <span id="spnPendingCompleteError" class="error" style="display:none;">Please select a pending/complete</span>
                         </div>
@@ -117,12 +117,12 @@
 
         function downloadReport() {
             if (IsValid()) {
-                var pendingComplete = $('#Pending-Complete').val();
+                var status = $('#Pending-Complete').val();
                 var projectID = $('#ProjectID').val();
                 var fromDate = $('#FromDate').val();
                 var toDate = $('#ToDate').val();
 
-                var url = "/Reports/DownloadINPendingCompleteDemandsExcel?PendingComplete=" + pendingComplete
+                var url = "/Reports/DownloadINPendingCompleteDemandsExcel?Status=" + status
                     + "&ProjectID=" + projectID
                     + "&FromDate=" + fromDate
                     + "&ToDate=" + toDate;

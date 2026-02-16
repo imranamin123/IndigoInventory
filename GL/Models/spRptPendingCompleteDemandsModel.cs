@@ -9,10 +9,18 @@ namespace GL.Models
     {
         public string Company { get; set; }
         public string ProjectName { get; set; }
+        public string Group { get; set; }
+        public string Category { get; set; }
         public long RequestID { get; set; }
-        public int ProjectID { get; set; }
         public System.DateTime RequestDate { get; set; }
+        public long RequestDetailID { get; set; }
+        public long ItemID { get; set; }
+        public string Item { get; set; }
+        public string Size { get; set; }
+        public string UOM { get; set; }
         public decimal RequestedQty { get; set; }
-        public decimal Balance { get; set; }
+        public decimal ApprovedQty { get; set; }
+        public string Status { get; set; }
+        public decimal ReceivedQty { get; set; }
     }
 }

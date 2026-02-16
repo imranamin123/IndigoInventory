@@ -64,9 +64,6 @@ go
 
 exec spRptINGoodsReceiptNote 294
 
-select * from INGoodsReceiptNote where purchaseOrderID is null
-
-update INGoodsReceiptNote set purchaseOrderID = 0  where GoodsReceiptNoteID <> 294
 
 
 

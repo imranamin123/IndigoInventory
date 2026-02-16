@@ -832,6 +832,9 @@
     <Compile Include="EF\spRptINItemStock_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spRptINPendingPOList_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spRptINPORevertHistoryData_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -851,6 +854,9 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\spRptINStoreReturnNote_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptINStoreTransferNote1_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\spRptINStoreTransferNote_Result.cs">
@@ -930,6 +936,7 @@
     <Compile Include="Models\spRptMemberPaymentPlanStatus_PaymentPlan.cs" />
     <Compile Include="Models\spRptPaymentPlan.cs" />
     <Compile Include="Models\spRptPendingCompleteDemandsModel.cs" />
+    <Compile Include="Models\spRptPendingPOModel.cs" />
     <Compile Include="Models\spRptVendorListModel.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -10171,6 +10178,7 @@
     <Content Include="Views\Reports\APVendorListReport.cshtml" />
     <Content Include="Views\Reports\INItemListReport.cshtml" />
     <Content Include="Views\Reports\INPendingCompleteDemandsReport.cshtml" />
+    <Content Include="Views\Reports\INPendingPOReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="admin-lte\bower_components\bootstrap-colorpicker\.github\" />

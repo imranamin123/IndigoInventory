@@ -3001,7 +3001,7 @@ namespace GL.Controllers
             ViewBag.ToDate = null;
             return View();
         }
-        public ActionResult DownloadINPendingCompleteDemandsExcel(int PendingComplete, int? ProjectID, DateTime? FromDate, DateTime? ToDate)
+        public ActionResult DownloadINPendingCompleteDemandsExcel(int? ProjectID, string Status, DateTime? FromDate, DateTime? ToDate)
         {
             // EPPlus license context (required in newer versions)
             //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -3011,38 +3011,34 @@ namespace GL.Controllers
             using (var package = new ExcelPackage())
             {
                 // Add a worksheet
-                var worksheet = package.Workbook.Worksheets.Add("Pending Complete Demands List Report");
+                var worksheet = package.Workbook.Worksheets.Add("Demands Status");
 
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
 
-                List<spRptPendingCompleteDemands_Result> spRptPendingCompleteDemandsList = null;
-                if (PendingComplete == 0)
-                {
-                    spRptPendingCompleteDemandsList = db.spRptPendingCompleteDemands(ProjectID, LoginUser.CompanyID, FromDate, ToDate).ToList();
-                }
-                else if (PendingComplete == 1)
-                {
-                    spRptPendingCompleteDemandsList = db.spRptPendingCompleteDemands(ProjectID, LoginUser.CompanyID, FromDate, ToDate).Where(x => x.Balance < x.RequestedQty).ToList();
-                }
-                else if (PendingComplete == 2)
-                {
-                    spRptPendingCompleteDemandsList = db.spRptPendingCompleteDemands(ProjectID, LoginUser.CompanyID, FromDate, ToDate).Where(x => x.Balance == x.RequestedQty).ToList();
-                }
-
+                var data = db.spRptPendingCompleteDemands(LoginUser.CompanyID, ProjectID, FromDate, ToDate).ToList();
+                var spRptPendingCompleteDemandsList = data.Where(x => x.Status == Status).ToList();
                 // ====== Final projection ======
                 var PendingCompleteDemandsData = (
                        from v in spRptPendingCompleteDemandsList
                        select new spRptPendingCompleteDemandsModel
                        {
                            Company = v.Company,
-                           Balance = v.Balance.GetValueOrDefault(0),
-                           ProjectID = v.ProjectID.GetValueOrDefault(0),
                            ProjectName = v.ProjectName,
                            RequestDate = v.RequestDate.Value,
                            RequestedQty = v.RequestedQty.GetValueOrDefault(0),
-                           RequestID = v.RequestID
+                           RequestID = v.RequestID,
+                           ApprovedQty = v.ApprovedQty.GetValueOrDefault(0),
+                           Category=v.Category,
+                           Group=v.Group,
+                           Item=v.Item,
+                           ItemID=v.ItemID.GetValueOrDefault(0),
+                           ReceivedQty=v.ReceivedQty.GetValueOrDefault(0),
+                           RequestDetailID=v.RequestDetailID,
+                           Size=v.Size,
+                           Status=v.Status,
+                           UOM=v.UOM
 
                        }).ToList();
 
@@ -3053,80 +3049,78 @@ namespace GL.Controllers
                 {
                     if (PendingCompleteDemandsData.Count > 0)
                     {
-                        var workSheet = excelPackage.Workbook.Worksheets.Add("Item List");
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Demands Status");
                         var rowNo = 1;
 
                         workSheet.Cells[rowNo, 1].Value = PendingCompleteDemandsData.Max(x => x.Company).ToString();
-                        workSheet.Cells[rowNo, 1, 2, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        workSheet.Cells[rowNo, 1, 2, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        workSheet.Cells[rowNo, 1, 2, 7].Merge = true;
-                        workSheet.Cells[rowNo, 1, 2, 7].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 1, 2, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 12].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 12].Style.Font.Bold = true;
 
                         rowNo++;
                         rowNo++;
 
-                        workSheet.Cells[rowNo, 1].Value = "Pending Complete Demands List Report";
-                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        workSheet.Cells[rowNo, 1, rowNo, 7].Merge = true;
-                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 1].Value = "Pending Completed Demands List Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 12].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 12].Style.Font.Bold = true;
 
                         rowNo++;
 
-                        workSheet.Cells[rowNo, 1].Value = "From Date";
-                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 11].Value = "From Date";
+                        workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
                         if (FromDate != null)
                         {
-                            workSheet.Cells[rowNo, 2].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 12].Value = FromDate.Value.ToString("dd-MMM-yyyy");
                         }
                         else
                         {
-                            workSheet.Cells[rowNo, 2].Value = "N/A";
+                            workSheet.Cells[rowNo, 12].Value = "N/A";
                         }
 
-                        workSheet.Cells[rowNo, 6].Value = "Status";
-                        if (PendingComplete == 0)
-                        {
-                            workSheet.Cells[rowNo, 7].Value = "All";
-                        }
-                        else if (PendingComplete == 1)
-                        {
-                            workSheet.Cells[rowNo, 7].Value = "Pending";
-                        }
-                        else if (PendingComplete == 2)
-                        {
-                            workSheet.Cells[rowNo, 7].Value = "Complete";
-                        }
-                        workSheet.Cells[rowNo, 6].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 1].Value = "Status";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 2].Value = Status;                        
 
                         rowNo++;
 
-                        workSheet.Cells[rowNo, 1].Value = "To Date";
-                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 11].Value = "To Date";
+                        workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
                         if (ToDate != null)
                         {
-                            workSheet.Cells[rowNo, 2].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 12].Value = ToDate.Value.ToString("dd-MMM-yyyy");
                         }
                         else
                         {
-                            workSheet.Cells[rowNo, 2].Value = "N/A";
+                            workSheet.Cells[rowNo, 12].Value = "N/A";
                         }
 
 
+                        workSheet.Cells[rowNo, 1].Value = "Project";
+                        workSheet.Cells[rowNo, 2].Value = PendingCompleteDemandsData.Max(x => x.ProjectName).ToString();
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
                         rowNo++;
-
 
                         rowNo++;
                         workSheet.Cells[rowNo, 1].Value = "Sr No";
-                        workSheet.Cells[rowNo, 2].Value = "Project";
-                        workSheet.Cells[rowNo, 3].Value = "Requested Date";
-                        workSheet.Cells[rowNo, 4].Value = "Request ID";
-                        workSheet.Cells[rowNo, 5].Value = "Requested Qty";
-                        workSheet.Cells[rowNo, 6].Value = "Balance";
-                        workSheet.Cells[rowNo, 7].Value = "Percentage";
+                        workSheet.Cells[rowNo, 2].Value = "Group";
+                        workSheet.Cells[rowNo, 3].Value = "Category";
+                        workSheet.Cells[rowNo, 4].Value = "Date";
+                        workSheet.Cells[rowNo, 5].Value = "PR ID";
+                        //workSheet.CCells[rowNo, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        
+                        workSheet.Cells[rowNo, 6].Value = "Item Description";
+                        workSheet.Cells[rowNo, 7].Value = "Size";
+                        workSheet.Cells[rowNo, 8].Value = "UOM";
+                        workSheet.Cells[rowNo, 9].Value = "Requested Qty";
+                        workSheet.Cells[rowNo, 10].Value = "Approved Qty";
+                        workSheet.Cells[rowNo, 11].Value = "Received Qty";
+                        workSheet.Cells[rowNo, 12].Value = "Status";
 
-                        workSheet.Cells[rowNo, 1, rowNo, 7].Style.Font.Bold = true;
-                        workSheet.Cells[rowNo, 5, rowNo, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                        workSheet.Cells[rowNo, 1, rowNo, 12].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 9, rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
                         Int64 SrNo = 0;
                         foreach (var row in PendingCompleteDemandsData)
@@ -3134,33 +3128,43 @@ namespace GL.Controllers
                             rowNo++;
                             SrNo++;
                             workSheet.Cells[rowNo, 1].Value = SrNo;
-                            workSheet.Cells[rowNo, 2].Value = row.ProjectName;
-                            workSheet.Cells[rowNo, 3].Value = row.RequestDate.ToString("dd-MMM-yyyy");
-                            workSheet.Cells[rowNo, 4].Value = row.RequestID.ToString();
-                            workSheet.Cells[rowNo, 5].Value = row.RequestedQty;
-                            workSheet.Cells[rowNo, 6].Value = row.Balance;
-                            workSheet.Cells[rowNo, 7].Value = decimal.Round(row.Balance / row.RequestedQty * 100, 2);
+                            workSheet.Cells[rowNo, 2].Value = row.Group;
+                            workSheet.Cells[rowNo, 3].Value = row.Category;
+                            workSheet.Cells[rowNo, 4].Value = row.RequestDate.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 5].Value = row.RequestID.ToString();
+                            workSheet.Cells[rowNo, 6].Value = row.Item;
+                            workSheet.Cells[rowNo, 7].Value = row.Size;
+                            workSheet.Cells[rowNo, 8].Value = row.UOM;
+                            workSheet.Cells[rowNo, 9].Value = row.RequestedQty;
+                            workSheet.Cells[rowNo, 10].Value = row.ApprovedQty;
+                            workSheet.Cells[rowNo, 11].Value = row.ReceivedQty;
+                            workSheet.Cells[rowNo, 12].Value = row.Status;
+
                         }
 
                         workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        workSheet.Column(2).Width = 10;
-                        workSheet.Column(3).Width = 20;
-                        workSheet.Column(4).Width = 10;
-                        workSheet.Column(5).Width = 20;
-                        workSheet.Column(6).Width = 10;
-                        workSheet.Column(7).Width = 10;
+                        workSheet.Column(2).Width = 30;
+                        workSheet.Column(3).Width = 40;
+                        workSheet.Column(4).Width = 20;
+                        workSheet.Column(5).Width = 10;
+                        workSheet.Column(6).Width = 30;
+                        workSheet.Column(8).Width = 10;
+                        workSheet.Column(9).Width = 20;
+                        workSheet.Column(10).Width = 20;
+                        workSheet.Column(11).Width = 20;
+                        workSheet.Column(12).Width = 20;
 
                     }
                     else
                     {
-                        var workSheet = excelPackage.Workbook.Worksheets.Add("Vendor List Report");
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Pending Completed Demands List Report");
                         var rowNo = 1;
 
                         workSheet.Cells[rowNo, 1].Value = "Record not found";
-                        workSheet.Cells[rowNo, 1, 2, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        workSheet.Cells[rowNo, 1, 2, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        workSheet.Cells[rowNo, 1, 2, 7].Merge = true;
-                        workSheet.Cells[rowNo, 1, 2, 7].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 1, 2, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 12].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 12].Style.Font.Bold = true;
                     }
 
 
@@ -3168,7 +3172,196 @@ namespace GL.Controllers
                     var stream = new MemoryStream();
                     excelPackage.SaveAs(stream);
                     stream.Position = 0;
-                    string fileName = "PendingCompleteDemandsReport.xlsx";
+                    string fileName = "PendingCompletedDemandsReport.xlsx";
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    return File(stream, contentType, fileName);
+
+                }
+
+            }
+        }
+
+
+        public ActionResult INPendingPOReport()
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            DALDropdowns dal = new DALDropdowns();
+            ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
+            ViewBag.FromDate = null;
+            ViewBag.ToDate = null;
+            return View();
+        }
+        public ActionResult DownloadINPendingPOExcel(int? ProjectID, string Status, DateTime? FromDate, DateTime? ToDate)
+        {
+            // EPPlus license context (required in newer versions)
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Pending PO");
+
+                var db = new GLEntities();
+
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                var data = db.spRptINPendingPOList(LoginUser.CompanyID, ProjectID, FromDate, ToDate).ToList();
+                var spRptPendingPOList = data.Where(x => x.Status == Status).ToList();
+                // ====== Final projection ======
+                var PendingCompleteDemandsData = (
+                       from v in spRptPendingPOList
+                       select new spRptPendingPOModel
+                       {
+                           Company = v.Company,
+                           GoodsReceiptNotesDate=v.GoodsReceiptNotesDate.Value,
+                           GoodsReceiptNoteID = v.GoodsReceiptNoteID,
+                           APVendorName= v.APVendorName,
+                           Amount=v.Amount.GetValueOrDefault(0),
+                           Rate=v.Rate.GetValueOrDefault(0),
+                           ProjectName = v.ProjectName,
+                           Category = v.Category,
+                           Group = v.Group,
+                           ItemName = v.ItemName,
+                           ItemID = v.ItemID.GetValueOrDefault(0),
+                           ReceivedQty = v.ReceivedQty.GetValueOrDefault(0),
+                           Size = v.Size,
+                           Status = v.Status,
+                           UOM = v.UOM
+
+                       }).ToList();
+
+
+                ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+                using (var excelPackage = new ExcelPackage())
+                {
+                    if (PendingCompleteDemandsData.Count > 0)
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Pending PO Status");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = PendingCompleteDemandsData.Max(x => x.Company).ToString();
+                        workSheet.Cells[rowNo, 1, 2, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 11].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 11].Style.Font.Bold = true;
+
+                        rowNo++;
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Pending PO Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.Font.Bold = true;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 10].Value = "From Date";
+                        workSheet.Cells[rowNo, 10].Style.Font.Bold = true;
+                        if (FromDate != null)
+                        {
+                            workSheet.Cells[rowNo, 11].Value = FromDate.Value.ToString("dd-MMM-yyyy");
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 11].Value = "N/A";
+                        }
+
+                        workSheet.Cells[rowNo, 1].Value = "Status";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 2].Value = Status;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 10].Value = "To Date";
+                        workSheet.Cells[rowNo, 10].Style.Font.Bold = true;
+                        if (ToDate != null)
+                        {
+                            workSheet.Cells[rowNo, 11].Value = ToDate.Value.ToString("dd-MMM-yyyy");
+                        }
+                        else
+                        {
+                            workSheet.Cells[rowNo, 11].Value = "N/A";
+                        }
+
+
+                        workSheet.Cells[rowNo, 1].Value = "Project";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 2].Value = PendingCompleteDemandsData.Max(x => x.ProjectName).ToString();
+                        
+                        rowNo++;
+
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Date";
+                        workSheet.Cells[rowNo, 3].Value = "GRN ID";
+                        workSheet.Cells[rowNo, 4].Value = "PO Status";
+                        workSheet.Cells[rowNo, 5].Value = "Vendor";
+                        workSheet.Cells[rowNo, 6].Value = "Item Description";
+                        workSheet.Cells[rowNo, 7].Value = "Size";
+                        workSheet.Cells[rowNo, 8].Value = "UOM";
+                        workSheet.Cells[rowNo, 9].Value = "Received Qty";
+                        workSheet.Cells[rowNo, 10].Value = "Rate";
+                        workSheet.Cells[rowNo, 11].Value = "Total Amount";
+
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 9, rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in PendingCompleteDemandsData)
+                        {
+                            rowNo++;
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            workSheet.Cells[rowNo, 2].Value = row.GoodsReceiptNotesDate.ToString("dd-MMM-yyyy");
+                            workSheet.Cells[rowNo, 3].Value = row.GoodsReceiptNoteID.ToString();
+                            workSheet.Cells[rowNo, 4].Value = row.Status;
+                            workSheet.Cells[rowNo, 5].Value = row.APVendorName;
+                            workSheet.Cells[rowNo, 6].Value = row.ItemName;
+                            workSheet.Cells[rowNo, 7].Value = row.Size;
+                            workSheet.Cells[rowNo, 8].Value = row.UOM;
+                            workSheet.Cells[rowNo, 9].Value = row.ReceivedQty;
+                            workSheet.Cells[rowNo, 10].Value = row.Rate;
+                            workSheet.Cells[rowNo, 11].Value = row.Amount;
+
+                        }
+                        workSheet.Cells[8, 8, rowNo, 11].Style.Numberformat.Format = "#,##0";
+
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 20;
+                        workSheet.Column(3).Width = 20;
+                        workSheet.Column(4).Width = 30;
+                        workSheet.Column(5).Width = 40;
+                        workSheet.Column(6).Width = 20;
+                        workSheet.Column(7).Width = 20;
+                        workSheet.Column(8).Width = 10;
+                        workSheet.Column(9).Width = 20;
+                        workSheet.Column(10).Width = 20;
+                        workSheet.Column(11).Width = 20;
+
+                    }
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Pending PO Report");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 10].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.Font.Bold = true;
+                    }
+
+
+                    // Export as Excel file
+                    var stream = new MemoryStream();
+                    excelPackage.SaveAs(stream);
+                    stream.Position = 0;
+                    string fileName = "PendingPOReport.xlsx";
                     string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                     return File(stream, contentType, fileName);

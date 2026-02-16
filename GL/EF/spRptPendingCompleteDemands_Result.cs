@@ -15,10 +15,18 @@ namespace GL.EF
     {
         public string Company { get; set; }
         public string ProjectName { get; set; }
+        public string Group { get; set; }
+        public string Category { get; set; }
         public long RequestID { get; set; }
-        public Nullable<int> ProjectID { get; set; }
         public Nullable<System.DateTime> RequestDate { get; set; }
+        public long RequestDetailID { get; set; }
+        public Nullable<long> ItemID { get; set; }
+        public string Item { get; set; }
+        public string Size { get; set; }
+        public string UOM { get; set; }
         public Nullable<decimal> RequestedQty { get; set; }
-        public Nullable<decimal> Balance { get; set; }
+        public Nullable<decimal> ApprovedQty { get; set; }
+        public string Status { get; set; }
+        public Nullable<decimal> ReceivedQty { get; set; }
     }
 }
