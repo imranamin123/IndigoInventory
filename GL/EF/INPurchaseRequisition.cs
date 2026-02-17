@@ -31,6 +31,8 @@ namespace GL.EF
         public Nullable<System.DateTime> SubmitedAtKPO { get; set; }
         public Nullable<int> SubmitedByMD { get; set; }
         public Nullable<System.DateTime> SubmitedAtMD { get; set; }
+        public Nullable<int> CancelledBy { get; set; }
+        public Nullable<System.DateTime> CancelledAt { get; set; }
         public Nullable<int> RequestTypeID { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public Nullable<int> CreatedBy { get; set; }
@@ -38,8 +40,8 @@ namespace GL.EF
         public Nullable<int> ModifiedBy { get; set; }
         public Nullable<int> CompanyID { get; set; }
     
-        public virtual INRequestType INRequestType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<INPurchaseRequisitionDetail> INPurchaseRequisitionDetails { get; set; }
+        public virtual INRequestType INRequestType { get; set; }
     }
 }

@@ -29,7 +29,10 @@ BEGIN
 		ISNULL(pr.SubmitedByKPO,0) 'SubmitedByKPO',
 		ISNULL(pr.SubmitedAtKPO,0) 'SubmitedAtKPO',
 		ISNULL(pr.SubmitedByMD,0) 'SubmitedByMD',
-		ISNULL(pr.SubmitedAtMD,0) 'SubmitedAtMD'
+		ISNULL(pr.SubmitedAtMD,0) 'SubmitedAtMD',
+		ISNULL(pr.CancelledBy,0) 'CancelledBy',
+		ISNULL(pr.CancelledAt,0) 'CancelledAt'
+
 	FROM INPurchaseRequisition pr
 	INNER JOIN INPurchaseRequisitionDetail prd  ON pr.RequestID = prd.RequestID
 	INNER JOIN INProject p ON pr.ProjectID = p.ProjectID
@@ -45,6 +48,6 @@ END
 GO
 
 exec spINPurchaseRequisitionSearchList 1,null,null,null,741
-SELECT * from INPurchaseRequisitionDetail 
+
 
 

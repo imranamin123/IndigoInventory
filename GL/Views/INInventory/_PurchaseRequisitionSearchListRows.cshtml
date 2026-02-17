@@ -28,6 +28,10 @@
                         <th>
                             <label>Status</label>
                         </th>
+                        <th>
+                            <label>Cancelled</label>
+                        </th>
+
                         <th></th>
                     </tr>
                 </thead>
@@ -63,6 +67,13 @@
                                     }
                                 </td>
 
+                                <td style="text-align: center; padding-right: 90px;">
+                                    @if (item.CancelledBy > 0)
+                                    {
+                                        <i class="fa fa-check"></i>
+                                    }
+                                </td>
+
                                 <td>
                                     @if (item.SubmitedByKPO > 0 || item.SubmitedByMD > 0)
                                     {
@@ -80,7 +91,7 @@
                                     }
                                     @if (Model.RoleID == 5)
                                     {
-                                        if (item.SubmitedByMD <= 0)
+                                        if (item.SubmitedByMD <= 0 && item.CancelledBy <= 0)
                                         {
                                             <a href="/INInventory/PurchaseRequisition/@item.RequestID" title="Edit" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
                                         }

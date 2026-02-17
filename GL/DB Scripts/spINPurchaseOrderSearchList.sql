@@ -28,6 +28,10 @@ BEGIN
 				1
 			ELSE 0
 		END 'Approved', 
+		CASE
+			WHEN ISNULL(po.CancelledBy,0) > 0 THEN
+				'Cancelled'
+		END Cancelled,
 		po.CompanyID
 	FROM dbo.INPurchaseOrder po
 	INNER JOIN INPurchaseOrderDetail pod ON po.PurchaseOrderID = pod.PurchaseOrderID

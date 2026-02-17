@@ -40,5 +40,8 @@ namespace GL.EF
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public string ApprovedBy { get; set; }
+        public Nullable<int> CancelledBy { get; set; }
+        public Nullable<System.DateTime> CancelledAt { get; set; }
+        public string Cancelled { get; set; }
     }
 }

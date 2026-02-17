@@ -18,6 +18,7 @@ namespace GL.EF
         public string ProjectName { get; set; }
         public string Remarks { get; set; }
         public int Approved { get; set; }
+        public string Cancelled { get; set; }
         public Nullable<int> CompanyID { get; set; }
     }
 }

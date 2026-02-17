@@ -173,6 +173,7 @@ namespace GL.ReportsWebForms
 
                     LastRate = v.LastRate.GetValueOrDefault(0),
                     QtyInHand = v.QtyInHand.GetValueOrDefault(0),
+                    Cancelled=v.Cancelled,
 
                 }).ToList();
 
@@ -498,7 +499,10 @@ namespace GL.ReportsWebForms
                     CreatedBy = v.CreatedBy,
                     CreatedAt = v.CreatedAt.GetValueOrDefault(DateTime.Now),
                     ApprovedBy=v.ApprovedBy,
-                    ApprovedAt = v.ApprovedAt.GetValueOrDefault(DateTime.Now)
+                    ApprovedAt = v.ApprovedAt.GetValueOrDefault(DateTime.Now),
+                    Cancelled = v.Cancelled,
+                    CancelledAt=v.CancelledAt.GetValueOrDefault(DateTime.Now),
+                    CancelledBy=v.CancelledBy.GetValueOrDefault(0),
 
                 }).ToList();
 

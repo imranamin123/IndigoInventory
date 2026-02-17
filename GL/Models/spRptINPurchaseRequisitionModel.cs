@@ -30,6 +30,11 @@ namespace GL.Models
         public System.DateTime SubmitedAtKPO { get; set; }
         public string SubmittedByMD { get; set; }
         public System.DateTime SubmitedAtMD { get; set; }
+        public int CancelledBy { get; set; }
+        public System.DateTime CancelledAt { get; set; }
+        public string Cancelled { get; set; }
+
+
 
     }
 }

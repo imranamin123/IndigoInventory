@@ -22,5 +22,7 @@ namespace GL.EF
         public System.DateTime SubmitedAtKPO { get; set; }
         public int SubmitedByMD { get; set; }
         public System.DateTime SubmitedAtMD { get; set; }
+        public int CancelledBy { get; set; }
+        public System.DateTime CancelledAt { get; set; }
     }
 }

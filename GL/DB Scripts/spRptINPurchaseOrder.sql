@@ -43,7 +43,13 @@ BEGIN
 		c.Name 'Company',
 		uCreate.Name 'CreatedBy',
 		po.CreatedAt,
-		uApprove.Name 'ApprovedBy'
+		uApprove.Name 'ApprovedBy',
+		po.CancelledBy,
+		po.CancelledAt,
+		CASE
+			WHEN po.CancelledBy > 0 THEN
+				'Cancelled'
+		END Cancelled
 		
 
 	FROM INPurchaseOrder po
@@ -103,9 +109,9 @@ END
 
 go
 
-exec spRptINPurchaseOrder 10012
+exec spRptINPurchaseOrder 72
 
-select * from INPurchaseOrderDetail
+
 
 
 

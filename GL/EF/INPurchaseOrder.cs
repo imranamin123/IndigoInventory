@@ -23,6 +23,8 @@ namespace GL.EF
         public string PaymentTerms { get; set; }
         public Nullable<System.DateTime> ApprovedAt { get; set; }
         public Nullable<int> ApprovedBy { get; set; }
+        public Nullable<System.DateTime> CancelledAt { get; set; }
+        public Nullable<int> CancelledBy { get; set; }
         public Nullable<int> POStatusID { get; set; }
         public string Remarks { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }

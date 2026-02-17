@@ -424,6 +424,29 @@ namespace GL.DAL
             }
         }
 
+        public bool INPurchaseRequisitionCancell(int RequestID, int UserID, int RoleID)
+        {
+            try
+            {
+                var INPurchaseRequisition = db.INPurchaseRequisitions.Where(x => x.RequestID == RequestID).FirstOrDefault();
+                var role = db.SecRoles.Where(x => x.RoleID == RoleID).FirstOrDefault();
+                if (role.RoleID == 4 || role.RoleID == 5)
+                {
+                    if (role.RoleID == 5)
+                    {
+                        INPurchaseRequisition.CancelledBy = UserID;
+                        INPurchaseRequisition.CancelledAt = DateTime.Now;
+                    }
+                    db.INPurchaseRequisitions.AddOrUpdate(INPurchaseRequisition);
+                    db.SaveChanges();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         public bool INPurchaseRequisitionSave(INPurchaseRequisition INPurchaseRequisition)
         {
@@ -482,7 +505,17 @@ namespace GL.DAL
             try
             {
                 var INPurchaseRequisition = db.INPurchaseRequisitions.Where(x => x.RequestID == id).FirstOrDefault();
-                INPurchaseRequisition.SubmitedByMD = 0;
+                if(INPurchaseRequisition.CancelledBy > 0)
+                {
+                    INPurchaseRequisition.CancelledBy = 0;
+                    INPurchaseRequisition.CancelledAt = null;
+                }
+                if(INPurchaseRequisition.SubmitedByMD > 0)
+                {
+                    INPurchaseRequisition.SubmitedByMD = 0;
+                    INPurchaseRequisition.SubmitedAtMD = null;
+                }
+                
                 db.INPurchaseRequisitions.AddOrUpdate(INPurchaseRequisition);
                 db.SaveChanges();
 
@@ -1676,6 +1709,23 @@ namespace GL.DAL
             }
         }
 
+        public bool POCancel(Int64 PurchaseOrderID, int userid)
+        {
+            try
+            {
+                var INPurchaseOrder = db.INPurchaseOrders.Where(x => x.PurchaseOrderID == PurchaseOrderID).FirstOrDefault();
+
+                INPurchaseOrder.CancelledBy = userid;
+                INPurchaseOrder.CancelledAt = DateTime.Now;
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public bool POApprove(Int64 PurchaseOrderID, int userid)
         {
             try
@@ -1767,6 +1817,14 @@ namespace GL.DAL
             {
 
                 var INPurchaseOrder = db.INPurchaseOrders.Where(x => x.PurchaseOrderID == PurchaseOrderID).FirstOrDefault();
+
+                if(INPurchaseOrder.CancelledBy > 0 )
+                {
+                    INPurchaseOrder.CancelledBy = null;
+                    INPurchaseOrder.CancelledAt = null;
+                    db.SaveChanges();
+                    return true;
+                }
 
                 INPurchaseOrder.ApprovedBy = null;
                 INPurchaseOrder.POStatusID = 1; // Pending Approval

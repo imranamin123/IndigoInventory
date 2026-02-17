@@ -716,6 +716,8 @@
           <Property Name="PaymentTerms" Type="nvarchar" MaxLength="100" />
           <Property Name="ApprovedAt" Type="datetime" />
           <Property Name="ApprovedBy" Type="int" />
+          <Property Name="CancelledAt" Type="datetime" />
+          <Property Name="CancelledBy" Type="int" />
           <Property Name="POStatusID" Type="int" />
           <Property Name="Remarks" Type="nvarchar" MaxLength="500" />
           <Property Name="CreatedAt" Type="datetime" />
@@ -759,6 +761,8 @@
           <Property Name="SubmitedAtKPO" Type="datetime" />
           <Property Name="SubmitedByMD" Type="int" />
           <Property Name="SubmitedAtMD" Type="datetime" />
+          <Property Name="CancelledBy" Type="int" />
+          <Property Name="CancelledAt" Type="datetime" />
           <Property Name="RequestTypeID" Type="int" />
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="CreatedBy" Type="int" />
@@ -3650,21 +3654,9 @@
             <Parameter Name="ItemID" Mode="In" Type="Int64" />
             <Parameter Name="RequestDetailID" Mode="In" Type="Int64" />
           </FunctionImport>
-          <EntitySet Name="INPurchaseRequisitions" EntityType="GLModel.INPurchaseRequisition" />
-          <AssociationSet Name="FK_INPurchaseRequisition_INRequestType" Association="GLModel.FK_INPurchaseRequisition_INRequestType">
-            <End Role="INRequestType" EntitySet="INRequestTypes" />
-            <End Role="INPurchaseRequisition" EntitySet="INPurchaseRequisitions" />
-          </AssociationSet>
-          <FunctionImport Name="spRptINPurchaseRequisition" ReturnType="Collection(GLModel.spRptINPurchaseRequisition_Result)">
-          <Parameter Name="RequestID" Mode="In" Type="Int32" />
-          </FunctionImport>
           <EntitySet Name="INPurchaseRequisitionDetails" EntityType="GLModel.INPurchaseRequisitionDetail" />
           <EntitySet Name="INStoreIssueNoteDetails" EntityType="GLModel.INStoreIssueNoteDetail" />
           <EntitySet Name="INStoreTransferNoteDetails" EntityType="GLModel.INStoreTransferNoteDetail" />
-          <AssociationSet Name="FK_INPurchaseReauisitionDetail_INPurchaseRequisition" Association="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition">
-            <End Role="INPurchaseRequisition" EntitySet="INPurchaseRequisitions" />
-            <End Role="INPurchaseRequisitionDetail" EntitySet="INPurchaseRequisitionDetails" />
-          </AssociationSet>
           <AssociationSet Name="FK_INStoreIssueNoteDetail_INStoreIssueNote" Association="GLModel.FK_INStoreIssueNoteDetail_INStoreIssueNote">
             <End Role="INStoreIssueNote" EntitySet="INStoreIssueNotes" />
             <End Role="INStoreIssueNoteDetail" EntitySet="INStoreIssueNoteDetails" />
@@ -3691,7 +3683,6 @@
           <FunctionImport Name="spRptINGoodsReceiptNote" ReturnType="Collection(GLModel.spRptINGoodsReceiptNote_Result)">
           <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int64" />
           </FunctionImport>
-          <EntitySet Name="INPurchaseOrders" EntityType="GLModel.INPurchaseOrder" />
           <FunctionImport Name="spINGRNItemsForPODropdown" ReturnType="Collection(GLModel.spINGRNItemsForPODropdown_Result)">
           <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int64" />
           </FunctionImport>
@@ -3723,9 +3714,6 @@
           <EntitySet Name="INPurchaseOrderDetails" EntityType="GLModel.INPurchaseOrderDetail" />
           <FunctionImport Name="spINPurchaseOrderDetailRows" ReturnType="Collection(GLModel.spINPurchaseOrderDetailRows_Result)">
           <Parameter Name="INPurchaseOrderID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="spRptINPurchaseOrder" ReturnType="Collection(GLModel.spRptINPurchaseOrder_Result)">
-          <Parameter Name="PurchaseOrderID" Mode="In" Type="Int64" />
           </FunctionImport>
           <EntitySet Name="INItems" EntityType="GLModel.INItem" />
           <AssociationSet Name="FK_INItem_INCategory" Association="GLModel.FK_INItem_INCategory">
@@ -3811,20 +3799,6 @@
             <Parameter Name="ToDate" Mode="In" Type="DateTime" />
             <Parameter Name="ItemID" Mode="In" Type="Int64" />
           </FunctionImport>
-          <FunctionImport Name="spINPurchaseOrderSearchList" ReturnType="Collection(GLModel.spINPurchaseOrderSearchList_Result)">
-            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
-            <Parameter Name="UserID" Mode="In" Type="Int32" />
-            <Parameter Name="FromDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ToDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ItemID" Mode="In" Type="Int64" />
-          </FunctionImport>
-          <FunctionImport Name="spINPurchaseRequisitionSearchList" ReturnType="Collection(GLModel.spINPurchaseRequisitionSearchList_Result)">
-            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
-            <Parameter Name="UserID" Mode="In" Type="Int32" />
-            <Parameter Name="RequestDateFrom" Mode="In" Type="DateTime" />
-            <Parameter Name="RequestDateTo" Mode="In" Type="DateTime" />
-            <Parameter Name="ItemID" Mode="In" Type="Int64" />
-          </FunctionImport>
           <FunctionImport Name="spINStoreIssueNoteSearchList" ReturnType="Collection(GLModel.spINStoreIssueNoteSearchList_Result)">
             <Parameter Name="CompanyID" Mode="In" Type="Int32" />
             <Parameter Name="UserID" Mode="In" Type="Int32" />
@@ -3879,6 +3853,36 @@
             <Parameter Name="ProjectID" Mode="In" Type="Int32" />
             <Parameter Name="FromDate" Mode="In" Type="DateTime" />
             <Parameter Name="ToDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="INPurchaseRequisitions" EntityType="GLModel.INPurchaseRequisition" />
+          <AssociationSet Name="FK_INPurchaseReauisitionDetail_INPurchaseRequisition" Association="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition">
+            <End Role="INPurchaseRequisition" EntitySet="INPurchaseRequisitions" />
+            <End Role="INPurchaseRequisitionDetail" EntitySet="INPurchaseRequisitionDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_INPurchaseRequisition_INRequestType" Association="GLModel.FK_INPurchaseRequisition_INRequestType">
+            <End Role="INRequestType" EntitySet="INRequestTypes" />
+            <End Role="INPurchaseRequisition" EntitySet="INPurchaseRequisitions" />
+          </AssociationSet>
+          <FunctionImport Name="spINPurchaseRequisitionSearchList" ReturnType="Collection(GLModel.spINPurchaseRequisitionSearchList_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
+            <Parameter Name="RequestDateFrom" Mode="In" Type="DateTime" />
+            <Parameter Name="RequestDateTo" Mode="In" Type="DateTime" />
+            <Parameter Name="ItemID" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <EntitySet Name="INPurchaseOrders" EntityType="GLModel.INPurchaseOrder" />
+          <FunctionImport Name="spINPurchaseOrderSearchList" ReturnType="Collection(GLModel.spINPurchaseOrderSearchList_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
+            <Parameter Name="FromDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ToDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ItemID" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <FunctionImport Name="spRptINPurchaseRequisition" ReturnType="Collection(GLModel.spRptINPurchaseRequisition_Result)">
+          <Parameter Name="RequestID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="spRptINPurchaseOrder" ReturnType="Collection(GLModel.spRptINPurchaseOrder_Result)">
+            <Parameter Name="PurchaseOrderID" Mode="In" Type="Int64" />
           </FunctionImport>
           </EntityContainer>
         <ComplexType Name="spAPInvoiceDetailRows_Result">
@@ -4943,66 +4947,6 @@
           <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
           <Property Type="Decimal" Name="ApprovedQty" Nullable="false" Precision="18" Scale="2" />
         </ComplexType>
-        <EntityType Name="INPurchaseRequisition">
-          <Key>
-            <PropertyRef Name="RequestID" />
-          </Key>
-          <Property Name="RequestID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RequestDate" Type="DateTime" Precision="3" />
-          <Property Name="ProjectID" Type="Int32" />
-          <Property Name="DocumentNo" Type="Int64" />
-          <Property Name="ManualDemandNo" Type="Int64" />
-          <Property Name="ProjectDocumentNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Remarks" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="SubmitedByKPO" Type="Int32" />
-          <Property Name="SubmitedAtKPO" Type="DateTime" Precision="3" />
-          <Property Name="SubmitedByMD" Type="Int32" />
-          <Property Name="SubmitedAtMD" Type="DateTime" Precision="3" />
-          <Property Name="RequestTypeID" Type="Int32" />
-          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedBy" Type="Int32" />
-          <Property Name="CompanyID" Type="Int32" />
-          <NavigationProperty Name="INRequestType" Relationship="GLModel.FK_INPurchaseRequisition_INRequestType" FromRole="INPurchaseRequisition" ToRole="INRequestType" />
-          <NavigationProperty Name="INPurchaseRequisitionDetails" Relationship="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition" FromRole="INPurchaseRequisition" ToRole="INPurchaseRequisitionDetail" />
-        </EntityType>
-        <Association Name="FK_INPurchaseRequisition_INRequestType">
-          <End Type="GLModel.INRequestType" Role="INRequestType" Multiplicity="0..1" />
-          <End Type="GLModel.INPurchaseRequisition" Role="INPurchaseRequisition" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="INRequestType">
-              <PropertyRef Name="RequestTypeID" />
-            </Principal>
-            <Dependent Role="INPurchaseRequisition">
-              <PropertyRef Name="RequestTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <ComplexType Name="spRptINPurchaseRequisition_Result">
-          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
-          <Property Type="Int64" Name="RequestID" Nullable="false" />
-          <Property Type="DateTime" Name="RequestDate" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="DocumentNo" Nullable="true" MaxLength="50" />
-          <Property Type="Int64" Name="ManualDemandNo" Nullable="true" />
-          <Property Type="String" Name="mRemarks" Nullable="true" MaxLength="500" />
-          <Property Type="Int64" Name="RequestDetailID" Nullable="false" />
-          <Property Type="Int64" Name="ItemID" Nullable="true" />
-          <Property Type="Int64" Name="ItemCode" Nullable="true" />
-          <Property Type="String" Name="Item" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
-          <Property Type="Decimal" Name="RequestedQty" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="ApprovedQty" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="QtyInHand" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="LastRate" Nullable="true" Precision="18" Scale="0" />
-          <Property Type="String" Name="dRemarks" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="SubmittedByKPO" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="SubmitedAtKPO" Nullable="true" Precision="23" />
-          <Property Type="String" Name="SubmittedByMD" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="SubmitedAtMD" Nullable="true" Precision="23" />
-        </ComplexType>
         <EntityType Name="INPurchaseRequisitionDetail">
           <Key>
             <PropertyRef Name="RequestDetailID" />
@@ -5021,8 +4965,8 @@
           <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Int32" />
           <Property Name="CompanyID" Type="Int32" />
-          <NavigationProperty Name="INPurchaseRequisition" Relationship="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition" FromRole="INPurchaseRequisitionDetail" ToRole="INPurchaseRequisition" />
           <NavigationProperty Name="INItem" Relationship="GLModel.FK_INPurchaseReauisitionDetail_INItem" FromRole="INPurchaseRequisitionDetail" ToRole="INItem" />
+          <NavigationProperty Name="INPurchaseRequisition" Relationship="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition" FromRole="INPurchaseRequisitionDetail" ToRole="INPurchaseRequisition" />
         </EntityType>
         <EntityType Name="INStoreIssueNoteDetail">
           <Key>
@@ -5060,18 +5004,6 @@
           <NavigationProperty Name="INStoreTransferNote" Relationship="GLModel.FK_INStoreTransferNoteDetail_INStoreTransferNote" FromRole="INStoreTransferNoteDetail" ToRole="INStoreTransferNote" />
           <NavigationProperty Name="INItem" Relationship="GLModel.FK_INStoreTransferNoteDetail_INItem" FromRole="INStoreTransferNoteDetail" ToRole="INItem" />
         </EntityType>
-        <Association Name="FK_INPurchaseReauisitionDetail_INPurchaseRequisition">
-          <End Type="GLModel.INPurchaseRequisition" Role="INPurchaseRequisition" Multiplicity="0..1" />
-          <End Type="GLModel.INPurchaseRequisitionDetail" Role="INPurchaseRequisitionDetail" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="INPurchaseRequisition">
-              <PropertyRef Name="RequestID" />
-            </Principal>
-            <Dependent Role="INPurchaseRequisitionDetail">
-              <PropertyRef Name="RequestID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_INStoreIssueNoteDetail_INStoreIssueNote">
           <End Type="GLModel.INStoreIssueNote" Role="INStoreIssueNote" Multiplicity="0..1" />
           <End Type="GLModel.INStoreIssueNoteDetail" Role="INStoreIssueNoteDetail" Multiplicity="*" />
@@ -5212,27 +5144,6 @@
           <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
           <Property Type="String" Name="ReceivedBy" Nullable="true" MaxLength="200" />
         </ComplexType>
-        <EntityType Name="INPurchaseOrder">
-          <Key>
-            <PropertyRef Name="PurchaseOrderID" />
-          </Key>
-          <Property Name="PurchaseOrderID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PurchaseOrderDate" Type="DateTime" Precision="3" />
-          <Property Name="RequestID" Type="Int64" />
-          <Property Name="GoodsReceiptNoteID" Type="Int64" />
-          <Property Name="ProjectID" Type="Int32" />
-          <Property Name="APVendorID" Type="Int32" />
-          <Property Name="PaymentTerms" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ApprovedAt" Type="DateTime" Precision="3" />
-          <Property Name="ApprovedBy" Type="Int32" />
-          <Property Name="POStatusID" Type="Int32" />
-          <Property Name="Remarks" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedBy" Type="Int32" />
-          <Property Name="CompanyID" Type="Int32" />
-        </EntityType>
         <ComplexType Name="spINGRNItemsForPODropdown_Result">
           <Property Type="String" Name="ItemID" Nullable="true" MaxLength="101" />
           <Property Type="String" Name="Description" Nullable="true" MaxLength="500" />
@@ -5358,35 +5269,6 @@
           <Property Type="Int32" Name="ModifiedBy" Nullable="true" />
           <Property Type="DateTime" Name="ModifiedAt" Nullable="true" Precision="23" />
           <Property Type="Int32" Name="CompanyID" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="spRptINPurchaseOrder_Result">
-          <Property Type="Int64" Name="PurchaseOrderID" Nullable="false" />
-          <Property Type="DateTime" Name="PurchaseOrderDate" Nullable="true" Precision="23" />
-          <Property Type="Int32" Name="ProjectID" Nullable="true" />
-          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="PaymentTerms" Nullable="true" MaxLength="100" />
-          <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
-          <Property Type="Int32" Name="APVendorID" Nullable="true" />
-          <Property Type="DateTime" Name="ApprovedAt" Nullable="true" Precision="23" />
-          <Property Type="String" Name="mRemarks" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="APVendorName" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="ContactNumber" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="ContactPerson" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="VendorAddress" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="BankDetails" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="Email" Nullable="true" MaxLength="50" />
-          <Property Type="Int64" Name="ItemID" Nullable="true" />
-          <Property Type="String" Name="Item" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
-          <Property Type="Decimal" Name="ApprovedQty" Nullable="true" Precision="18" Scale="4" />
-          <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="DiscountedPrice" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="Amount" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="CreatedAt" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ApprovedBy" Nullable="true" MaxLength="200" />
         </ComplexType>
         <EntityType Name="INItem">
           <Key>
@@ -5729,25 +5611,6 @@
           <Property Type="Boolean" Name="IsPosted" Nullable="false" />
           <Property Type="Int32" Name="CompanyID" Nullable="true" />
         </ComplexType>
-        <ComplexType Name="spINPurchaseOrderSearchList_Result">
-          <Property Type="Int64" Name="PurchaseOrderID" Nullable="false" />
-          <Property Type="DateTime" Name="PurchaseOrderDate" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
-          <Property Type="Int32" Name="Approved" Nullable="false" />
-          <Property Type="Int32" Name="CompanyID" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="spINPurchaseRequisitionSearchList_Result">
-          <Property Type="Int64" Name="RequestID" Nullable="false" />
-          <Property Type="DateTime" Name="RequestDate" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="ProjectDocumentNo" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
-          <Property Type="Int32" Name="SubmitedByKPO" Nullable="false" />
-          <Property Type="DateTime" Name="SubmitedAtKPO" Nullable="false" Precision="23" />
-          <Property Type="Int32" Name="SubmitedByMD" Nullable="false" />
-          <Property Type="DateTime" Name="SubmitedAtMD" Nullable="false" Precision="23" />
-        </ComplexType>
         <ComplexType Name="spINStoreIssueNoteSearchList_Result">
           <Property Type="Int64" Name="StoreIssueNoteID" Nullable="false" />
           <Property Type="DateTime" Name="StoreIssueNoteDate" Nullable="true" Precision="23" />
@@ -5883,6 +5746,158 @@
           <Property Type="Decimal" Name="ReceivedQty" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Decimal" Name="Rate" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Decimal" Name="Amount" Nullable="true" Precision="18" Scale="2" />
+        </ComplexType>
+        <EntityType Name="INPurchaseRequisition">
+          <Key>
+            <PropertyRef Name="RequestID" />
+          </Key>
+          <Property Name="RequestID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RequestDate" Type="DateTime" Precision="3" />
+          <Property Name="ProjectID" Type="Int32" />
+          <Property Name="DocumentNo" Type="Int64" />
+          <Property Name="ManualDemandNo" Type="Int64" />
+          <Property Name="ProjectDocumentNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Remarks" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="SubmitedByKPO" Type="Int32" />
+          <Property Name="SubmitedAtKPO" Type="DateTime" Precision="3" />
+          <Property Name="SubmitedByMD" Type="Int32" />
+          <Property Name="SubmitedAtMD" Type="DateTime" Precision="3" />
+          <Property Name="CancelledBy" Type="Int32" />
+          <Property Name="CancelledAt" Type="DateTime" Precision="3" />
+          <Property Name="RequestTypeID" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int32" />
+          <Property Name="CompanyID" Type="Int32" />
+          <NavigationProperty Name="INPurchaseRequisitionDetails" Relationship="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition" FromRole="INPurchaseRequisition" ToRole="INPurchaseRequisitionDetail" />
+          <NavigationProperty Name="INRequestType" Relationship="GLModel.FK_INPurchaseRequisition_INRequestType" FromRole="INPurchaseRequisition" ToRole="INRequestType" />
+        </EntityType>
+        <Association Name="FK_INPurchaseReauisitionDetail_INPurchaseRequisition">
+          <End Type="GLModel.INPurchaseRequisition" Role="INPurchaseRequisition" Multiplicity="0..1" />
+          <End Type="GLModel.INPurchaseRequisitionDetail" Role="INPurchaseRequisitionDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="INPurchaseRequisition">
+              <PropertyRef Name="RequestID" />
+            </Principal>
+            <Dependent Role="INPurchaseRequisitionDetail">
+              <PropertyRef Name="RequestID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_INPurchaseRequisition_INRequestType">
+          <End Type="GLModel.INRequestType" Role="INRequestType" Multiplicity="0..1" />
+          <End Type="GLModel.INPurchaseRequisition" Role="INPurchaseRequisition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="INRequestType">
+              <PropertyRef Name="RequestTypeID" />
+            </Principal>
+            <Dependent Role="INPurchaseRequisition">
+              <PropertyRef Name="RequestTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="spINPurchaseRequisitionSearchList_Result">
+          <Property Type="Int64" Name="RequestID" Nullable="false" />
+          <Property Type="DateTime" Name="RequestDate" Nullable="true" Precision="23" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="ProjectDocumentNo" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
+          <Property Type="Int32" Name="SubmitedByKPO" Nullable="false" />
+          <Property Type="DateTime" Name="SubmitedAtKPO" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="SubmitedByMD" Nullable="false" />
+          <Property Type="DateTime" Name="SubmitedAtMD" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="CancelledBy" Nullable="false" />
+          <Property Type="DateTime" Name="CancelledAt" Nullable="false" Precision="23" />
+        </ComplexType>
+        <EntityType Name="INPurchaseOrder">
+          <Key>
+            <PropertyRef Name="PurchaseOrderID" />
+          </Key>
+          <Property Name="PurchaseOrderID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PurchaseOrderDate" Type="DateTime" Precision="3" />
+          <Property Name="RequestID" Type="Int64" />
+          <Property Name="GoodsReceiptNoteID" Type="Int64" />
+          <Property Name="ProjectID" Type="Int32" />
+          <Property Name="APVendorID" Type="Int32" />
+          <Property Name="PaymentTerms" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ApprovedAt" Type="DateTime" Precision="3" />
+          <Property Name="ApprovedBy" Type="Int32" />
+          <Property Name="CancelledAt" Type="DateTime" Precision="3" />
+          <Property Name="CancelledBy" Type="Int32" />
+          <Property Name="POStatusID" Type="Int32" />
+          <Property Name="Remarks" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int32" />
+          <Property Name="CompanyID" Type="Int32" />
+        </EntityType>
+        <ComplexType Name="spINPurchaseOrderSearchList_Result">
+          <Property Type="Int64" Name="PurchaseOrderID" Nullable="false" />
+          <Property Type="DateTime" Name="PurchaseOrderDate" Nullable="true" Precision="23" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
+          <Property Type="Int32" Name="Approved" Nullable="false" />
+          <Property Type="String" Name="Cancelled" Nullable="true" MaxLength="9" />
+          <Property Type="Int32" Name="CompanyID" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="spRptINPurchaseRequisition_Result">
+          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
+          <Property Type="Int64" Name="RequestID" Nullable="false" />
+          <Property Type="DateTime" Name="RequestDate" Nullable="true" Precision="23" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="DocumentNo" Nullable="true" MaxLength="50" />
+          <Property Type="Int64" Name="ManualDemandNo" Nullable="true" />
+          <Property Type="String" Name="mRemarks" Nullable="true" MaxLength="500" />
+          <Property Type="Int64" Name="RequestDetailID" Nullable="false" />
+          <Property Type="Int64" Name="ItemID" Nullable="true" />
+          <Property Type="Int64" Name="ItemCode" Nullable="true" />
+          <Property Type="String" Name="Item" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
+          <Property Type="Decimal" Name="RequestedQty" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="ApprovedQty" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="QtyInHand" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="LastRate" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="String" Name="dRemarks" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="SubmittedByKPO" Nullable="true" MaxLength="200" />
+          <Property Type="DateTime" Name="SubmitedAtKPO" Nullable="true" Precision="23" />
+          <Property Type="String" Name="SubmittedByMD" Nullable="true" MaxLength="200" />
+          <Property Type="DateTime" Name="SubmitedAtMD" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Cancelled" Nullable="true" MaxLength="9" />
+        </ComplexType>
+        <ComplexType Name="spRptINPurchaseOrder_Result">
+          <Property Type="Int64" Name="PurchaseOrderID" Nullable="false" />
+          <Property Type="DateTime" Name="PurchaseOrderDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="ProjectID" Nullable="true" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="PaymentTerms" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="APVendorID" Nullable="true" />
+          <Property Type="DateTime" Name="ApprovedAt" Nullable="true" Precision="23" />
+          <Property Type="String" Name="mRemarks" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="APVendorName" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="ContactNumber" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ContactPerson" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="VendorAddress" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="BankDetails" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="50" />
+          <Property Type="Int64" Name="ItemID" Nullable="true" />
+          <Property Type="String" Name="Item" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
+          <Property Type="Decimal" Name="ApprovedQty" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="DiscountedPrice" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="Amount" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="200" />
+          <Property Type="DateTime" Name="CreatedAt" Nullable="true" Precision="23" />
+          <Property Type="String" Name="ApprovedBy" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="CancelledBy" Nullable="true" />
+          <Property Type="DateTime" Name="CancelledAt" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Cancelled" Nullable="true" MaxLength="9" />
         </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
@@ -7973,57 +7988,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="INPurchaseRequisitions">
-            <EntityTypeMapping TypeName="GLModel.INPurchaseRequisition">
-              <MappingFragment StoreEntitySet="INPurchaseRequisition">
-                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
-                <ScalarProperty Name="SubmitedAtMD" ColumnName="SubmitedAtMD" />
-                <ScalarProperty Name="SubmitedByMD" ColumnName="SubmitedByMD" />
-                <ScalarProperty Name="SubmitedAtKPO" ColumnName="SubmitedAtKPO" />
-                <ScalarProperty Name="SubmitedByKPO" ColumnName="SubmitedByKPO" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="ProjectDocumentNo" ColumnName="ProjectDocumentNo" />
-                <ScalarProperty Name="ManualDemandNo" ColumnName="ManualDemandNo" />
-                <ScalarProperty Name="DocumentNo" ColumnName="DocumentNo" />
-                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
-                <ScalarProperty Name="RequestDate" ColumnName="RequestDate" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="spRptINPurchaseRequisition" FunctionName="GLModel.Store.spRptINPurchaseRequisition">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spRptINPurchaseRequisition_Result">
-                <ScalarProperty Name="Company" ColumnName="Company" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="RequestDate" ColumnName="RequestDate" />
-                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
-                <ScalarProperty Name="DocumentNo" ColumnName="DocumentNo" />
-                <ScalarProperty Name="ManualDemandNo" ColumnName="ManualDemandNo" />
-                <ScalarProperty Name="mRemarks" ColumnName="mRemarks" />
-                <ScalarProperty Name="RequestDetailID" ColumnName="RequestDetailID" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="ItemCode" ColumnName="ItemCode" />
-                <ScalarProperty Name="Item" ColumnName="Item" />
-                <ScalarProperty Name="Size" ColumnName="Size" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="RequestedQty" ColumnName="RequestedQty" />
-                <ScalarProperty Name="ApprovedQty" ColumnName="ApprovedQty" />
-                <ScalarProperty Name="QtyInHand" ColumnName="QtyInHand" />
-                <ScalarProperty Name="LastRate" ColumnName="LastRate" />
-                <ScalarProperty Name="dRemarks" ColumnName="dRemarks" />
-                <ScalarProperty Name="SubmittedByKPO" ColumnName="SubmittedByKPO" />
-                <ScalarProperty Name="SubmitedAtKPO" ColumnName="SubmitedAtKPO" />
-                <ScalarProperty Name="SubmittedByMD" ColumnName="SubmittedByMD" />
-                <ScalarProperty Name="SubmitedAtMD" ColumnName="SubmitedAtMD" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <EntitySetMapping Name="INPurchaseRequisitionDetails">
             <EntityTypeMapping TypeName="GLModel.INPurchaseRequisitionDetail">
               <MappingFragment StoreEntitySet="INPurchaseRequisitionDetail">
@@ -8186,28 +8150,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="INPurchaseOrders">
-            <EntityTypeMapping TypeName="GLModel.INPurchaseOrder">
-              <MappingFragment StoreEntitySet="INPurchaseOrder">
-                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="POStatusID" ColumnName="POStatusID" />
-                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
-                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
-                <ScalarProperty Name="PaymentTerms" ColumnName="PaymentTerms" />
-                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
-                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
-                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
-                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="spINGRNItemsForPODropdown" FunctionName="GLModel.Store.spINGRNItemsForPODropdown">
             <ResultMapping>
               <ComplexTypeMapping TypeName="GLModel.spINGRNItemsForPODropdown_Result">
@@ -8344,39 +8286,6 @@
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
                 <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spRptINPurchaseOrder" FunctionName="GLModel.Store.spRptINPurchaseOrder">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spRptINPurchaseOrder_Result">
-                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
-                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
-                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
-                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
-                <ScalarProperty Name="PaymentTerms" ColumnName="PaymentTerms" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
-                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
-                <ScalarProperty Name="mRemarks" ColumnName="mRemarks" />
-                <ScalarProperty Name="APVendorName" ColumnName="APVendorName" />
-                <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
-                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
-                <ScalarProperty Name="VendorAddress" ColumnName="VendorAddress" />
-                <ScalarProperty Name="BankDetails" ColumnName="BankDetails" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="Item" ColumnName="Item" />
-                <ScalarProperty Name="Size" ColumnName="Size" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="ApprovedQty" ColumnName="ApprovedQty" />
-                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
-                <ScalarProperty Name="DiscountedPrice" ColumnName="DiscountedPrice" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Company" ColumnName="Company" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -8591,33 +8500,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spINPurchaseOrderSearchList" FunctionName="GLModel.Store.spINPurchaseOrderSearchList">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spINPurchaseOrderSearchList_Result">
-                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
-                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
-                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="Approved" ColumnName="Approved" />
-                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spINPurchaseRequisitionSearchList" FunctionName="GLModel.Store.spINPurchaseRequisitionSearchList">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spINPurchaseRequisitionSearchList_Result">
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="RequestDate" ColumnName="RequestDate" />
-                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
-                <ScalarProperty Name="ProjectDocumentNo" ColumnName="ProjectDocumentNo" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="SubmitedByKPO" ColumnName="SubmitedByKPO" />
-                <ScalarProperty Name="SubmitedAtKPO" ColumnName="SubmitedAtKPO" />
-                <ScalarProperty Name="SubmitedByMD" ColumnName="SubmitedByMD" />
-                <ScalarProperty Name="SubmitedAtMD" ColumnName="SubmitedAtMD" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="spINStoreIssueNoteSearchList" FunctionName="GLModel.Store.spINStoreIssueNoteSearchList">
             <ResultMapping>
               <ComplexTypeMapping TypeName="GLModel.spINStoreIssueNoteSearchList_Result">
@@ -8791,6 +8673,150 @@
                 <ScalarProperty Name="ReceivedQty" ColumnName="ReceivedQty" />
                 <ScalarProperty Name="Rate" ColumnName="Rate" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="INPurchaseRequisitions">
+            <EntityTypeMapping TypeName="GLModel.INPurchaseRequisition">
+              <MappingFragment StoreEntitySet="INPurchaseRequisition">
+                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
+                <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
+                <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
+                <ScalarProperty Name="SubmitedAtMD" ColumnName="SubmitedAtMD" />
+                <ScalarProperty Name="SubmitedByMD" ColumnName="SubmitedByMD" />
+                <ScalarProperty Name="SubmitedAtKPO" ColumnName="SubmitedAtKPO" />
+                <ScalarProperty Name="SubmitedByKPO" ColumnName="SubmitedByKPO" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="ProjectDocumentNo" ColumnName="ProjectDocumentNo" />
+                <ScalarProperty Name="ManualDemandNo" ColumnName="ManualDemandNo" />
+                <ScalarProperty Name="DocumentNo" ColumnName="DocumentNo" />
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="RequestDate" ColumnName="RequestDate" />
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="spINPurchaseRequisitionSearchList" FunctionName="GLModel.Store.spINPurchaseRequisitionSearchList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spINPurchaseRequisitionSearchList_Result">
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="RequestDate" ColumnName="RequestDate" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="ProjectDocumentNo" ColumnName="ProjectDocumentNo" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="SubmitedByKPO" ColumnName="SubmitedByKPO" />
+                <ScalarProperty Name="SubmitedAtKPO" ColumnName="SubmitedAtKPO" />
+                <ScalarProperty Name="SubmitedByMD" ColumnName="SubmitedByMD" />
+                <ScalarProperty Name="SubmitedAtMD" ColumnName="SubmitedAtMD" />
+                <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
+                <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="INPurchaseOrders">
+            <EntityTypeMapping TypeName="GLModel.INPurchaseOrder">
+              <MappingFragment StoreEntitySet="INPurchaseOrder">
+                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="POStatusID" ColumnName="POStatusID" />
+                <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
+                <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
+                <ScalarProperty Name="PaymentTerms" ColumnName="PaymentTerms" />
+                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
+                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="spINPurchaseOrderSearchList" FunctionName="GLModel.Store.spINPurchaseOrderSearchList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spINPurchaseOrderSearchList_Result">
+                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
+                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Approved" ColumnName="Approved" />
+                <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
+                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spRptINPurchaseRequisition" FunctionName="GLModel.Store.spRptINPurchaseRequisition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spRptINPurchaseRequisition_Result">
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="RequestDate" ColumnName="RequestDate" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="DocumentNo" ColumnName="DocumentNo" />
+                <ScalarProperty Name="ManualDemandNo" ColumnName="ManualDemandNo" />
+                <ScalarProperty Name="mRemarks" ColumnName="mRemarks" />
+                <ScalarProperty Name="RequestDetailID" ColumnName="RequestDetailID" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemCode" ColumnName="ItemCode" />
+                <ScalarProperty Name="Item" ColumnName="Item" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="RequestedQty" ColumnName="RequestedQty" />
+                <ScalarProperty Name="ApprovedQty" ColumnName="ApprovedQty" />
+                <ScalarProperty Name="QtyInHand" ColumnName="QtyInHand" />
+                <ScalarProperty Name="LastRate" ColumnName="LastRate" />
+                <ScalarProperty Name="dRemarks" ColumnName="dRemarks" />
+                <ScalarProperty Name="SubmittedByKPO" ColumnName="SubmittedByKPO" />
+                <ScalarProperty Name="SubmitedAtKPO" ColumnName="SubmitedAtKPO" />
+                <ScalarProperty Name="SubmittedByMD" ColumnName="SubmittedByMD" />
+                <ScalarProperty Name="SubmitedAtMD" ColumnName="SubmitedAtMD" />
+                <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spRptINPurchaseOrder" FunctionName="GLModel.Store.spRptINPurchaseOrder">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spRptINPurchaseOrder_Result">
+                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
+                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="PaymentTerms" ColumnName="PaymentTerms" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
+                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
+                <ScalarProperty Name="mRemarks" ColumnName="mRemarks" />
+                <ScalarProperty Name="APVendorName" ColumnName="APVendorName" />
+                <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
+                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
+                <ScalarProperty Name="VendorAddress" ColumnName="VendorAddress" />
+                <ScalarProperty Name="BankDetails" ColumnName="BankDetails" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Item" ColumnName="Item" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="ApprovedQty" ColumnName="ApprovedQty" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="DiscountedPrice" ColumnName="DiscountedPrice" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
+                <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
+                <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

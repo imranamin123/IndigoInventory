@@ -34,5 +34,8 @@ namespace GL.Models
         public string CreatedBy { get; set; }
         public System.DateTime CreatedAt { get; set; }
         public string ApprovedBy { get; set; }
+        public int CancelledBy { get; set; }
+        public System.DateTime CancelledAt { get; set; }
+        public string Cancelled { get; set; }
     }
 }

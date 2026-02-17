@@ -29,7 +29,7 @@ namespace GL.EF
         public Nullable<int> ModifiedBy { get; set; }
         public Nullable<int> CompanyID { get; set; }
     
-        public virtual INPurchaseRequisition INPurchaseRequisition { get; set; }
         public virtual INItem INItem { get; set; }
+        public virtual INPurchaseRequisition INPurchaseRequisition { get; set; }
     }
 }

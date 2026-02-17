@@ -1198,7 +1198,7 @@ namespace GL.Controllers
                     DocumentNo = v.DocumentNo ?? "",
                     ProjectName = v.ProjectName,
                     RequestDate = v.RequestDate.GetValueOrDefault(DateTime.Now),
-                    RequestID = v.RequestID,
+                    RequestID = v.RequestID,                   
 
                     RequestDetailID = v.RequestDetailID,
                     ItemID = v.ItemID.GetValueOrDefault(0),
@@ -1217,6 +1217,7 @@ namespace GL.Controllers
 
                     LastRate = v.LastRate.GetValueOrDefault(0),
                     QtyInHand = v.QtyInHand.GetValueOrDefault(0),
+                    Cancelled = v.Cancelled
 
                 }).ToList();
 
@@ -2485,7 +2486,8 @@ namespace GL.Controllers
                        RevertedTotalAmount = v.RevertedTotalAmount.GetValueOrDefault(0),
                        Size = v.Size,
                        TotalAmount = v.TotalAmount.GetValueOrDefault(0),
-                       UOM = v.UOM
+                       UOM = v.UOM,
+                       
 
                    }).ToList();
 

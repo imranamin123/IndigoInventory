@@ -107,12 +107,12 @@
 
                     </div>
 
-                    <div class="row" style="margin-bottom:10px;">
-                        <label for="ItemID" class="control-label col-sm-2">Item</label>
-                        <div class="col-sm-8">
-                            @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
-                        </div>
-                    </div>
+                    @*<div class="row" style="margin-bottom:10px;">
+                            <label for="ItemID" class="control-label col-sm-2">Item</label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </div>
+                        </div>*@
 
                     <!-- /.box-body -->
                     <div class="box-footer">
@@ -322,8 +322,13 @@
                     {
                         <a href="#" class="btn btn-success btnSubmit pull-right">Submit</a>
                     }
-                    else if (Model.RoleID == 5 && Model.INPurchaseRequisition.SubmitedByKPO.GetValueOrDefault(0) > 0 && Model.INPurchaseRequisition.SubmitedByMD.GetValueOrDefault(0) <= 0)
+                    else if
+                        (
+                            Model.RoleID == 5 && 
+                            (Model.INPurchaseRequisition.SubmitedByMD.GetValueOrDefault(0) <= 0 && Model.INPurchaseRequisition.CancelledBy.GetValueOrDefault(0) <= 0)
+                        )
                     {
+                        <a href="#" class="btn btn-danger btnCancell pull-right" style="margin-left:5px;">Cancell</a>
                         <a href="#" class="btn btn-success btnSubmit pull-right" id="submit">Submit</a>
                     }
 
@@ -524,11 +529,11 @@
 
 
         var IsSubmit = false;
-            $(document).on("click", ".btnSubmit", function (e) {
+        $(document).on("click", ".btnSubmit, .btnCancell", function (e) {
 
                 e.preventDefault;
 
-                debugger;
+        
 
                 if (isNew == 1) {
                     alert("Please first save the requisition");
@@ -545,11 +550,19 @@
                     IsSubmit = false;
                     return;
                 }
-                $(".btnSave").trigger("click");
+            $(".btnSave").trigger("click");
+
+            var option = "";
+            if ($(this).hasClass('btnSubmit')) {
+                option = 'Submit';
+            }
+            else if ($(this).hasClass('btnCancell')) {
+                option = 'Cancell';
+            }
 
                 debugger;
 
-                $.post("/INInventory/INPurchaseRequisitionSubmit", { RequestID: requestId }).done(function (res) {
+            $.post("/INInventory/INPurchaseRequisitionSubmit", { RequestID: requestId, Option: option }).done(function (res) {
 
                     if (res.status == true) {
 

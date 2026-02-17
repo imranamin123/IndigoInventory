@@ -37,7 +37,12 @@ BEGIN
 		u1.Name 'SubmittedByKPO',
 		m.SubmitedAtKPO 'SubmitedAtKPO',
 		u2.Name 'SubmittedByMD',		
-		m.SubmitedAtMD 'SubmitedAtMD'
+		m.SubmitedAtMD 'SubmitedAtMD',
+		CASE
+			WHEN m.cancelledBy > 0 THEN
+				'Cancelled'
+		END Cancelled
+		
 		
 	FROM INPurchaseRequisition m
 		INNER JOIN INPurchaseRequisitionDetail d ON m.RequestID = d.RequestID
@@ -56,7 +61,7 @@ END
 
 go
 
-exec spRptINPurchaseRequisition 5
+exec spRptINPurchaseRequisition 10777
 
 
 --select * from secusers

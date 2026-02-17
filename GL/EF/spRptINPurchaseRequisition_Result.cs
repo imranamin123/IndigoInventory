@@ -35,5 +35,6 @@ namespace GL.EF
         public Nullable<System.DateTime> SubmitedAtKPO { get; set; }
         public string SubmittedByMD { get; set; }
         public Nullable<System.DateTime> SubmitedAtMD { get; set; }
+        public string Cancelled { get; set; }
     }
 }

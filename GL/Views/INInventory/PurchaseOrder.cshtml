@@ -7,7 +7,6 @@
 
 }
 
-<a href="~/Views/INInventory/PurchaseOrder.cshtml">~/Views/INInventory/PurchaseOrder.cshtml</a>
 
 <style>
     .error {
@@ -112,7 +111,7 @@
                         <label for="Remarks" class="col-sm-2 control-label ">Remarks</label>
                         <div class="col-sm-8">
                             @*<input class="form-control" value="@Model.INPurchaseOrder.Remarks" id="Remarks">*@
-                            <textarea  class="form-control" rows="4" id="Remarks">@Model.INPurchaseOrder.Remarks</textarea>
+                            <textarea class="form-control" rows="4" id="Remarks">@Model.INPurchaseOrder.Remarks</textarea>
                             <span id="spnRemarksError" class="error" style="display:none;">Please enter remarks</span>
                         </div>
                     </div>
@@ -142,8 +141,6 @@
                             <th style="text-align:left;"><label>Item</label></th>
                             <th style="width:150px;" class="align-right"><label>Size</label></th>
                             <th style="width:150px;" class="align-right"><label>Unit</label></th>
-                            @*<th style="text-align: left; width: 200px;"><label>Remarks</label></th>*@
-                            @*<th style="width:150px;" class="align-right"><label>Requested Qty</label></th>*@
                             <th style="width:150px;" class="align-right"><label>Qty</label></th>
                             <th style="width:150px;" class="align-right"><label>Unit Price</label></th>
                             <th style="width:150px;" class="align-right"><label>Discount Price</label></th>
@@ -193,11 +190,6 @@
                                         <input type="text" readonly id="Unit" class="form-control" placeholder="" value="@item.Unit" />
                                     </td>
 
-                                    @*<td>
-            <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post" value="@item.RequestedQty" />
-            <span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
-        </td>*@
-
                                     <td>
                                         <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal " onblur="calculateTotals();" onchange="hidSubmit();" value="@item.ApprovedQty" />
                                         <span id="spnApprovedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>
@@ -221,74 +213,73 @@
                                     {
                                         <td>
                                             <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
-                                            @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
                                         </td>
                                     }
                                 </tr>
                                 i = i + 1;
                             }
                         }
-                    <tr>
-                        <td style="width:50px;text-align:center;">
-                            <input type="hidden" id="PurchaseOrderDetailID" value="" />
-                            <input type="hidden" id="PurchaseOrderID" value="" />
-                            <input type="hidden" id="ItemID" value="" />
+                        <tr>
+                            <td style="width:50px;text-align:center;">
+                                <input type="hidden" id="PurchaseOrderDetailID" value="" />
+                                <input type="hidden" id="PurchaseOrderID" value="" />
+                                <input type="hidden" id="ItemID" value="" />
 
-                            <input type="hidden" id="CreatedBy" value="" />
-                            <input type="hidden" id="CreatedAt" value="" />
-                            <input type="hidden" id="ModifiedBy" value="" />
-                            <input type="hidden" id="ModifiedAt" value="" />
-                            <input type="hidden" id="CompanyID" value="" />
+                                <input type="hidden" id="CreatedBy" value="" />
+                                <input type="hidden" id="CreatedAt" value="" />
+                                <input type="hidden" id="ModifiedBy" value="" />
+                                <input type="hidden" id="ModifiedAt" value="" />
+                                <input type="hidden" id="CompanyID" value="" />
 
-                            <label></label>
-                        </td>
-
-                        <td style="width:300px">
-                            <input type="text" class="itemId" value="" style="display:none;" />
-                            <input type="text" class="requestDetailID" value="" style="display:none;" />
-                            @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
-                        </td>
-
-                        <td>
-                            <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
-                        </td>
-
-                        <td>
-                            <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
-                        </td>
-
-                        <!--<td>
-        <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post"  value="" />-->
-                        @*<span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>*@
-                        <!--</td>-->
-
-                        <td>
-                            <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal " onblur="calculateTotals();" value="" />
-                            <span id="spnApprovedQtyError" class="error" style="display:none;">Please add approved qty</span>
-                            <span id="spnApprovedQtyGreaterError" class="error" style="display:none;">Approved qty can not be greater than requested qty</span>
-                        </td>
-
-                        <td>
-                            <input type="text" style="text-align:right;" id="UnitPrice" class="form-control decimal" onblur="calculateTotals();" value="" />
-                            <span id="spnUnitPriceError" class="error" style="display:none;">Please enter unit price</span>
-                        </td>
-
-                        <td>
-                            <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
-                        </td>
-
-                        <td>
-                            <input type="text" style="text-align:right;" id="Amount" class="form-control decimal" value="" />
-                        </td>
-
-                        @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0 && Model.INPurchaseOrder.PurchaseOrderID > 0)
-                        {
-                            <td>
-                                <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
-                                @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
+                                <label></label>
                             </td>
-                        }
-                    </tr>
+
+                            <td style="width:300px">
+                                <input type="text" class="itemId" value="" style="display:none;" />
+                                <input type="text" class="requestDetailID" value="" style="display:none;" />
+                                @Html.DropDownList("ItemID", new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                            </td>
+
+                            <td>
+                                <input type="text" readonly id="Size" class="form-control" placeholder="" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
+                            </td>
+
+                            <!--<td>
+                            <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post"  value="" />-->
+                            @*<span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>*@
+                            <!--</td>-->
+
+                            <td>
+                                <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal " onblur="calculateTotals();" value="" />
+                                <span id="spnApprovedQtyError" class="error" style="display:none;">Please add approved qty</span>
+                                <span id="spnApprovedQtyGreaterError" class="error" style="display:none;">Approved qty can not be greater than requested qty</span>
+                            </td>
+
+                            <td>
+                                <input type="text" style="text-align:right;" id="UnitPrice" class="form-control decimal" onblur="calculateTotals();" value="" />
+                                <span id="spnUnitPriceError" class="error" style="display:none;">Please enter unit price</span>
+                            </td>
+
+                            <td>
+                                <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
+                            </td>
+
+                            <td>
+                                <input type="text" style="text-align:right;" id="Amount" class="form-control decimal" value="" />
+                            </td>
+
+                            @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0 && Model.INPurchaseOrder.PurchaseOrderID > 0)
+                            {
+                                <td>
+                                    <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
+                                    @*<button class='btn btn-primary btn-xs add-row' tabindex="-1"><i class='fa fa-times'></i></button>*@
+                                </td>
+                            }
+                        </tr>
 
                     </tbody>
                     <tfoot>
@@ -325,9 +316,10 @@
                         {
                             <a href="#" class="btn btn-success btnSubmit pull-right">Submit</a>
                         }*@
-                    @if (Model.RoleID == 5 && Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0)
+                    @if (Model.RoleID == 5 && (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) <= 0 && Model.INPurchaseOrder.CancelledBy.GetValueOrDefault(0) <= 0))
                     {
-                        <a onclick="approve()" class="btn btn-success btnSubmit pull-right" id="approve">Approve</a>
+                        <a onclick="approve()" class="btn btn-success btnSubmit pull-right" id="approve" style="margin-left:5px;">Approve</a>
+                        <a onclick="poCancel()" href="#" class="btn btn-danger btnCancell pull-right" style="margin-left:5px;">Cancell</a>
                     }
 
                     @*@if (Model.INPurchaseOrder.IsPosted.GetValueOrDefault(false) == false && Model.INPurchaseOrder.INPurchaseOrderID > 0)
@@ -373,11 +365,6 @@
             <input type="text" readonly id="Unit" class="form-control" placeholder="" value="" />
         </td>
 
-        <!--<td>
-        <input type="text" readonly style="text-align:right;" id="RequestedQty" class="form-control decimal post" value="" />-->
-        @*<span id="spnRequestedQtyError" class="error" style="display:none;">Approved qty is greater than requested qty</span>*@
-        <!--</td>-->
-
         <td>
             <input type="text" style="text-align:right;" id="ApprovedQty" class="form-control decimal" onblur="calculateTotals();" value="" />
             <span id="spnApprovedQtyError" class="error" style="display:none;">Please enter approved qty</span>
@@ -401,7 +388,7 @@
         </td>
 
         @*@if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) > 1 && Model.INPurchaseOrder.INPurchaseOrderID > 0)
-        {*@
+            {*@
         <td>
             <button class='btn btn-danger btn-xs delete-row' tabindex="-1"><i class='fa fa-times'></i></button>
         </td>
@@ -431,17 +418,6 @@
             $("#APVendorID").select2();
             @*var roleId = @RoleID;*@
 
-        //$("#POStatusID")
-
-            ////var requestID = $("#RequestID").val();
-
-            ////if (requestID != undefined || requestID != "" || requestID != null) {
-
-            ////    loadRequest();
-            ////    //$('#titleee').find('a').trigger('click')
-            ////    //$("#loadPurchaseDemand").trigger("click");
-            ////}
-
             $('.dt').datepicker({
                 autoclose: true,
                 orientation: "bottom auto",  // Forces the datepicker to open downward
@@ -449,14 +425,7 @@
             });
             calculateTotals();
 
-            //if (roleId == 5) {
-            //    $('#header').find('input, select, textarea, button').prop('disabled', true);
-            //}
-
-
             $("#tbodyList tr").each(function () {
-
-
 
                 $(this).find(".ddl").select2();
                 var itemId = $(this).find(".itemId").val();
@@ -517,12 +486,6 @@
                             calculateTotals();
                         }
                         else {
-                            //$(row).find("#ItemID").val("");
-                            //$(row).find("#ItemID").prop({ selectedIndex: 1 })
-                            //$(row).find('#ItemID').val('').trigger('change');
-                            //$(row).find('#ItemID').text('').trigger('change');
-                            //$(row).find("#ItemID").attr('selectedIndex', 0);
-                            //$(row).find(".select2-ItemID-containerSize").val("");
                             clear = true;
                             $(row).find(".ddl").val('').trigger('change');
 
@@ -530,7 +493,7 @@
                             $(row).find("#Unit").val("");
                             $(row).find("#UnitPrice").val("");
                             $(row).find("#DiscountedPrice").val("");
-                            
+
                             //$(row).find("#RequestedQty").val("");
                             $(row).find("#ApprovedQty").val("");
                         }
@@ -538,51 +501,7 @@
                 }
             });
 
-            //$(document).on("click", ".btnSubmit", function (e) {
-
-            //    e.preventDefault;
-
-
-
-            //    if (isNew == 1) {
-            //        alert("Please first save the requisition");
-            //        return;
-            //    }
-
-            //    $('.btnSubmit').attr('disabled', 'disabled');
-
-            //    if (IsValid() == false) {
-            //        $('.btnSubmit').removeAttr('disabled');
-            //        return;
-            //    }
-
-            //    var requestId = $("#RequestID").val();
-
-
-            //    $.post("/INInventory/INPurchaseOrderSubmit", { RequestID: requestId }).done(function (res) {
-
-            //        if (res.status == true) {
-            //            alert(res.resMessage);
-            //            window.location = "/INInventory/PurchaseRequisitionList/";
-
-            //        }
-            //        else {
-            //            alert(res.resMessage);
-            //        }
-
-            //    }).fail(function (ex) {
-            //        alert(ex.responseText);
-            //        // ShowAlert('Error', $(jQuery.parseHTML(ex.responseText)).eq(1).text(), true);
-            //    }).always(function () {
-
-            //    });
-
-            //});
-
-
             $(document).on("click", ".btnSave", function (e) {
-
-
 
                 e.preventDefault;
 
@@ -593,13 +512,9 @@
                     return;
                 }
 
-
-
                 var obj = getObject();
 
                 var objDetails = getObjectDetails();
-
-
 
                 $.post("/INInventory/INPurchaseOrderSave", { INPurchaseOrder: obj, INPurchaseOrderDetailList: objDetails }).done(function (res) {
 
@@ -884,25 +799,37 @@
 
         function approve() {
             debugger;
-        if (confirm("Are you sure you want to approve")) {
-            var INPurchaseOrderID = $('#PurchaseOrderID').val();
-
-            $.post("/INInventory/POApprove", { INPurchaseOrderID: INPurchaseOrderID }).done(function (res) {
-
+            if (confirm("Are you sure you want to approve")) {
+                var INPurchaseOrderID = $('#PurchaseOrderID').val();
+                $.post("/INInventory/POApprove", { INPurchaseOrderID: INPurchaseOrderID }).done(function (res) {
                     if (res = true) {
                         alert('Record Posted');
                         $('#btnPost').css("visibility", 'hidden');
-                        //window.location.href = "/INInventory/PurchaseOrder?PurchaseOrderID=" + res.id;
                         window.location.href = "/INInventory/PurchaseOrderList";
                     }
 
                 }).fail(function (ex) {
-
                     alert(ex.responseText);
-
                 }).always(function () { });
             }
         }
+
+        function poCancel() {
+            if (confirm("Are you sure you want to cancel")) {
+                var INPurchaseOrderID = $('#PurchaseOrderID').val();
+                $.post("/INInventory/POCancel", { INPurchaseOrderID: INPurchaseOrderID }).done(function (res) {
+                    if (res = true) {
+                        alert('Record cancelled');
+                        //$('#btnPost').css("visibility", 'hidden');
+                        window.location.href = "/INInventory/PurchaseOrderList";
+                    }
+
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                }).always(function () { });
+            }
+        }
+
     </script>
 
 }

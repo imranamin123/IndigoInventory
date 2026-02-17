@@ -380,6 +380,8 @@ namespace GL.Controllers
                     model.INPurchaseRequisition.CreatedBy = 0;
                     model.INPurchaseRequisition.ModifiedAt = DateTime.Now;
                     model.INPurchaseRequisition.ModifiedBy = 0;
+                    model.INPurchaseRequisition.CancelledAt = DateTime.Now;
+                    model.INPurchaseRequisition.CancelledBy = 0;
                     model.INPurchaseRequisition.CompanyID = 0;
 
                     model.IsNew = 1;
@@ -465,15 +467,23 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public JsonResult INPurchaseRequisitionSubmit(int RequestID)
+        public JsonResult INPurchaseRequisitionSubmit(int RequestID, string Option)
         {
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
                 GL.Models.response res = new GL.Models.response();
 
-                bool result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
-
+                bool result = false;
+                if(Option=="Submit")
+                {
+                    result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
+                }
+                else if (Option=="Cancell")
+                {
+                    result = new DALInventory().INPurchaseRequisitionCancell(RequestID, LoginUser.UsersID, LoginUser.RoleID);
+                }
+                    
                 res.id = RequestID;
                 res.status = true;
                 res.resMessage = "Record submitted successfully!";
@@ -2205,6 +2215,43 @@ namespace GL.Controllers
                
 
                 return RedirectToAction("PurchaseOrderList");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+
+        [HttpPost]
+        public JsonResult POCancel(Int64 INPurchaseOrderID)
+        {
+            try
+            {
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                GL.Models.response res = new GL.Models.response();
+                bool result = false;
+                DALInventory dal = new DALInventory();
+
+                result = dal.POCancel(INPurchaseOrderID, LoginUser.UsersID);
+
+                if (result == true)
+                {
+                    res.id = INPurchaseOrderID;
+                    res.status = true;
+                    res.resMessage = "PO cancelled successfully!";
+                }
+                else
+                {
+                    res.resObj = null;
+                    res.status = false;
+                    res.resMessage = "Record was not cancelled. Please contact to the admin!";
+
+                }
+
+                return Json(res, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
