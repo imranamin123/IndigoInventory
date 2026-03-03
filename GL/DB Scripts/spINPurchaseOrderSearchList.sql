@@ -18,7 +18,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	SELECT 
+	SELECT distinct
 		po.PurchaseOrderID,
 		po.PurchaseOrderDate,
 		p.ProjectName,
@@ -44,3 +44,7 @@ BEGIN
 		(pod.ItemID = @ItemID OR @ItemID IS NULL)
 	ORDER BY po.PurchaseOrderDate DESC
 END
+
+GO
+
+spINPurchaseOrderSearchList 1, 68 

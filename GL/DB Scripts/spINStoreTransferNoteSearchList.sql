@@ -41,7 +41,7 @@ BEGIN
 		--ISNULL(grn.IsPosted,0) 'IsPosted',
 		stn.CompanyID
 	FROM dbo.INStoreTransferNote stn
-	INNER JOIN INStoreTransferNoteDetail stnd ON stn.StoreTransferNoteID = stnd.StoreTransferNoteID
+	--INNER JOIN INStoreTransferNoteDetail stnd ON stn.StoreTransferNoteID = stnd.StoreTransferNoteID
 	INNER JOIN INProject pF ON stn.FromProjectID = pF.ProjectID
 	INNER JOIN INProject pT ON stn.ToProjectID = pT.ProjectID
 

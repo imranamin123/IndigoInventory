@@ -85,6 +85,126 @@ namespace GL.Controllers
         }
 
         [HttpPost]
+        public ActionResult STN(HttpPostedFileBase file)
+        {
+            var db = new GLEntities();
+
+            if (file == null || file.ContentLength == 0)
+            {
+                TempData["Msg"] = "Please select a CSV file.";
+                return RedirectToAction("Item");
+                //return View();
+            }
+
+            try
+            {
+
+                using (var reader = new StreamReader(file.InputStream))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    var itemsCSV = csv.GetRecords<INItemModel>().ToList();
+                    var itemsCSVWithOB = itemsCSV.ToList();
+                    using (var transaction = db.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            //var stndList = db.INStoreTransferNoteDetails.Where(x => x.StoreTransferNoteID == 23).ToList();
+
+                            //var pr = db.INPurchaseRequisitions.Where(x => x.RequestID == 10915).FirstOrDefault();
+                            //var prds = db.INPurchaseRequisitionDetails.Where(x => x.RequestID == 10915).ToList();
+
+                            var stn = db.INStoreTransferNotes.Where(x => x.StoreTransferNoteID == 24).FirstOrDefault();
+                            
+
+                            foreach (var item in itemsCSVWithOB)
+                            {
+
+                                //STN
+
+                                var stnd = new INStoreTransferNoteDetail() { 
+                                    CompanyID = 1,
+                                    CreatedAt = DateTime.Now,
+                                    CreatedBy=59,
+                                    QtyInHand= 0,
+                                    ItemID=item.ItemID,
+                                    ModifiedAt = DateTime.Now,
+                                    ModifiedBy=59,
+                                    Remarks = "STN  Transfer Requested from IBA to ISA By Code",
+                                    RequestDetailID= db.INPurchaseRequisitionDetails.Where(x=>x.RequestID == 10915 && x.ItemID == item.ItemID).FirstOrDefault().RequestDetailID ,
+                                    RequestedQty=item.STN,
+                                    TransferQty=item.STN,
+                                    StoreTransferNoteID=stn.StoreTransferNoteID,
+                                    StoreTransferNoteDetailID=0
+                                };
+                                db.INStoreTransferNoteDetails.AddOrUpdate(stnd);
+
+                              //  // demand
+
+                              //  var prd = new INPurchaseRequisitionDetail() { 
+                              //      RequestID = pr.RequestID,
+                              //      ItemID = item.ItemID,
+                              //      RequestedQty = item.STN,
+                              //      ApprovedQty = item.STN,
+                              //      QtyInHand = 0,
+                              //      LastRate=0,
+                              //      Remarks = "STN  Transfer Requested from IBA to ISA By Code",
+                              //      Balance = 0,
+                              //      CreatedAt=DateTime.Now,
+                              //      CreatedBy= 59,
+                              //      ModifiedAt = DateTime.Now,
+                              //      ModifiedBy = 59
+                              //  };
+
+                              //  //prds.Add(prd);
+                              ////  prds.
+                              //  db.INPurchaseRequisitionDetails.AddOrUpdate(prd);
+                               // db.SaveChanges();
+
+
+                                //var projectItemTo = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 1).FirstOrDefault();
+                                //if (projectItemTo != null)
+                                //{
+                                //    projectItemTo.QtyInHand += item.STN;
+                                //    db.INProjectItems.AddOrUpdate(projectItemTo);
+                                //    //db.SaveChanges();
+                                //}
+
+                                //var projectItemFrom = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 2).FirstOrDefault();
+                                //if (projectItemFrom != null)
+                                //{
+                                //    projectItemFrom.QtyInHand -= item.STN;
+                                //    db.INProjectItems.AddOrUpdate(projectItemFrom);
+                                //    //db.SaveChanges();
+                                //}
+
+                            }
+
+                            //pr.SubmitedAtMD = DateTime.Now;
+                            //pr.SubmitedByMD = 40;
+                            //db.INPurchaseRequisitions.AddOrUpdate(pr);
+                            db.SaveChanges();
+
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            TempData["Msg"] = "ERROR: Data not imported successfully!";
+                        }
+                        TempData["Msg"] = "Data imported successfully!";
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["Msg"] = "Error: " + ex.Message;
+            }
+            return RedirectToAction("Item");
+        }
+
+
+        [HttpPost]
         public ActionResult Upload(HttpPostedFileBase file)
         {
             var db = new GLEntities();
@@ -138,6 +258,8 @@ namespace GL.Controllers
             }
             return RedirectToAction("Item");
         }
+
+
 
         [HttpGet]
         public ActionResult ItemList()
@@ -675,9 +797,6 @@ namespace GL.Controllers
                             }
                         }
                     }
-
-
-
                 }
                 else
                 {
@@ -719,10 +838,8 @@ namespace GL.Controllers
         {
             try
             {
-
                 new DALInventory().INGoodsReceiptNoteDetailDelete(id);
                 return RedirectToAction("PurchaseRequisition");
-
             }
             catch (Exception ex)
             {
@@ -734,7 +851,6 @@ namespace GL.Controllers
         {
             try
             {
-
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
                 INGoodsReceiptNoteViewModel model = new INGoodsReceiptNoteViewModel();
 
@@ -750,6 +866,7 @@ namespace GL.Controllers
                 throw ex;
             }
         }
+
         [HttpPost]
         public ActionResult GoodsReceiptNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, int? Pending=0)
         {
@@ -1730,9 +1847,6 @@ namespace GL.Controllers
                             }
                         }
                     }
-
-
-
                 }
                 else
                 {
@@ -1904,9 +2018,6 @@ namespace GL.Controllers
             ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
             return View("_PurchaseOrderListRows", model);
         }
-
-
-      
 
         [HttpGet]
         public ActionResult PurchaseOrder(Int64? PurchaseOrderID)
@@ -2181,11 +2292,22 @@ namespace GL.Controllers
 
                 var INPurchaseOrder = dal.GetPurchaseOrderMaster(PurchaseOrderID);
 
+
                 if (INPurchaseOrder != null)
                 {
-                    res.status = true;
+                    INPurchaseOrder.CancelledBy = INPurchaseOrder.CancelledBy == null ? 0 : INPurchaseOrder.CancelledBy;
+                    if (INPurchaseOrder.CancelledBy <= 0) {
+                        res.resMessage = "Record Found!";
+                        res.status = true;
+                    }
+                    else
+                    {
+                        res.resMessage = "This PO is already cancelled!";
+                        res.status = false;
+
+                    }
                     res.resObj = INPurchaseOrder;
-                    res.resMessage = "Record Found!";
+                    //res.resMessage = "Record Found!";
                 }
                 else
                 {

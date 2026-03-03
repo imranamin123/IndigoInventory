@@ -1069,14 +1069,18 @@
                         if (GoodsReceiptNoteID > 0) {
                             var IsValidPO = CheckVendor2(res.resObj.APVendorID, res.resObj.ProjectID);
                             if (IsValidPO == false) {
-                                //IsValidPO = false;
                                 return false;
-                                }
                             }
+                        }
                         else {
                             $("#ProjectID").val(res.resObj.ProjectID).trigger("change");
                             $("#APVendorID").val(res.resObj.APVendorID).trigger('change');
                         }
+                    }
+                    else {  
+                        alert(res.resMessage);
+                        $("#PurchaseOrderID").val("");
+                        return false;
                     }
                 },
                 error: function (err) {

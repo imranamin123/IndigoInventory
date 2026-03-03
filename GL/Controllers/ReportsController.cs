@@ -546,7 +546,7 @@ namespace GL.Controllers
                         OpeningQty = (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
                                      + (pi?.OpeningQty ?? 0),
                         ReceivedQty = (grn?.TotalReceivedQty ?? 0),// + (srn?.TotalReturnQty ?? 0) + (stnIn?.TotalReceivedQty ?? 0),
-                        IssuedQty = (sin?.TotalIssuedQty ?? 0) + (stnOut?.TotalIssuedQty ?? 0),
+                        IssuedQty = (sin?.TotalIssuedQty ?? 0), // + (stnOut?.TotalIssuedQty ?? 0),
                         TransferQty = (stnIn?.TotalReceivedQty ?? 0) - (stnOut?.TotalIssuedQty ?? 0),
                         ReturnQty = (srn?.TotalReturnQty ?? 0), // - (srn?.TotalReturnQty ?? 0),
                         ClosingQty =

@@ -671,11 +671,6 @@ namespace GL.DAL
             }
         }
 
-
-
-
-
-
         public INPurchaseOrder GetPurchaseOrderMaster(long PurchaseOrderID)
         {
             try
