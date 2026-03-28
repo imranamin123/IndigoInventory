@@ -1398,5 +1398,18 @@ namespace GL.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPurchaseOrder_Result>("spRptINPurchaseOrder", purchaseOrderIDParameter);
         }
+    
+        public virtual ObjectResult<spRptINItemRateComparisonList_Result> spRptINItemRateComparisonList(Nullable<int> companyID, Nullable<int> projectID)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemRateComparisonList_Result>("spRptINItemRateComparisonList", companyIDParameter, projectIDParameter);
+        }
     }
 }

@@ -716,8 +716,8 @@
           <Property Name="PaymentTerms" Type="nvarchar" MaxLength="100" />
           <Property Name="ApprovedAt" Type="datetime" />
           <Property Name="ApprovedBy" Type="int" />
-          <Property Name="CancelledAt" Type="datetime" />
           <Property Name="CancelledBy" Type="int" />
+          <Property Name="CancelledAt" Type="datetime" />
           <Property Name="POStatusID" Type="int" />
           <Property Name="Remarks" Type="nvarchar" MaxLength="500" />
           <Property Name="CreatedAt" Type="datetime" />
@@ -761,9 +761,9 @@
           <Property Name="SubmitedAtKPO" Type="datetime" />
           <Property Name="SubmitedByMD" Type="int" />
           <Property Name="SubmitedAtMD" Type="datetime" />
+          <Property Name="RequestTypeID" Type="int" />
           <Property Name="CancelledBy" Type="int" />
           <Property Name="CancelledAt" Type="datetime" />
-          <Property Name="RequestTypeID" Type="int" />
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="CreatedBy" Type="int" />
           <Property Name="ModifiedAt" Type="datetime" />
@@ -1876,6 +1876,10 @@
           <Parameter Name="ComapnyID" Type="int" Mode="In" />
           <Parameter Name="FromDate" Type="date" Mode="In" />
           <Parameter Name="ToDate" Type="date" Mode="In" />
+        </Function>
+        <Function Name="spRptINItemRateComparisonList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CompanyID" Type="int" Mode="In" />
+          <Parameter Name="ProjectID" Type="int" Mode="In" />
         </Function>
         <Function Name="spRptINPendingPOList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="CompanyID" Type="int" Mode="In" />
@@ -3882,7 +3886,11 @@
           <Parameter Name="RequestID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="spRptINPurchaseOrder" ReturnType="Collection(GLModel.spRptINPurchaseOrder_Result)">
-            <Parameter Name="PurchaseOrderID" Mode="In" Type="Int64" />
+          <Parameter Name="PurchaseOrderID" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <FunctionImport Name="spRptINItemRateComparisonList" ReturnType="Collection(GLModel.spRptINItemRateComparisonList_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="ProjectID" Mode="In" Type="Int32" />
           </FunctionImport>
           </EntityContainer>
         <ComplexType Name="spAPInvoiceDetailRows_Result">
@@ -5898,6 +5906,24 @@
           <Property Type="Int32" Name="CancelledBy" Nullable="true" />
           <Property Type="DateTime" Name="CancelledAt" Nullable="true" Precision="23" />
           <Property Type="String" Name="Cancelled" Nullable="true" MaxLength="9" />
+        </ComplexType>
+        <ComplexType Name="spRptINItemRateComparisonList_Result">
+          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="Group" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Category" Nullable="true" MaxLength="50" />
+          <Property Type="Int64" Name="ItemID" Nullable="true" />
+          <Property Type="String" Name="ItemName" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
+          <Property Type="Decimal" Name="LastRate" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="LastRate2" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate2" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="LastRate3" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate3" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="LastRate4" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate4" Nullable="true" Precision="23" />
         </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
@@ -8817,6 +8843,28 @@
                 <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
                 <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
                 <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spRptINItemRateComparisonList" FunctionName="GLModel.Store.spRptINItemRateComparisonList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spRptINItemRateComparisonList_Result">
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="Group" ColumnName="Group" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="UOM" ColumnName="UOM" />
+                <ScalarProperty Name="LastRate" ColumnName="LastRate" />
+                <ScalarProperty Name="LastRateDate" ColumnName="LastRateDate" />
+                <ScalarProperty Name="LastRate2" ColumnName="LastRate2" />
+                <ScalarProperty Name="LastRateDate2" ColumnName="LastRateDate2" />
+                <ScalarProperty Name="LastRate3" ColumnName="LastRate3" />
+                <ScalarProperty Name="LastRateDate3" ColumnName="LastRateDate3" />
+                <ScalarProperty Name="LastRate4" ColumnName="LastRate4" />
+                <ScalarProperty Name="LastRateDate4" ColumnName="LastRateDate4" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

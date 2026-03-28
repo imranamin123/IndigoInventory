@@ -10,13 +10,13 @@ namespace GL.Models
         public long ItemID { get; set; }
 
         public Nullable<decimal> STN { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
+        //public string From { get; set; }
+        //public string To { get; set; }
 
         //  public Nullable<long> ItemCode { get; set; }
         //public string Description { get; set; }
 
-        public Nullable<decimal> Rate { get; set; }
+        //public Nullable<decimal> Rate { get; set; }
 
         //public Nullable<decimal> ISALastRate { get; set; }
         //public Nullable<decimal> ISAOpeningQty { get; set; }

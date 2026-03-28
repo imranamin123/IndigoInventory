@@ -829,6 +829,9 @@
     <Compile Include="EF\spRptINItemList_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spRptINItemRateComparisonList_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spRptINItemStock_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -923,6 +926,7 @@
     <Compile Include="Models\spRptINGoodsReceiptNoteHistoryDataModel.cs" />
     <Compile Include="Models\spRptINGoodsReceiptNoteReport.cs" />
     <Compile Include="Models\spRptINItemListModel.cs" />
+    <Compile Include="Models\spRptINItemRateComparisonListModel.cs" />
     <Compile Include="Models\spRptINItemStockModel.cs" />
     <Compile Include="Models\spRptINPORevertHistoryDataModel.cs" />
     <Compile Include="Models\spRptINPurchaseOrderReportModel.cs" />
@@ -10179,6 +10183,7 @@
     <Content Include="Views\Reports\INItemListReport.cshtml" />
     <Content Include="Views\Reports\INPendingCompleteDemandsReport.cshtml" />
     <Content Include="Views\Reports\INPendingPOReport.cshtml" />
+    <Content Include="Views\Reports\INItemRateComparison.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="admin-lte\bower_components\bootstrap-colorpicker\.github\" />

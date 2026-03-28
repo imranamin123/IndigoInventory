@@ -3192,6 +3192,7 @@ namespace GL.Controllers
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.FromDate = null;
             ViewBag.ToDate = null;
+
             return View();
         }
         public ActionResult DownloadINPendingPOExcel(int? ProjectID, string Status, DateTime? FromDate, DateTime? ToDate)
@@ -3372,6 +3373,207 @@ namespace GL.Controllers
 
             }
         }
+
+        public ActionResult INItemRateComparison()
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            DALDropdowns dal = new DALDropdowns();
+            ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
+            return View();
+        }
+
+        public ActionResult DownloadINItemRateComparisonExcel(int? ProjectID)
+        {
+            // EPPlus license context (required in newer versions)
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Item Rate Comparison");
+
+                var db = new GLEntities();
+
+                var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+
+                var data = db.spRptINItemRateComparisonList(LoginUser.CompanyID, ProjectID).ToList();
+                var INItemRateComparisonList = data.Where(x => x.LastRate != null ).ToList();
+                // ====== Final projection ======
+                var INItemRateComparisonListData = (
+                       from v in INItemRateComparisonList
+                       select new spRptINItemRateComparisonListModel 
+                       {
+                           Company = v.Company,
+                           ProjectName = v.ProjectName,
+                           Category = v.Category,
+                           Group = v.Group,
+                           ItemName = v.ItemName,
+                           ItemID = v.ItemID.GetValueOrDefault(0),
+                           Size = v.Size,
+                           UOM = v.UOM,
+                           LastRate = v.LastRate.GetValueOrDefault(0),
+                           LastRateDate = v.LastRateDate.GetValueOrDefault(DateTime.MinValue),
+                           LastRate2=v.LastRate2.GetValueOrDefault(0),
+                           LastRateDate2 = v.LastRateDate2.GetValueOrDefault(DateTime.MinValue),    
+                           LastRate3=v.LastRate3.GetValueOrDefault(0),
+                           LastRateDate3=v.LastRateDate3.GetValueOrDefault(DateTime.MinValue),
+                           LastRate4=v.LastRate4.GetValueOrDefault(0),
+                           LastRateDate4=v.LastRateDate4.GetValueOrDefault(DateTime.MinValue)
+
+                       }).ToList();
+
+
+                ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
+
+                using (var excelPackage = new ExcelPackage())
+                {
+                    if (INItemRateComparisonListData.Count > 0)
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Item Rate Comparison");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = INItemRateComparisonListData.Max(x => x.Company).ToString();
+                        workSheet.Cells[rowNo, 1, 2, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 11].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 11].Style.Font.Bold = true;
+
+                        rowNo++;
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Pending PO Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 11].Style.Font.Bold = true;
+
+                        rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Project";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 2].Value = INItemRateComparisonListData.Max(x => x.ProjectName).ToString();
+
+                        rowNo++;
+
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Group";
+                        workSheet.Cells[rowNo, 3].Value = "Category";
+                        workSheet.Cells[rowNo, 4].Value = "ItemID";
+                        workSheet.Cells[rowNo, 5].Value = "ItemName";
+                        workSheet.Cells[rowNo, 6].Value = "Size";
+                        workSheet.Cells[rowNo, 7].Value = "UOM";
+
+                        workSheet.Cells[rowNo, 8].Value = "Last Purchase Rate";
+                        workSheet.Cells[rowNo, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        workSheet.Cells[rowNo, 9].Value = "2nd Last Purchase Rate";
+                        workSheet.Cells[rowNo, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        //workSheet.Cells[rowNo, 11].Value = "2nd Last Purchase Date";
+                        //workSheet.Cells[rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        workSheet.Cells[rowNo, 10].Value = "3rd Last Purchase Rate";
+                        workSheet.Cells[rowNo, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        //workSheet.Cells[rowNo, 13].Value = "3rd Last Purchase Date";
+                        //workSheet.Cells[rowNo, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        workSheet.Cells[rowNo, 11].Value = "4th Last Purchase Rate";
+                        workSheet.Cells[rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        //workSheet.Cells[rowNo, 15].Value = "4th Last Purchase Date";
+                        //workSheet.Cells[rowNo, 15].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        workSheet.Cells[rowNo, 12].Value = "Last Purchase Date";
+                        workSheet.Cells[rowNo, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        workSheet.Cells[rowNo, 1, rowNo, 12].Style.Font.Bold = true;
+                        //workSheet.Cells[rowNo, 9, rowNo, 15].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in INItemRateComparisonListData)
+                        {
+                            rowNo++;
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            workSheet.Cells[rowNo, 2].Value = row.Group;
+                            workSheet.Cells[rowNo, 3].Value = row.Category;
+                            workSheet.Cells[rowNo, 4].Value = row.ItemID.ToString();
+                            workSheet.Cells[rowNo, 5].Value = row.ItemName;
+                            workSheet.Cells[rowNo, 6].Value = row.Size;
+                            workSheet.Cells[rowNo, 7].Value = row.UOM;
+
+                            workSheet.Cells[rowNo, 8].Value = row.LastRate > 0 ? row.LastRate : (object)null ;
+                            //workSheet.Cells[rowNo, 9].Value = row.LastRateDate != DateTime.MinValue ? row.LastRateDate.ToString("dd-MMM-yyyy") : "";
+                            //workSheet.Cells[rowNo, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                            workSheet.Cells[rowNo, 9].Value = row.LastRate2 > 0 ? row.LastRate2 : (object)null; 
+                            //workSheet.Cells[rowNo, 11].Value = row.LastRateDate2 != DateTime.MinValue ? row.LastRateDate2.ToString("dd-MMM-yyyy"): "";
+                            //workSheet.Cells[rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                            workSheet.Cells[rowNo, 10].Value = row.LastRate3 > 0 ? row.LastRate3 : (object)null;
+                            //workSheet.Cells[rowNo, 13].Value = row.LastRateDate3 != DateTime.MinValue ? row.LastRateDate3.ToString("dd-MMM-yyyy") : "";
+                            //workSheet.Cells[rowNo, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                            workSheet.Cells[rowNo, 11].Value = row.LastRate4 > 0 ? row.LastRate4 : (object)null;
+                            //workSheet.Cells[rowNo, 15].Value = row.LastRateDate4 != DateTime.MinValue ? row.LastRateDate4.ToString("dd-MMM-yyyy") : "";
+                            //workSheet.Cells[rowNo, 15].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                            workSheet.Cells[rowNo, 12].Value = row.LastRateDate != DateTime.MinValue ? row.LastRateDate.ToString("dd-MMM-yyyy") : "";
+                            workSheet.Cells[rowNo, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+
+                        }
+                        workSheet.Cells[8, 8, rowNo, 11].Style.Numberformat.Format = "#,##0";
+
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 20;
+                        workSheet.Column(3).Width = 20;
+                        workSheet.Column(4).Width = 30;
+                        workSheet.Column(5).Width = 40;
+                        workSheet.Column(6).Width = 20;
+                        workSheet.Column(7).Width = 20;
+
+                        workSheet.Column(8).Width = 25;
+                        workSheet.Column(9).Width = 25;
+                        workSheet.Column(10).Width = 25;
+                        workSheet.Column(11).Width = 25;
+                        workSheet.Column(12).Width = 25;
+                        //workSheet.Column(13).Width = 25;
+                        //workSheet.Column(14).Width = 25;
+                        //workSheet.Column(15).Width = 25;
+
+                    }
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("Item Rate Comparison");
+                        var rowNo = 1;
+
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 10].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 10].Style.Font.Bold = true;
+                    }
+
+
+                    // Export as Excel file
+                    var stream = new MemoryStream();
+                    excelPackage.SaveAs(stream);
+                    stream.Position = 0;
+                    string fileName = "ItemRateComparison.xlsx";
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    return File(stream, contentType, fileName);
+
+                }
+
+            }
+        }
+
 
         #endregion
 

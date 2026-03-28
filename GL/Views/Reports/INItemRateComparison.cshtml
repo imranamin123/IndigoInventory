@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewBag.Title = "Item Rate Comparison Report";
+}
+
+<h2>Item Rate Comparison Report</h2>
+
+
+<style>
+    .error {
+        color: red;
+    }
+
+    .errorDetail {
+        border-color: red;
+        color: black;
+    }
+</style>
+
+<section class="content">
+
+
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="form-horizontal">
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Item Rate Comparison Report</h2>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <label class="control-label col-sm-2">Project</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), "-- Select --",
+                            new { @class = "form-control showError", @id = "ProjectID" })
+                            <span id="spnProjectIDError" class="error" style="display:none;">Please select a project</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                    <!-- /.box-footer -->
+
+                </div>
+            </div>
+
+
+
+            <div class="box-footer">
+                <div class="Actions">
+                    <a onclick="downloadReport()" class=" btn btn-success"> Download Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="GLAccounts">
+        $().ready(function () {
+
+            $('.date-picker').datepicker({
+                autoclose: true,
+                orientation: "bottom auto",  // Forces the datepicker to open downward
+                format: 'dd-M-yyyy',
+            });
+
+            // $("#UnitID").select2();
+
+
+
+        });
+
+
+
+        function downloadReport() {
+            if (IsValid()) {
+                var projectID = $('#ProjectID').val();
+
+                var url = "/Reports/DownloadINItemRateComparisonExcel?ProjectID=" + projectID;
+
+                window.location.href = url; // 🔽 this will download the Excel
+            }
+        }
+
+
+        function IsValid() {
+
+            var valid = true;
+            $(".error").hide();
+
+            if ($('#ProjectID').val() == '') {
+                $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            //if ($('#FromDate').val() == '') {
+            //    $("#spnFromDateError").show();
+            //    valid = false;
+            //}
+
+            //if ($('#ToDate').val() == '') {
+            //    $("#spnToDateError").show();
+            //    valid = false;
+            //}
+
+            return valid;
+        }
+    </script>
+}
+
