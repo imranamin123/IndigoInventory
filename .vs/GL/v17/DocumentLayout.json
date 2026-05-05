@@ -3,24 +3,32 @@
   "WorkspaceRootPath": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\reports\\rptinpurchaseorder.rpt||{C0EF7560-990E-4D61-B970-65A6096B6866}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\reports\\rptinpurchaseorder.rpt||{C0EF7560-990E-4D61-B970-65A6096B6866}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\views\\ininventory\\purchaseorder.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\ininventory\\purchaseorder.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\reportswebforms\\reportform.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\reportswebforms\\reportform.aspx.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\reportswebforms\\reportform.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\reportswebforms\\reportform.aspx.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\views\\ininventory\\_purchaseorderlistrows.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\ininventory\\_purchaseorderlistrows.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\models\\initemmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\models\\initemmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\views\\ininventory\\item.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\ininventory\\item.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\dal\\dalinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\dal\\dalinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\ef\\model.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\ef\\model.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -29,73 +37,91 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 323,
-          "SelectedChildIndex": 4,
+          "DockedWidth": 244,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Web.config",
-              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Web.config",
-              "RelativeDocumentMoniker": "GL\\Web.config",
-              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Web.config",
-              "RelativeToolTip": "GL\\Web.config",
-              "ViewState": "AgIAALEAAAAAAAAAAAAAAMcAAABxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2026-03-24T07:59:16.963Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DALInventory.cs",
-              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\DAL\\DALInventory.cs",
-              "RelativeDocumentMoniker": "GL\\DAL\\DALInventory.cs",
-              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\DAL\\DALInventory.cs",
-              "RelativeToolTip": "GL\\DAL\\DALInventory.cs",
-              "ViewState": "AgIAAEAFAAAAAAAAAAAUwD0FAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-16T10:28:35.053Z",
+              "DocumentIndex": 0,
+              "Title": "rptINPurchaseOrder.rpt",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Reports\\rptINPurchaseOrder.rpt",
+              "RelativeDocumentMoniker": "GL\\Reports\\rptINPurchaseOrder.rpt",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Reports\\rptINPurchaseOrder.rpt",
+              "RelativeToolTip": "GL\\Reports\\rptINPurchaseOrder.rpt",
+              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARpSURBVEhLtZRLbFRVGMd/9/2YmTuP1j6AlgYSm/Jqa\u002BVVYgxx4UKj1qAikLAgsnClYWHiCmPEsDJBY9FoAgsiGjUBMRKDimkFFSioFBZtYyl9USil0047nbn3HBczbcowFTb8b76ck\u002B/kO/9z/\u002Bf/HXiYkFIqhbklVUuXrVrduK4wXwxCCnHl8j8X\u002Bq//21O4tiBatmzbNXQzKcaSU/eNgRt3/E8PH7vohsLRwn1moRYmAEKOSTRsFw0vZBMJWURcCy9kqQ31DfVffXdm1DBNu3AfFiJYCFJKJBJkbq5qKom4Q0VpVP3482/OL15S82hhzQMTSCHzE4mUEiFBVRRinktpPExTY33d3n0HjhqGac2vuy\u002BBlCCERCBzo5AIIZBCABByDLywTWkirDQ1NTZ8e/Lc5Pz6BQmkzEf\u002Bm5VFzq1JfD8gOZEm6/uYukZ1RQxFUbT5\u002B/wPQU4KKSRSgJC56Jy6Qmt/Kyl/CkVVcR0LxzawbYNI2EZV73a\u002BakcXl9tepWdFKvT5Czmdc1rLvCzj/jjHU9/T2v8J\u002B7v3M5mZIBACISRSCKTM39M86Ps\u002Bazv0V89Eb\u002B/wxJ2etoNdocrHVviByEuRO71EMuLfoiN7gUV6JS42H/V/SCqY4s3qPZSYJXk574W2/dWXB55qKm9oXpHY6VRu2NydrFj/299D5tT0DBUJF9tSGfeTnM38gaPZJLQ47SPtDM8M05m6zJQ/zQZvE5pUMQyd3oFRjhxqfWeOoG5N841UOjgbZFKn1teFE7VV3rKuEc3\u002B6eItfjjTx0hqlAtlJ5CKT4leQkQN8evQafqT/QTZgItjHQhfsiHejGXqXCskaPv5uB/42UnTjQ5PpmlPhBRrY1202TAdro/pdA7eoCfdTp/RQY/Sw1XlKp3nOhm9NIrsFjjXbFZGG2gqW0vItegbvH0XgQrw44kvOPD\u002BnvR7b\u002B8aTM/4XdXlLk/XW2xa4WEq1Uz/\u002BQxDXTa92V66/S7Ghm7DdYExaPBK1U6eq3iJ6elM0Uues\u002BlEcozhgWvyy8MfBFHPpSzu0FijUuI5mOoy1PNbkCPlKFJBpiVGxqClYSsvrttGNOJhWQaKcs/jXLwPdE3FdS2qSnVCroZquBhBLZlTLfhDJbjSZfu63ex44jXiXpR4zMM0jaIuKkqgKAqaqmCZKp4tQNXRnBhmqh7l2A5eb3iLFx7fStyLEYtFMA0DiVLUp0UJIPf\u002BTKYlQ\u002BMSRTdxQg5lZVHWVNXxZM1mShNxYtEIpmEiABGI3JNSgKIEUkqm0z5nu3wmA4d4NMTyCpvaJQ7Pr48Ri3vEYlFM08x1u5AIeLA/kEgy2YATl2b4vT9BzaJH2FjrUF9j0NKksrxEYOo6uqblulzkOz6QFDERc9e\u002B\u002B413ldWNzW7p0pV7hebsyQQGIQvCFrh6Bs\u002BcIRHRMHUNirhlFh2dfTy7ec3cwQsINjql8fBaVVVWKXnPqaqSFUKm0zPZzNdHDsqx2zdnSxZE2y8njxbmHhr\u002BA6b\u002BDV3NpoS2AAAAAElFTkSuQmCC",
+              "WhenOpened": "2026-04-30T12:50:04.863Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Item.cshtml",
-              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\Item.cshtml",
-              "RelativeDocumentMoniker": "GL\\Views\\INInventory\\Item.cshtml",
-              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\Item.cshtml",
-              "RelativeToolTip": "GL\\Views\\INInventory\\Item.cshtml",
-              "ViewState": "AgIAAHUAAAAAAAAAAAAAAIoAAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-03T06:22:53.926Z",
-              "EditorCaption": ""
+              "Title": "ReportForm.aspx.cs",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\ReportsWebForms\\ReportForm.aspx.cs",
+              "RelativeDocumentMoniker": "GL\\ReportsWebForms\\ReportForm.aspx.cs",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\ReportsWebForms\\ReportForm.aspx.cs",
+              "RelativeToolTip": "GL\\ReportsWebForms\\ReportForm.aspx.cs",
+              "ViewState": "AgIAAMsBAAAAAAAAAAAqwNQBAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-30T12:46:28.981Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "INItemModel.cs",
-              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Models\\INItemModel.cs",
-              "RelativeDocumentMoniker": "GL\\Models\\INItemModel.cs",
-              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Models\\INItemModel.cs",
-              "RelativeToolTip": "GL\\Models\\INItemModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA4AAAAAAAAAA==",
+              "Title": "ReportForm.aspx.designer.cs",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\ReportsWebForms\\ReportForm.aspx.designer.cs",
+              "RelativeDocumentMoniker": "GL\\ReportsWebForms\\ReportForm.aspx.designer.cs",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\ReportsWebForms\\ReportForm.aspx.designer.cs",
+              "RelativeToolTip": "GL\\ReportsWebForms\\ReportForm.aspx.designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-02T11:22:00.011Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-30T12:46:25.292Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
+              "Title": "_PurchaseOrderListRows.cshtml",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\_PurchaseOrderListRows.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\INInventory\\_PurchaseOrderListRows.cshtml",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\_PurchaseOrderListRows.cshtml",
+              "RelativeToolTip": "GL\\Views\\INInventory\\_PurchaseOrderListRows.cshtml",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAABUAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-30T11:31:01.899Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Model.edmx [Diagram1]",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\EF\\Model.edmx",
+              "RelativeDocumentMoniker": "GL\\EF\\Model.edmx",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\EF\\Model.edmx [Diagram1]",
+              "RelativeToolTip": "GL\\EF\\Model.edmx [Diagram1]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001116|",
+              "WhenOpened": "2026-04-30T11:12:02.094Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "INInventoryController.cs",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\INInventoryController.cs",
               "RelativeDocumentMoniker": "GL\\Controllers\\INInventoryController.cs",
               "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\INInventoryController.cs",
               "RelativeToolTip": "GL\\Controllers\\INInventoryController.cs",
-              "ViewState": "AgIAAGcAAAAAAAAAAAAgwHYAAABAAAAAAAAAAA==",
+              "ViewState": "AgIAAK0IAAAAAAAAAAAuwK4IAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-02T09:23:30.026Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-30T11:08:20.031Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PurchaseOrder.cshtml",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\PurchaseOrder.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\INInventory\\PurchaseOrder.cshtml",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\PurchaseOrder.cshtml",
+              "RelativeToolTip": "GL\\Views\\INInventory\\PurchaseOrder.cshtml",
+              "ViewState": "AgIAAMYCAAAAAAAAAAAWwNkCAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-30T11:06:52.089Z"
             }
           ]
         }

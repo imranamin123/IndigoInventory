@@ -46,11 +46,17 @@ BEGIN
 		uApprove.Name 'ApprovedBy',
 		po.CancelledBy,
 		po.CancelledAt,
+		po.FreightCharges,
+		CASE 
+			WHEN po.GoodsReceiptNoteID <= 0 OR po.GoodsReceiptNoteID IS NULL  THEN
+				'Pending'
+			ELSE 
+			  CAST(po.GoodsReceiptNoteID as varchar(50))
+		END GoodsReceiptNoteID,
 		CASE
 			WHEN po.CancelledBy > 0 THEN
 				'Cancelled'
-		END Cancelled
-		
+		END Cancelled		
 
 	FROM INPurchaseOrder po
 		INNER JOIN INPurchaseOrderDetail pod ON po.PurchaseOrderID = pod.PurchaseOrderID
@@ -66,50 +72,14 @@ BEGIN
 
 	WHERE 
 		po.PurchaseOrderID = @PurchaseOrderID
-
-	------SELECT 
-	------	po.PurchaseOrderID,
-	------	po.PurchaseOrderDate,
-	------	po.ProjectID,
-	------	p.ProjectName,
-	------	po.PaymentTerms,
-	------	po.APVendorID,
-	------	po.ApprovedAt,
-	------	po.Remarks 'mRemarks',
-	------	v.APVendorName,
-	------	v.ContactNumber,
-	------	v.ContactPerson,
-	------	v.Address 'VendorAddress',
-	------	v.BankDetails,
-	------	v.Email,
-	------	pod.ItemID,
-	------	i.Description 'Item',
-	------	s.Name 'Size',
-	------	uom.Name 'Unit',
-	------	pod.ApprovedQty,
-	------	pod.UnitPrice,
-	------	pod.Amount,
-	------	c.Name 'Company',
-	------	u.Name 'ReceivedBy'
-
-	------FROM INPurchaseOrder po
-	------	INNER JOIN INPurchaseOrderDetail pod ON po.PurchaseOrderID = pod.PurchaseOrderID
-	------	INNER JOIN INItem i ON pod.ItemID = i.ItemID
-	------	INNER JOIN INUnitOfMeasurement uom ON i.UOMID = uom.UOMID
-	------	LEFT JOIn INSize s ON i.SizeID = s.SizeID
-	------	INNER JOIN INProject p ON po.ProjectID = p.ProjectID
-	------	LEFT JOIN APVendor v ON po.APVendorID = v.APVendorID
-	------	INNER JOIN Company c ON po.CompanyID = c.CompanyID
-	------	INNER JOIN SecUsers u ON po.CreatedBy = u.UsersID
-
-	------WHERE 
-	------	po.PurchaseOrderID = @PurchaseOrderID
-
+	
 END
 
 go
 
-exec spRptINPurchaseOrder 72
+exec spRptINPurchaseOrder 157
+
+
 
 
 

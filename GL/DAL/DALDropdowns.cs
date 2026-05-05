@@ -224,9 +224,9 @@ namespace GL.DAL
             return INPOStatusList;
         }
 
-        public List<INItem> INItemsList(int CompanyID)
+        public List<spINItemsDropdown_Result> INItemsList(int CompanyID)
         {
-            var INItemsList = db.INItems.Where(x => x.CompanyID == CompanyID).ToList();
+            var INItemsList = db.spINItemsDropdown(CompanyID).ToList();// db.INItems.Where(x => x.CompanyID == CompanyID).ToList();
             return INItemsList;
         }
 

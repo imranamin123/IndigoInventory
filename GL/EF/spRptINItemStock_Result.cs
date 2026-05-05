@@ -13,7 +13,8 @@ namespace GL.EF
     
     public partial class spRptINItemStock_Result
     {
-        public long ItemID { get; set; }
+        public Nullable<int> ProjectID { get; set; }
+        public Nullable<long> ItemID { get; set; }
         public string Description { get; set; }
         public string GroupName { get; set; }
         public string CategoryName { get; set; }
@@ -25,8 +26,10 @@ namespace GL.EF
         public Nullable<System.DateTime> ToDate { get; set; }
         public Nullable<decimal> Rate { get; set; }
         public Nullable<decimal> OpeningQty { get; set; }
-        public decimal ReceivedQty { get; set; }
-        public decimal IssuedQty { get; set; }
+        public Nullable<decimal> ReceivedQty { get; set; }
+        public Nullable<decimal> IssuedQty { get; set; }
+        public Nullable<decimal> TransferQty { get; set; }
+        public Nullable<decimal> ReturnQty { get; set; }
         public Nullable<decimal> ClosingQty { get; set; }
         public Nullable<decimal> ClosingAmount { get; set; }
     }

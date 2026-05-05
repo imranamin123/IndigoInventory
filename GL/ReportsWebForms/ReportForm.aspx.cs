@@ -396,69 +396,6 @@ namespace GL.ReportsWebForms
 
         }
 
-        private void INItemStockReportDownloadPdf()
-        {
-            //CrystalReportViewer1.ToolPanelView = CrystalDecisions.Web.ToolPanelViewType.None;
-            report = new RptINItemStock();
-            int CompanyID = Convert.ToInt32(Request.QueryString["CompanyID"]);
-            int ProjectID = Convert.ToInt32(Request.QueryString["ProjectID"]);
-            DateTime FromDate = Convert.ToDateTime(Request.QueryString["FromDate"]);
-            DateTime ToDate = Convert.ToDateTime(Request.QueryString["ToDate"]);
-
-            var INItemStockList = new GLEntities().spRptINItemStock(CompanyID, ProjectID, FromDate, ToDate);
-
-            var INItemStockData = (
-
-                from v in INItemStockList
-                select new spRptINItemStockModel
-                {
-                    CompanyName = v.CompanyName,
-                    ProjectName = v.ProjectName,
-                    GroupName = v.GroupName,
-                    CategoryName = v.CategoryName,
-                    ItemID = v.ItemID,
-                    Description = v.Description,
-                    SizeName = v.SizeName,
-                    UOM = v.UOM,
-                    OpeningQty = v.OpeningQty.GetValueOrDefault(0),
-                    ReceivedQty = v.ReceivedQty,
-                    Rate = v.Rate.GetValueOrDefault(0),
-                    ClosingQty = v.ClosingQty.GetValueOrDefault(0),
-                    ClosingAmount = v.ClosingAmount.GetValueOrDefault(0)
-                }).ToList();
-
-
-            reportQueue.Enqueue(report);
-
-
-            report.SetDataSource(INItemStockData);
-            ReportDocument reportDocument = report;
-
-            // Export to a memory stream
-            Stream pdfStream = reportDocument.ExportToStream(ExportFormatType.PortableDocFormat);
-
-            // Read the Stream into a MemoryStream
-            MemoryStream memoryStream = new MemoryStream();
-            pdfStream.CopyTo(memoryStream);
-
-            // Close the original Stream
-            pdfStream.Close();
-
-            // Set the response for the browser to download the file
-            Response.ContentType = "application/pdf";
-            Response.AddHeader("content-disposition", "attachment;filename=ItemStockReport.pdf");
-            Response.Buffer = true;
-            Response.Clear();
-
-            // Write the MemoryStream to the response
-            Response.BinaryWrite(memoryStream.ToArray());
-            Response.End();
-
-            // Cleanup
-            reportDocument.Close();
-            reportDocument.Dispose();
-
-        }
 
         private void INPurchaseOrderReportDownload()
         {
@@ -475,7 +412,8 @@ namespace GL.ReportsWebForms
                 {
                     ProjectName= v.ProjectName,
                     ProjectID=v.ProjectID.GetValueOrDefault(0),
-                    Unit=v.Unit,
+                    FreightCharges = v.FreightCharges.GetValueOrDefault(0),
+                    Unit =v.Unit,
                     ItemID=v.ItemID.GetValueOrDefault(0),
                     APVendorID=v.APVendorID.GetValueOrDefault(0),
                     Amount=v.Amount.GetValueOrDefault(0),
@@ -493,6 +431,7 @@ namespace GL.ReportsWebForms
                     PurchaseOrderDate=v.PurchaseOrderDate.GetValueOrDefault(DateTime.Now),
                     PurchaseOrderID=v.PurchaseOrderID,
                     Size=v.Size,
+                    GoodsReceiptNoteID=v.GoodsReceiptNoteID,
                     UnitPrice=v.UnitPrice.GetValueOrDefault(0),
                     DiscountedPrice = v.DiscountedPrice.GetValueOrDefault(0),
                     VendorAddress = v.VendorAddress,
@@ -880,29 +819,6 @@ namespace GL.ReportsWebForms
                          }).ToList();
 
 
-            //var GeneralLedgerReportData = (
-            //    from v in GeneralLedgerReportModel
-            //    select new
-            //    {
-            //        CompanyID = v.CompanyID,
-            //        Company = v.Company,
-            //        GLAccountNo = v.GLAccountNo ?? "",
-            //        Description = v.Description ?? "",
-            //        VoucherDate = v.VoucherDate ?? DateTime.MinValue,
-            //        VTYPE = v.VTYPE ?? "",
-            //        VoucherNumber = v.VoucherNumber ?? "",
-            //        GLNarration = v.GLNarration ?? "",
-            //        Debit = v.Debit ?? 0,
-            //        Credit = v.Credit ?? 0,
-            //        Balance = v.Balance ?? 0,
-            //    }).ToList();
-
-            //ReportDocument reportPdf = new ReportDocument();
-            //report.Load("/pdf/" + report);
-            ////report.Load("pdfYourReportPath.rpt");
-            //report.ExportToDisk(ExportFormatType.PortableDocFormat, "/pdf/" + report);
-
-
             reportQueue.Enqueue(report);
 
             report.SetDataSource(ReportData);
@@ -952,11 +868,6 @@ namespace GL.ReportsWebForms
                     Credit = v.Credit ?? 0,
                     Balance = v.Balance ?? 0,
                 }).ToList();
-
-            //ReportDocument reportPdf = new ReportDocument();
-            //report.Load("/pdf/" + report);
-            ////report.Load("pdfYourReportPath.rpt");
-            //report.ExportToDisk(ExportFormatType.PortableDocFormat, "/pdf/" + report);
 
 
             reportQueue.Enqueue(report);
@@ -1264,10 +1175,6 @@ namespace GL.ReportsWebForms
                         spRptMemberPaymentPlan.Balance = dueAmount.GetValueOrDefault(0) - spRptMemberPaymentPlan.ReceivedAmount;
                     }
                 }
-                //{
-                //    spRptMemberPaymentPlan.Balance = spRptMemberPaymentPlan.DueAmount.GetValueOrDefault(0) - downPaymentAmountTotal;
-                //    spRptMemberPaymentPlan.ReceivedAmount = downPaymentAmountTotal;
-                //}
                 else if (spRptMemberPaymentPlan.PaymentPlanTypeID == Convert.ToInt32(PaymentPlanTypeEnum.Possession))
                 {
                     spRptMemberPaymentPlan.Balance = spRptMemberPaymentPlan.DueAmount.GetValueOrDefault(0);

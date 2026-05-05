@@ -27,6 +27,7 @@ namespace GL.Models
         public string Size { get; set; }
         public string Unit { get; set; }
         public decimal ApprovedQty { get; set; }
+        public decimal FreightCharges { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal DiscountedPrice { get; set; }
         public decimal Amount { get; set; }
@@ -35,6 +36,7 @@ namespace GL.Models
         public System.DateTime CreatedAt { get; set; }
         public string ApprovedBy { get; set; }
         public int CancelledBy { get; set; }
+        public string GoodsReceiptNoteID { get; set; }
         public System.DateTime CancelledAt { get; set; }
         public string Cancelled { get; set; }
     }

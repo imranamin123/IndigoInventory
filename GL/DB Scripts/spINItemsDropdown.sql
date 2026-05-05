@@ -17,7 +17,7 @@ BEGIN
 
 	SELECT 
 		ItemID,
-		Description
+		(CAST(ItemID as varchar(50)) + ' = '  + Description) 'Description'
 	FROM 
 		INItem
 	WHERE

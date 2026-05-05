@@ -1,25 +1,18 @@
 ﻿using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
-using CrystalDecisions.Web;
 using GL.DAL;
 using GL.EF;
 using GL.Models;
 using GL.Reports;
 using GL.ReportsWebForms;
-using GL.ViewModels.DV;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data.Entity.Infrastructure;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using static System.Data.Entity.Infrastructure.Design.Executor;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Data.Entity;
 
 namespace GL.Controllers
 {
@@ -37,9 +30,7 @@ namespace GL.Controllers
             return View();
         }
 
-
-
-        public ActionResult DownloadExcel2(int companyId, int projectId, DateTime? FromDate, DateTime? ToDate, long? fromItemId, long? toItemId)
+        public ActionResult DownloadExcelItem(int CompanyID, int ProjectID, DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             // EPPlus license context (required in newer versions)
             //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -53,251 +44,513 @@ namespace GL.Controllers
 
                 var db = new GLEntities();
 
+                var result =
+                    (
+                        from i in db.INItems.Include( x => x.INGroup).Include(x => x.INCategory)                        
 
-                DateTime fd = FromDate ?? DateTime.MinValue;
-                DateTime td = ToDate ?? DateTime.Now;
+                        join size in db.INSizes on i.SizeID equals size.SizeID into sizej
+                        from size in sizej.DefaultIfEmpty()
 
-                var INItemStockData =
-                (
-                    from pi in db.INProjectItems
-                    join i in db.INItems on pi.ItemID equals i.ItemID
-                    join p in db.INProjects on pi.ProjectID equals p.ProjectID
-                    join co in db.Companies on pi.CompanyID equals co.CompanyID
+                        join uom in db.INUnitOfMeasurements on i.UOMID equals uom.UOMID into uomj
+                        from uom in uomj.DefaultIfEmpty()
 
-                    join g in db.INGroups on i.GroupID equals g.GroupID into gg
-                    from g in gg.DefaultIfEmpty()
+                        join pi in db.INProjectItems
+                            .Where(x => x.ProjectID == ProjectID)
+                            on i.ItemID equals pi.ItemID into pij
+                        from pi in pij.DefaultIfEmpty()
 
-                    join c in db.INCategories on i.CategoryID equals c.CategoryID into cc
-                    from c in cc.DefaultIfEmpty()
+                        join mv in
+                        (
+                            (
+                                // GRN
+                                from d in db.INGoodsReceiptNoteDetails
+                                join m in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
+                                where m.ProjectID == ProjectID
+                                      && m.GoodsReceiptNotesDate <= ToDate
+                                      && (!ItemID.HasValue || d.ItemID == ItemID)
+                                select new
+                                {
+                                    d.ItemID,
+                                    TranDate = m.GoodsReceiptNotesDate,
+                                    ReceivedQty = d.ReceivedQty ?? 0m,
+                                    IssuedQty = 0m,
+                                    ReturnQty = 0m,
+                                    TransferInQty = 0m,
+                                    TransferOutQty = 0m
+                                }
+                            )
 
-                    join s in db.INSizes on i.SizeID equals s.SizeID into ss
-                    from s in ss.DefaultIfEmpty()
+                            .Concat(
+                                // SIN
+                                from d in db.INStoreIssueNoteDetails
+                                join m in db.INStoreIssueNotes on d.StoreIssueNoteID equals m.StoreIssueNoteID
+                                where m.ProjectID == ProjectID
+                                      && m.StoreIssueNoteDate <= ToDate
+                                      && (!ItemID.HasValue || d.ItemID == ItemID)
+                                select new
+                                {
+                                    d.ItemID,
+                                    TranDate = m.StoreIssueNoteDate,
+                                    ReceivedQty = 0m,
+                                    IssuedQty = d.IssuedQty ?? 0m,
+                                    ReturnQty = 0m,
+                                    TransferInQty = 0m,
+                                    TransferOutQty = 0m
+                                }
+                            )
 
-                    join u in db.INUnitOfMeasurements on i.UOMID equals u.UOMID into uu
-                    from u in uu.DefaultIfEmpty()
+                            .Concat(
+                                // SRN
+                                from d in db.INStoreReturnNoteDetails
+                                join m in db.INStoreReturnNotes on d.StoreReturnNoteID equals m.StoreReturnNoteID
+                                where m.ProjectID == ProjectID
+                                      && m.IsPosted == true
+                                      && m.StoreReturnNoteDate <= ToDate
+                                      && (!ItemID.HasValue || d.ItemID == ItemID)
+                                select new
+                                {
+                                    d.ItemID,
+                                    TranDate = m.StoreReturnNoteDate,
+                                    ReceivedQty = 0m,
+                                    IssuedQty = 0m,
+                                    ReturnQty = d.ReturnQty ?? 0m,
+                                    TransferInQty = 0m,
+                                    TransferOutQty = 0m
+                                }
+                            )
 
-                    where pi.CompanyID == companyId
-                       && pi.ProjectID == projectId
-                       && i.ItemID >= fromItemId
-                       && i.ItemID <= toItemId
+                            .Concat(
+                                // STN IN
+                                from d in db.INStoreTransferNoteDetails
+                                join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                                where m.ToProjectID == ProjectID
+                                      && m.ReceivedByID != null
+                                      && m.StoreTransferNoteDate <= ToDate
+                                      && (!ItemID.HasValue || d.ItemID == ItemID)
+                                select new
+                                {
+                                    d.ItemID,
+                                    TranDate = m.StoreTransferNoteDate,
+                                    ReceivedQty = 0m,
+                                    IssuedQty = 0m,
+                                    ReturnQty = 0m,
+                                    TransferInQty = d.TransferQty ?? 0m,
+                                    TransferOutQty = 0m
+                                }
+                            )
 
-                    /* ================= OPENING (Before FromDate) ================= */
+                            .Concat(
+                                // STN OUT
+                                from d in db.INStoreTransferNoteDetails
+                                join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                                where m.FromProjectID == ProjectID
+                                      && m.ReceivedByID != null
+                                      && m.StoreTransferNoteDate <= ToDate
+                                      && (!ItemID.HasValue || d.ItemID == ItemID)
+                                select new
+                                {
+                                    d.ItemID,
+                                    TranDate = m.StoreTransferNoteDate,
+                                    ReceivedQty = 0m,
+                                    IssuedQty = 0m,
+                                    ReturnQty = 0m,
+                                    TransferInQty = 0m,
+                                    TransferOutQty = d.TransferQty ?? 0m
+                                }
+                            )
 
-                    let openingReceived =
-                        (from d in db.INGoodsReceiptNoteDetails
-                         join h in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals h.GoodsReceiptNoteID
-                         where h.CompanyID == companyId
-                            && h.ProjectID == projectId
-                            && h.IsPosted == true
-                            && h.CreatedAt < fd
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.ReceivedQty).Sum() ?? 0
+                        ) on i.ItemID equals mv.ItemID into mvj
+                        from mv in mvj.DefaultIfEmpty()
 
-                    let openingIssued =
-                        (from d in db.INStoreIssueNoteDetails
-                         join h in db.INStoreIssueNotes on d.StoreIssueNoteID equals h.StoreIssueNoteID
-                         where h.CompanyID == companyId
-                            && h.ProjectID == projectId
-                            && h.IsPosted == true
-                            && h.CreatedAt < fd
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.IssuedQty).Sum() ?? 0
+                        where i.CompanyID == CompanyID
+                              && (!ItemID.HasValue || i.ItemID == ItemID)
 
-                    let openingReturned =
-                        (from d in db.INStoreReturnNoteDetails
-                         join h in db.INStoreReturnNotes on d.StoreReturnNoteID equals h.StoreReturnNoteID
-                         where h.CompanyID == companyId
-                            && h.ProjectID == projectId
-                            && h.IsPosted == true
-                            && h.CreatedAt < fd
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.ReturnQty).Sum() ?? 0
+                        group new { i, size, uom, pi, mv } by new
+                        {
+                            i.ItemID,
+                            i.Description,
+                            GroupName = i.INGroup.Name,
+                            CategoryName = i.INCategory.Name,
+                            SizeName = size != null ? size.Name : "",
+                            UOM = uom != null ? uom.Name : "",
+                            Rate = pi != null ? pi.LastRate ?? 0m : 0m,
+                            Opening = pi != null ? pi.OpeningQty ?? 0m : 0m
+                        }
+                        into g
 
-                    let openingTransferred =
-                        (from d in db.INStoreTransferNoteDetails
-                         join h in db.INStoreTransferNotes on d.StoreTransferNoteID equals h.StoreTransferNoteID
-                         where h.CompanyID == companyId
-                            && h.CreatedAt < fd
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.TransferQty).Sum() ?? 0
+                        let OpeningQty =
+                            (g.Where(x => x.mv != null && x.mv.TranDate < FromDate)
+                             .Sum(x => (decimal?)(
+                                 x.mv.ReceivedQty + x.mv.ReturnQty + x.mv.TransferInQty
+                                 - x.mv.IssuedQty - x.mv.TransferOutQty)) ?? 0m)
+                            + g.Key.Opening
 
-                    /* ================= PERIOD MOVEMENTS ================= */
+                        let ReceivedQty =
+                            g.Where(x => x.mv != null && x.mv.TranDate >= FromDate && x.mv.TranDate <= ToDate)
+                             .Sum(x => (decimal?)x.mv.ReceivedQty) ?? 0m
 
-                    let received =
-                        (from d in db.INGoodsReceiptNoteDetails
-                         join h in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals h.GoodsReceiptNoteID
-                         where h.CompanyID == companyId
-                            && h.ProjectID == projectId
-                            && h.IsPosted == true
-                            && h.CreatedAt >= fd
-                            && h.CreatedAt <= td
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.ReceivedQty).Sum() ?? 0
+                        let IssuedQty =
+                            g.Where(x => x.mv != null && x.mv.TranDate >= FromDate && x.mv.TranDate <= ToDate)
+                             .Sum(x => (decimal?)x.mv.IssuedQty) ?? 0m
 
-                    let issued =
-                        (from d in db.INStoreIssueNoteDetails
-                         join h in db.INStoreIssueNotes on d.StoreIssueNoteID equals h.StoreIssueNoteID
-                         where h.CompanyID == companyId
-                            && h.ProjectID == projectId
-                            && h.IsPosted == true
-                            && h.CreatedAt >= fd
-                            && h.CreatedAt <= td
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.IssuedQty).Sum() ?? 0
+                        let ReturnQty =
+                            g.Where(x => x.mv != null && x.mv.TranDate >= FromDate && x.mv.TranDate <= ToDate)
+                             .Sum(x => (decimal?)x.mv.ReturnQty) ?? 0m
 
-                    let returned =
-                         (from d in db.INStoreReturnNoteDetails
-                          join h in db.INStoreReturnNotes on d.StoreReturnNoteID equals h.StoreReturnNoteID
-                          where h.CompanyID == companyId
-                             && h.ProjectID == projectId
-                             && h.IsPosted == true
-                             && h.CreatedAt >= fd
-                             && h.CreatedAt <= td
-                             && d.ItemID == i.ItemID
-                          select (decimal?)d.ReturnQty).Sum() ?? 0
+                        let TransferQty =
+                            g.Where(x => x.mv != null && x.mv.TranDate >= FromDate && x.mv.TranDate <= ToDate)
+                             .Sum(x => (decimal?)(
+                                 x.mv.TransferInQty - x.mv.TransferOutQty)) ?? 0m
 
-                    let transferred =
-                        (from d in db.INStoreTransferNoteDetails
-                         join h in db.INStoreTransferNotes on d.StoreTransferNoteID equals h.StoreTransferNoteID
-                         where h.CompanyID == companyId
-                            && h.CreatedAt >= fd
-                            && h.CreatedAt <= td
-                            && d.ItemID == i.ItemID
-                         select (decimal?)d.TransferQty).Sum() ?? 0
+                        let ClosingQty = OpeningQty + ReceivedQty + ReturnQty + TransferQty - IssuedQty
 
-                    let openingQty =
-                        (pi.OpeningQty ?? 0)
-                        + openingReceived
-                        + openingReturned
-                        - openingIssued
-                        - openingTransferred
+                        select new spRptINItemStockModel
+                        {
+                            ProjectID = ProjectID,
+                            ItemID = g.Key.ItemID,
+                            Description = g.Key.Description,
+                            SizeName = g.Key.SizeName,
+                            UOM = g.Key.UOM,
+                            Rate = g.Key.Rate,
+                            FromDate = FromDate.Value,
+                            ToDate = ToDate.Value,
+                            GroupName = g.Key.GroupName,
+                            CategoryName = g.Key.CategoryName,
+                            OpeningQty = OpeningQty,
+                            ReceivedQty = ReceivedQty,
+                            IssuedQty = IssuedQty,
+                            ReturnQty = ReturnQty,
+                            TransferQty = TransferQty,
+                            ClosingQty = ClosingQty,
+                            ClosingAmount = ClosingQty * g.Key.Rate
+                        }
+                    )
+                    .Where(x =>
+                        x.OpeningQty != 0 ||
+                        x.ReceivedQty != 0 ||
+                        x.IssuedQty != 0 ||
+                        x.ReturnQty != 0 ||
+                        x.TransferQty != 0 ||
+                        x.ClosingQty != 0 ||
+                        x.Rate != 0)
+                    .ToList();
 
-                    let closingQty =
-                        openingQty
-                        + received
-                        + returned
-                        - issued
-                        - transferred
+                ////var INItemStockData =
+                ////    (
+                ////        from i in db.INItems
+                ////        where i.CompanyID == CompanyID
+                ////              && (!ItemID.HasValue || i.ItemID == ItemID.Value)
 
-                    select new spRptINItemStockModel
-                    {
-                        ProjectID = p.ProjectID,
-                        ItemID = i.ItemID,
-                        Description = i.Description,
-                        GroupName = g.Name,
-                        CategoryName = c.Name,
-                        SizeName = s.Name,
-                        UOM = u.Name,
-                        ProjectName = p.ProjectName,
-                        CompanyName = co.Name,
+                ////        join pi in db.INProjectItems
+                ////            .Where(x => x.CompanyID == CompanyID
+                ////                     && x.ProjectID == ProjectID
+                ////                     && (!ItemID.HasValue || x.ItemID == ItemID.Value))
+                ////            on i.ItemID equals pi.ItemID into pij
+                ////        from pi in pij.DefaultIfEmpty()
 
-                        FromDate = fd,
-                        ToDate = td,
+                ////        join mv in
+                ////        (
+                ////            // GRN
+                ////            (
+                ////                from d in db.INGoodsReceiptNoteDetails
+                ////                join m in db.INGoodsReceiptNotes
+                ////                    on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
+                ////                where m.ProjectID == ProjectID
+                ////                      && m.GoodsReceiptNotesDate <= ToDate
+                ////                      && (!ItemID.HasValue || d.ItemID == ItemID.Value)
+                ////                select new
+                ////                {
+                ////                    d.ItemID,
+                ////                    TranDate = m.GoodsReceiptNotesDate,
+                ////                    ReceivedQty = d.ReceivedQty ?? 0m,
+                ////                    IssuedQty = 0m,
+                ////                    ReturnQty = 0m,
+                ////                    TransferInQty = 0m,
+                ////                    TransferOutQty = 0m,
+                ////                    NetQty = d.ReceivedQty ?? 0m
+                ////                }
+                ////            )
 
-                        Rate = pi.LastRate ?? 0,
+                ////            .Union(
 
-                        OpeningQty = openingQty,
-                        ReceivedQty = received,
-                        IssuedQty = issued,
-                        ReturnQty = returned,
-                        TransferQty = transferred,
-                        ClosingQty = closingQty,
-                        ClosingAmount = closingQty * (pi.LastRate ?? 0)
-                    }
-                                ).ToList();
+                ////            // SIN
+                ////            from d in db.INStoreIssueNoteDetails
+                ////            join m in db.INStoreIssueNotes
+                ////                on d.StoreIssueNoteID equals m.StoreIssueNoteID
+                ////            where m.ProjectID == ProjectID
+                ////                  && m.StoreIssueNoteDate <= ToDate
+                ////                  && (!ItemID.HasValue || d.ItemID == ItemID.Value)
+                ////            select new
+                ////            {
+                ////                d.ItemID,
+                ////                TranDate = m.StoreIssueNoteDate,
+                ////                ReceivedQty = 0m,
+                ////                IssuedQty = d.IssuedQty ?? 0m,
+                ////                ReturnQty = 0m,
+                ////                TransferInQty = 0m,
+                ////                TransferOutQty = 0m,
+                ////                NetQty = -(d.IssuedQty ?? 0m)
+                ////            })
 
+                ////            .Union(
 
+                ////            // SRN
+                ////            from d in db.INStoreReturnNoteDetails
+                ////            join m in db.INStoreReturnNotes
+                ////                on d.StoreReturnNoteID equals m.StoreReturnNoteID
+                ////            where m.ProjectID == ProjectID
+                ////                  && m.IsPosted == true
+                ////                  && m.StoreReturnNoteDate <= ToDate
+                ////                  && (!ItemID.HasValue || d.ItemID == ItemID.Value)
+                ////            select new
+                ////            {
+                ////                d.ItemID,
+                ////                TranDate = m.StoreReturnNoteDate,
+                ////                ReceivedQty = 0m,
+                ////                IssuedQty = 0m,
+                ////                ReturnQty = d.ReturnQty ?? 0m,
+                ////                TransferInQty = 0m,
+                ////                TransferOutQty = 0m,
+                ////                NetQty = d.ReturnQty ?? 0m
+                ////            })
+
+                ////            .Union(
+
+                ////            // STN IN
+                ////            from d in db.INStoreTransferNoteDetails
+                ////            join m in db.INStoreTransferNotes
+                ////                on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                ////            where m.ToProjectID == ProjectID
+                ////                  && m.ReceivedByID != null
+                ////                  && m.StoreTransferNoteDate <= ToDate
+                ////                  && (!ItemID.HasValue || d.ItemID == ItemID.Value)
+                ////            select new
+                ////            {
+                ////                d.ItemID,
+                ////                TranDate = m.StoreTransferNoteDate,
+                ////                ReceivedQty = 0m,
+                ////                IssuedQty = 0m,
+                ////                ReturnQty = 0m,
+                ////                TransferInQty = d.TransferQty ?? 0m,
+                ////                TransferOutQty = 0m,
+                ////                NetQty = d.TransferQty ?? 0m
+                ////            })
+
+                ////            .Union(
+
+                ////            // STN OUT
+                ////            from d in db.INStoreTransferNoteDetails
+                ////            join m in db.INStoreTransferNotes
+                ////                on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                ////            where m.FromProjectID == ProjectID
+                ////                  && m.ReceivedByID != null
+                ////                  && m.StoreTransferNoteDate <= ToDate
+                ////                  && (!ItemID.HasValue || d.ItemID == ItemID.Value)
+                ////            select new
+                ////            {
+                ////                d.ItemID,
+                ////                TranDate = m.StoreTransferNoteDate,
+                ////                ReceivedQty = 0m,
+                ////                IssuedQty = 0m,
+                ////                ReturnQty = 0m,
+                ////                TransferInQty = 0m,
+                ////                TransferOutQty = d.TransferQty ?? 0m,
+                ////                NetQty = -(d.TransferQty ?? 0m)
+                ////            })
+                ////        )
+                ////        on i.ItemID equals mv.ItemID into mvj
+                ////        from mv in mvj.DefaultIfEmpty()
+
+                ////        group new { i, pi, mv } by new
+                ////        {
+                ////            i.ItemID,
+                ////            i.Description,
+                ////            GroupName = i.INGroup.Name,
+                ////            CategoryName = i.INCategory.Name,
+                ////            SizeName = i.SizeID != null
+                ////                ? db.INSizes.FirstOrDefault(x => x.SizeID == i.SizeID).Name
+                ////                : "",
+                ////            UOM = db.INUnitOfMeasurements
+                ////                .FirstOrDefault(x => x.UOMID == i.UOMID).Name,
+                ////            Rate = pi != null ? pi.LastRate : 0m,
+                ////            ProjectOpeningQty = pi != null ? pi.OpeningQty : 0m
+                ////        }
+                ////        into g
+
+                ////        let OpeningQty =
+                ////            (g.Where(x => x.mv != null && x.mv.TranDate < FromDate)
+                ////              .Sum(x => (decimal?)x.mv.NetQty) ?? 0m)
+                ////            + (g.Key.ProjectOpeningQty ?? 0m)
+
+                ////        let ReceivedQty =
+                ////            g.Where(x => x.mv != null
+                ////                      && x.mv.TranDate >= FromDate
+                ////                      && x.mv.TranDate <= ToDate)
+                ////             .Sum(x => (decimal?)x.mv.ReceivedQty) ?? 0m
+
+                ////        let IssuedQty =
+                ////            g.Where(x => x.mv != null
+                ////                      && x.mv.TranDate >= FromDate
+                ////                      && x.mv.TranDate <= ToDate)
+                ////             .Sum(x => (decimal?)x.mv.IssuedQty) ?? 0m
+
+                ////        let ReturnQty =
+                ////            g.Where(x => x.mv != null
+                ////                      && x.mv.TranDate >= FromDate
+                ////                      && x.mv.TranDate <= ToDate)
+                ////             .Sum(x => (decimal?)x.mv.ReturnQty) ?? 0m
+
+                ////        let TransferQty =
+                ////            (g.Where(x => x.mv != null
+                ////                       && x.mv.TranDate >= FromDate
+                ////                       && x.mv.TranDate <= ToDate)
+                ////              .Sum(x => (decimal?)x.mv.TransferInQty) ?? 0m)
+                ////            -
+                ////            (g.Where(x => x.mv != null
+                ////                       && x.mv.TranDate >= FromDate
+                ////                       && x.mv.TranDate <= ToDate)
+                ////              .Sum(x => (decimal?)x.mv.TransferOutQty) ?? 0m)
+
+                ////        let ClosingQty =
+                ////            OpeningQty + ReceivedQty + ReturnQty + TransferQty - IssuedQty
+
+                ////        select new spRptINItemStockModel
+                ////        {
+                ////            ProjectID = ProjectID,
+                ////            ItemID = g.Key.ItemID,
+                ////            Description = g.Key.Description,
+                ////            GroupName = g.Key.GroupName,
+                ////            CategoryName = g.Key.CategoryName,
+                ////            SizeName = g.Key.SizeName,
+                ////            UOM = g.Key.UOM,
+                ////            FromDate = FromDate.Value,
+                ////            ToDate = ToDate.Value,
+                ////            Rate = g.Key.Rate ?? 0m,
+                ////            OpeningQty = OpeningQty,
+                ////            ReceivedQty = ReceivedQty,
+                ////            IssuedQty = IssuedQty,
+                ////            TransferQty = TransferQty,
+                ////            ReturnQty = ReturnQty,
+                ////            ClosingQty = ClosingQty,
+                ////            ClosingAmount = ClosingQty * (g.Key.Rate ?? 0m)
+                ////        }
+                ////    )
+                ////    .Where(x =>
+                ////        x.OpeningQty != 0 ||
+                ////        x.ReceivedQty != 0 ||
+                ////        x.IssuedQty != 0 ||
+                ////        x.TransferQty != 0 ||
+                ////        x.ReturnQty != 0 ||
+                ////        x.ClosingQty != 0 ||
+                ////        x.Rate != 0)
+                ////    .ToList();
 
 
                 ExcelPackage.License.SetNonCommercialPersonal("Indigo"); //This will also set the Author property to the name provided in the argument.
 
+
                 using (var excelPackage = new ExcelPackage())
                 {
-                    var workSheet = excelPackage.Workbook.Worksheets.Add("INItemStockReportExcel");
-                    var rowNo = 1;
-
-                    workSheet.Cells[rowNo, 1].Value = INItemStockData.Max(x => x.CompanyName);
-                    workSheet.Cells[rowNo, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    workSheet.Cells[rowNo, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
-                    workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
-
-                    rowNo++;
-                    rowNo++;
-
-                    workSheet.Cells[rowNo, 1].Value = "Item Stock Report";
-                    workSheet.Cells[rowNo, 1, rowNo, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    workSheet.Cells[rowNo, 1, rowNo, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    workSheet.Cells[rowNo, 1, rowNo, 13].Merge = true;
-                    workSheet.Cells[rowNo, 1, rowNo, 13].Style.Font.Bold = true;
-
-
-
-                    rowNo++;
-                    workSheet.Cells[rowNo, 1].Value = "Project";
-                    workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
-                    workSheet.Cells[rowNo, 2].Value = INItemStockData.Max(x => x.ProjectName).ToString();
-
-                    workSheet.Cells[rowNo, 11].Value = "From Date";
-                    workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
-                    workSheet.Cells[rowNo, 12].Value = INItemStockData.Max(x => x.FromDate).ToString("dd-MMM-yyyy");
-
-                    rowNo++;
-                    workSheet.Cells[rowNo, 11].Value = "To Date";
-                    workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
-                    workSheet.Cells[rowNo, 12].Value = INItemStockData.Max(x => x.ToDate).ToString("dd-MMM-yyyy");
-
-
-                    rowNo++;
-                    rowNo++;
-                    workSheet.Cells[rowNo, 1].Value = "Sr No";
-                    workSheet.Cells[rowNo, 2].Value = "Group";
-                    workSheet.Cells[rowNo, 3].Value = "Category";
-                    workSheet.Cells[rowNo, 4].Value = "Item ID";
-                    workSheet.Cells[rowNo, 5].Value = "Item Description";
-                    workSheet.Cells[rowNo, 6].Value = "Size";
-                    workSheet.Cells[rowNo, 7].Value = "UOM";
-                    workSheet.Cells[rowNo, 8].Value = "Opening";
-                    workSheet.Cells[rowNo, 9].Value = "GRN";
-                    workSheet.Cells[rowNo, 10].Value = "STN";
-                    workSheet.Cells[rowNo, 11].Value = "SIN";
-                    workSheet.Cells[rowNo, 12].Value = "Closing";
-                    workSheet.Cells[rowNo, 13].Value = "Rate";
-                    workSheet.Cells[rowNo, 14].Value = "Total Amount";
-
-                    workSheet.Cells[rowNo, 1, rowNo, 14].Style.Font.Bold = true;
-
-                    Int64 SrNo = 0;
-                    foreach (var row in INItemStockData)
+                    if (result.Count > 0)
                     {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("INItemStockReportExcel");
+                        var rowNo = 1;
+
+                        //workSheet.Cells[rowNo, 1].Value = INItemStockData.Max(x => x.CompanyName);
+                        //workSheet.Cells[rowNo, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        //workSheet.Cells[rowNo, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        //workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
+                        //workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
+
+                        //rowNo++;
+                        //rowNo++;
+
+                        workSheet.Cells[rowNo, 1].Value = "Item Stock Report";
+                        workSheet.Cells[rowNo, 1, rowNo, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, rowNo, 13].Merge = true;
+                        workSheet.Cells[rowNo, 1, rowNo, 13].Style.Font.Bold = true;
+
+
+
                         rowNo++;
-                        //balance += (row.DebitAmount ?? 0) - (row.CreditAmount ?? 0);
-                        SrNo++;
-                        workSheet.Cells[rowNo, 1].Value = SrNo;
-                        // worksheet.Cells[rowNo, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        workSheet.Cells[rowNo, 2].Value = row.GroupName;
-                        workSheet.Cells[rowNo, 3].Value = row.CategoryName;
-                        workSheet.Cells[rowNo, 4].Value = row.ItemID;
-                        workSheet.Cells[rowNo, 5].Value = row.Description;
-                        workSheet.Cells[rowNo, 6].Value = row.SizeName;
-                        workSheet.Cells[rowNo, 7].Value = row.UOM;
-                        workSheet.Cells[rowNo, 8].Value = row.OpeningQty;
-                        workSheet.Cells[rowNo, 9].Value = row.ReceivedQty;
-                        workSheet.Cells[rowNo, 10].Value = row.TransferQty;
-                        workSheet.Cells[rowNo, 11].Value = row.IssuedQty;
-                        workSheet.Cells[rowNo, 12].Value = row.ClosingQty;
-                        workSheet.Cells[rowNo, 13].Value = row.Rate;
-                        workSheet.Cells[rowNo, 14].Value = row.ClosingAmount;
+                        workSheet.Cells[rowNo, 1].Value = "Project";
+                        workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 2].Value = db.INProjects.Where(x => x.ProjectID == ProjectID).FirstOrDefault().ProjectName;// INItemStockData.Max(x => x.ProjectName).ToString();
+
+                        workSheet.Cells[rowNo, 11].Value = "From Date";
+                        workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 12].Value = result.Max(x => x.FromDate).ToString("dd-MMM-yyyy");
+
+                        rowNo++;
+                        workSheet.Cells[rowNo, 11].Value = "To Date";
+                        workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
+                        workSheet.Cells[rowNo, 12].Value = result.Max(x => x.ToDate).ToString("dd-MMM-yyyy");
 
 
+                        rowNo++;
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = "Sr No";
+                        workSheet.Cells[rowNo, 2].Value = "Group";
+                        workSheet.Cells[rowNo, 3].Value = "Category";
+                        workSheet.Cells[rowNo, 4].Value = "Item ID";
+                        workSheet.Cells[rowNo, 5].Value = "Item Description";
+                        workSheet.Cells[rowNo, 6].Value = "Size";
+                        workSheet.Cells[rowNo, 7].Value = "UOM";
+                        workSheet.Cells[rowNo, 8].Value = "Opening";
+                        workSheet.Cells[rowNo, 9].Value = "GRN";
+                        workSheet.Cells[rowNo, 10].Value = "STN";
+                        workSheet.Cells[rowNo, 11].Value = "SIN";
+                        workSheet.Cells[rowNo, 12].Value = "SRN";
+                        workSheet.Cells[rowNo, 13].Value = "Closing";
+                        workSheet.Cells[rowNo, 14].Value = "Rate";
+                        workSheet.Cells[rowNo, 15].Value = "Total Amount";
+
+                        workSheet.Cells[rowNo, 1, rowNo, 15].Style.Font.Bold = true;
+
+                        Int64 SrNo = 0;
+                        foreach (var row in result)
+                        {
+                            rowNo++;
+                            //balance += (row.DebitAmount ?? 0) - (row.CreditAmount ?? 0);
+                            SrNo++;
+                            workSheet.Cells[rowNo, 1].Value = SrNo;
+                            // worksheet.Cells[rowNo, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                            workSheet.Cells[rowNo, 2].Value = row.GroupName;
+                            workSheet.Cells[rowNo, 3].Value = row.CategoryName;
+                            workSheet.Cells[rowNo, 4].Value = row.ItemID;
+                            workSheet.Cells[rowNo, 5].Value = row.Description;
+                            workSheet.Cells[rowNo, 6].Value = row.SizeName;
+                            workSheet.Cells[rowNo, 7].Value = row.UOM;
+                            workSheet.Cells[rowNo, 8].Value = row.OpeningQty;
+                            workSheet.Cells[rowNo, 9].Value = row.ReceivedQty;
+                            workSheet.Cells[rowNo, 10].Value = row.TransferQty;
+                            workSheet.Cells[rowNo, 11].Value = row.IssuedQty;
+                            workSheet.Cells[rowNo, 12].Value = row.ReturnQty;
+                            workSheet.Cells[rowNo, 13].Value = row.ClosingQty;
+                            workSheet.Cells[rowNo, 14].Value = row.Rate;
+                            workSheet.Cells[rowNo, 15].Value = row.ClosingAmount;
+
+
+                        }
+                        workSheet.Cells[5, 8, rowNo, 12].Style.Numberformat.Format = "#,##0";
+                        //worksheet.Cells[8, 1, rowNo, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Column(2).Width = 20;
+                        workSheet.Column(3).Width = 40;
+                        workSheet.Column(5).Width = 50;
                     }
-                    workSheet.Cells[8, 8, rowNo, 12].Style.Numberformat.Format = "#,##0";
-                    //worksheet.Cells[8, 1, rowNo, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    workSheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    workSheet.Column(2).Width = 20;
-                    workSheet.Column(3).Width = 40;
-                    workSheet.Column(5).Width = 50;
+                    else
+                    {
+                        var workSheet = excelPackage.Workbook.Worksheets.Add("INItemStockReportExcel");
+                        var rowNo = 1;
 
+                        workSheet.Cells[rowNo, 1].Value = "Record not found";
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        workSheet.Cells[rowNo, 1, 2, 13].Merge = true;
+                        workSheet.Cells[rowNo, 1, 2, 13].Style.Font.Bold = true;
+                    }
                     // Export as Excel file
                     var stream = new MemoryStream();
                     excelPackage.SaveAs(stream);
@@ -311,7 +564,6 @@ namespace GL.Controllers
 
             }
         }
-
 
         public ActionResult DownloadExcel(int CompanyID, int ProjectID, DateTime? FromDate, DateTime? ToDate)
         {
@@ -327,252 +579,454 @@ namespace GL.Controllers
 
                 var db = new GLEntities();
 
-                // ======================
-                // 1. OPENING BALANCES
-                // ======================
-
-                var grnData =
-                    from d in db.INGoodsReceiptNoteDetails
-                    join m in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
-                    where m.GoodsReceiptNotesDate < FromDate && m.ProjectID == ProjectID
-                    group d by new { d.ItemID, m.ProjectID } into g
-                    select new
-                    {
-                        g.Key.ItemID,
-                        g.Key.ProjectID,
-                        Qty = g.Sum(x => x.ReceivedQty ?? 0)
-                    };
-
-                var sinData =
-                    from d in db.INStoreIssueNoteDetails
-                    join m in db.INStoreIssueNotes on d.StoreIssueNoteID equals m.StoreIssueNoteID
-                    where m.StoreIssueNoteDate < FromDate && m.ProjectID == ProjectID
-                    group d by new { d.ItemID, m.ProjectID } into g
-                    select new
-                    {
-                        g.Key.ItemID,
-                        g.Key.ProjectID,
-                        Qty = g.Sum(x => x.IssuedQty ?? 0)
-                    };
-
-                var srnData =
-                    from d in db.INStoreReturnNoteDetails
-                    join m in db.INStoreReturnNotes on d.StoreReturnNoteID equals m.StoreReturnNoteID
-                    where m.StoreReturnNoteDate < FromDate && m.ProjectID == ProjectID && m.IsPosted == true
-                    group d by new { d.ItemID, m.ProjectID } into g
-                    select new
-                    {
-                        g.Key.ItemID,
-                        g.Key.ProjectID,
-                        Qty = g.Sum(x => x.ReturnQty ?? 0)
-                    };
-
-                var stnInData =
-                    from d in db.INStoreTransferNoteDetails
-                    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
-                    where m.StoreTransferNoteDate < FromDate
-                          && m.ToProjectID == ProjectID
-                          && m.ReceivedByID != null && m.ReceivedByID > 0
-                    group d by new { d.ItemID, m.ToProjectID } into g
-                    select new
-                    {
-                        g.Key.ItemID,
-                        ProjectID = g.Key.ToProjectID,
-                        Qty = g.Sum(x => x.TransferQty ?? 0)
-                    };
-
-                var stnOutData =
-                    from d in db.INStoreTransferNoteDetails
-                    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
-                    where m.StoreTransferNoteDate < FromDate
-                          && m.FromProjectID == ProjectID
-                          && m.ReceivedByID != null && m.ReceivedByID > 0
-                    group d by new { d.ItemID, m.FromProjectID } into g
-                    select new
-                    {
-                        g.Key.ItemID,
-                        ProjectID = g.Key.FromProjectID,
-                        Qty = g.Sum(x => x.TransferQty ?? 0)
-                    };
-
-                var openingQty =
+                var INItemStockData =
                 (
-                    from g in grnData
-                    join s in sinData on new { g.ItemID, g.ProjectID } equals new { s.ItemID, s.ProjectID } into sj
-                    from s in sj.DefaultIfEmpty()
-                    join r in srnData on new { g.ItemID, g.ProjectID } equals new { r.ItemID, r.ProjectID } into rj
-                    from r in rj.DefaultIfEmpty()
-                    join tin in stnInData on new { g.ItemID, g.ProjectID } equals new { tin.ItemID, tin.ProjectID } into tij
-                    from tin in tij.DefaultIfEmpty()
-                    join tout in stnOutData on new { g.ItemID, g.ProjectID } equals new { tout.ItemID, tout.ProjectID } into toj
-                    from tout in toj.DefaultIfEmpty()
-                    select new
-                    {
-                        g.ItemID,
-                        g.ProjectID,
-                        OpeningQty =
-                            (g.Qty + (r == null ? 0 : r.Qty) + (tin == null ? 0 : tin.Qty))
-                          - ((s == null ? 0 : s.Qty) + (tout == null ? 0 : tout.Qty))
-                    }
-                    //    OpeningQty =
-                    //        (g.Qty + (r?.Qty ?? 0) + (tin?.Qty ?? 0))
-                    //      - ((s?.Qty ?? 0) + (tout?.Qty ?? 0))
-                    //}
-                )
-                .Union
-                (
-                    from s in sinData
-                    join g in grnData on new { s.ItemID, s.ProjectID } equals new { g.ItemID, g.ProjectID } into gj
-                    from g in gj.DefaultIfEmpty()
-                    join r in srnData on new { s.ItemID, s.ProjectID } equals new { r.ItemID, r.ProjectID } into rj
-                    from r in rj.DefaultIfEmpty()
-                    join tin in stnInData on new { s.ItemID, s.ProjectID } equals new { tin.ItemID, tin.ProjectID } into tij
-                    from tin in tij.DefaultIfEmpty()
-                    join tout in stnOutData on new { s.ItemID, s.ProjectID } equals new { tout.ItemID, tout.ProjectID } into toj
-                    from tout in toj.DefaultIfEmpty()
-                    select new
-                    {
-                        s.ItemID,
-                        s.ProjectID,
-                        OpeningQty =
-                            ((g == null ? 0 : g.Qty) + (r == null ? 0 : r.Qty) + (tin == null ? 0 : tin.Qty))
-                          - (s.Qty + (tout == null ? 0 : tout.Qty))
-                    }
-                )
-                .ToList();
+                    from i in db.INItems
+                    where i.CompanyID == CompanyID
 
-                // ======================
-                // 2. PERIOD TRANSACTIONS
-                // ======================
-
-                var resultGRN =
-                    (from d in db.INGoodsReceiptNoteDetails
-                     join m in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
-                     where m.GoodsReceiptNotesDate >= FromDate && m.GoodsReceiptNotesDate <= ToDate && m.ProjectID == ProjectID
-                     group d by new { m.ProjectID, d.ItemID } into g
-                     select new
-                     {
-                         g.Key.ProjectID,
-                         g.Key.ItemID,
-                         TotalReceivedQty = g.Sum(x => x.ReceivedQty ?? 0)
-                     }).ToList();
-
-                var resultSIN =
-                    (from d in db.INStoreIssueNoteDetails
-                     join m in db.INStoreIssueNotes on d.StoreIssueNoteID equals m.StoreIssueNoteID
-                     where m.StoreIssueNoteDate >= FromDate && m.StoreIssueNoteDate <= ToDate && m.ProjectID == ProjectID
-                     group d by new { m.ProjectID, d.ItemID } into g
-                     select new
-                     {
-                         g.Key.ProjectID,
-                         g.Key.ItemID,
-                         TotalIssuedQty = g.Sum(x => x.IssuedQty ?? 0)
-                     }).ToList();
-
-                var resultSRN =
-                    (from d in db.INStoreReturnNoteDetails
-                     join m in db.INStoreReturnNotes on d.StoreReturnNoteID equals m.StoreReturnNoteID
-                     where m.StoreReturnNoteDate >= FromDate && m.StoreReturnNoteDate <= ToDate && m.ProjectID == ProjectID && m.IsPosted == true
-                     group d by new { m.ProjectID, d.ItemID } into g
-                     select new
-                     {
-                         g.Key.ProjectID,
-                         g.Key.ItemID,
-                         TotalReturnQty = g.Sum(x => x.ReturnQty ?? 0)
-                     }).ToList();
-
-                var resultSTNIn =
-                    from d in db.INStoreTransferNoteDetails
-                    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
-                    where m.StoreTransferNoteDate >= FromDate && m.StoreTransferNoteDate <= ToDate
-                          && m.ToProjectID == ProjectID && m.ReceivedByID != null
-                    group d by new { d.ItemID, m.ToProjectID } into g
-                    select new
-                    {
-                        ProjectID = g.Key.ToProjectID,
-                        ItemID = g.Key.ItemID,
-                        TotalReceivedQty = g.Sum(x => x.TransferQty ?? 0)
-                    };
-
-                var resultSTNOut =
-                    from d in db.INStoreTransferNoteDetails
-                    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
-                    where m.StoreTransferNoteDate >= FromDate && m.StoreTransferNoteDate <= ToDate
-                          && m.FromProjectID == ProjectID && m.ReceivedByID != null
-                    group d by new { d.ItemID, m.FromProjectID } into g
-                    select new
-                    {
-                        ProjectID = g.Key.FromProjectID,
-                        ItemID = g.Key.ItemID,
-                        TotalIssuedQty = g.Sum(x => x.TransferQty ?? 0)
-                    };
-
-                // ======================
-                // 3. FINAL STOCK REPORT
-                // ======================
-
-                var items = db.INItems.Where(x => x.CompanyID == CompanyID).ToList();
-                var projectItems = db.INProjectItems.Where(x => x.CompanyID == CompanyID && x.ProjectID == ProjectID).ToList();
-
-                var spRptINItemStockModelList =
-                (
-                    from i in items
-                    join pi in projectItems on i.ItemID equals pi.ItemID into pij
+                    join pi in db.INProjectItems
+                        .Where(x => x.CompanyID == CompanyID && x.ProjectID == ProjectID)
+                        on i.ItemID equals pi.ItemID into pij
                     from pi in pij.DefaultIfEmpty()
-                    join grn in resultGRN on i.ItemID equals grn.ItemID into gj
-                    from grn in gj.DefaultIfEmpty()
-                    join sin in resultSIN on i.ItemID equals sin.ItemID into sj
-                    from sin in sj.DefaultIfEmpty()
-                    join srn in resultSRN on i.ItemID equals srn.ItemID into srj
-                    from srn in srj.DefaultIfEmpty()
-                    join stnIn in resultSTNIn on i.ItemID equals stnIn.ItemID into tij
-                    from stnIn in tij.DefaultIfEmpty()
-                    join stnOut in resultSTNOut on i.ItemID equals stnOut.ItemID into toj
-                    from stnOut in toj.DefaultIfEmpty()
+
+                    join mv in
+                    (
+                        // GRN
+                        (
+                            from d in db.INGoodsReceiptNoteDetails
+                            join m in db.INGoodsReceiptNotes
+                                on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
+                            where m.ProjectID == ProjectID
+                                  && m.GoodsReceiptNotesDate <= ToDate
+                            select new
+                            {
+                                d.ItemID,
+                                TranDate = m.GoodsReceiptNotesDate,
+                                ReceivedQty = d.ReceivedQty ?? 0m,
+                                IssuedQty = 0m,
+                                ReturnQty = 0m,
+                                TransferInQty = 0m,
+                                TransferOutQty = 0m,
+                                NetQty = d.ReceivedQty ?? 0m
+                            }
+                        )
+
+                        .Union(
+
+                        // SIN
+                        from d in db.INStoreIssueNoteDetails
+                        join m in db.INStoreIssueNotes
+                            on d.StoreIssueNoteID equals m.StoreIssueNoteID
+                        where m.ProjectID == ProjectID
+                              && m.StoreIssueNoteDate <= ToDate
+                        select new
+                        {
+                            d.ItemID,
+                            TranDate = m.StoreIssueNoteDate,
+                            ReceivedQty = 0m,
+                            IssuedQty = d.IssuedQty ?? 0m,
+                            ReturnQty = 0m,
+                            TransferInQty = 0m,
+                            TransferOutQty = 0m,
+                            NetQty = -(d.IssuedQty ?? 0m)
+                        })
+
+                        .Union(
+
+                        // SRN
+                        from d in db.INStoreReturnNoteDetails
+                        join m in db.INStoreReturnNotes
+                            on d.StoreReturnNoteID equals m.StoreReturnNoteID
+                        where m.ProjectID == ProjectID
+                              && m.IsPosted == true
+                              && m.StoreReturnNoteDate <= ToDate
+                        select new
+                        {
+                            d.ItemID,
+                            TranDate = m.StoreReturnNoteDate,
+                            ReceivedQty = 0m,
+                            IssuedQty = 0m,
+                            ReturnQty = d.ReturnQty ?? 0m,
+                            TransferInQty = 0m,
+                            TransferOutQty = 0m,
+                            NetQty = d.ReturnQty ?? 0m
+                        })
+
+                        .Union(
+
+                        // STN IN
+                        from d in db.INStoreTransferNoteDetails
+                        join m in db.INStoreTransferNotes
+                            on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                        where m.ToProjectID == ProjectID
+                              && m.ReceivedByID != null
+                              && m.StoreTransferNoteDate <= ToDate
+                        select new
+                        {
+                            d.ItemID,
+                            TranDate = m.StoreTransferNoteDate,
+                            ReceivedQty = 0m,
+                            IssuedQty = 0m,
+                            ReturnQty = 0m,
+                            TransferInQty = d.TransferQty ?? 0m,
+                            TransferOutQty = 0m,
+                            NetQty = d.TransferQty ?? 0m
+                        })
+
+                        .Union(
+
+                        // STN OUT
+                        from d in db.INStoreTransferNoteDetails
+                        join m in db.INStoreTransferNotes
+                            on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                        where m.FromProjectID == ProjectID
+                              && m.ReceivedByID != null
+                              && m.StoreTransferNoteDate <= ToDate
+                        select new
+                        {
+                            d.ItemID,
+                            TranDate = m.StoreTransferNoteDate,
+                            ReceivedQty = 0m,
+                            IssuedQty = 0m,
+                            ReturnQty = 0m,
+                            TransferInQty = 0m,
+                            TransferOutQty = d.TransferQty ?? 0m,
+                            NetQty = -(d.TransferQty ?? 0m)
+                        })
+                    )
+                    on i.ItemID equals mv.ItemID into mvj
+                    from mv in mvj.DefaultIfEmpty()
+
+                    group new { i, pi, mv } by new
+                    {
+                        i.ItemID,
+                        i.Description,
+                        GroupName = i.INGroup.Name,
+                        CategoryName = i.INCategory.Name,
+                        SizeName = i.SizeID != null
+                            ? db.INSizes.FirstOrDefault(x => x.SizeID == i.SizeID).Name
+                            : "",
+                        UOM = db.INUnitOfMeasurements
+                            .FirstOrDefault(x => x.UOMID == i.UOMID).Name,
+                        Rate = pi != null ? pi.LastRate : 0m,
+                        ProjectOpeningQty = pi != null ? pi.OpeningQty : 0m
+                    }
+                    into g
+
+                    let OpeningQty =
+                        (g.Where(x => x.mv != null && x.mv.TranDate < FromDate)
+                          .Sum(x => (decimal?)x.mv.NetQty) ?? 0m)
+                        + (g.Key.ProjectOpeningQty ?? 0m)
+
+                    let ReceivedQty =
+                        g.Where(x => x.mv != null
+                                  && x.mv.TranDate >= FromDate
+                                  && x.mv.TranDate <= ToDate)
+                         .Sum(x => (decimal?)x.mv.ReceivedQty) ?? 0m
+
+                    let IssuedQty =
+                        g.Where(x => x.mv != null
+                                  && x.mv.TranDate >= FromDate
+                                  && x.mv.TranDate <= ToDate)
+                         .Sum(x => (decimal?)x.mv.IssuedQty) ?? 0m
+
+                    let ReturnQty =
+                        g.Where(x => x.mv != null
+                                  && x.mv.TranDate >= FromDate
+                                  && x.mv.TranDate <= ToDate)
+                         .Sum(x => (decimal?)x.mv.ReturnQty) ?? 0m
+
+                    let TransferQty =
+                        (g.Where(x => x.mv != null
+                                   && x.mv.TranDate >= FromDate
+                                   && x.mv.TranDate <= ToDate)
+                          .Sum(x => (decimal?)x.mv.TransferInQty) ?? 0m)
+                        -
+                        (g.Where(x => x.mv != null
+                                   && x.mv.TranDate >= FromDate
+                                   && x.mv.TranDate <= ToDate)
+                          .Sum(x => (decimal?)x.mv.TransferOutQty) ?? 0m)
+
+                    let ClosingQty =
+                        OpeningQty + ReceivedQty + ReturnQty + TransferQty - IssuedQty
+
                     select new spRptINItemStockModel
                     {
                         ProjectID = ProjectID,
-                        ItemID = i.ItemID,
-                        Description = i.Description,
-                        GroupName = i.INGroup.Name,
-                        CategoryName = i.INCategory.Name,
-                        SizeName = i.SizeID != null ? db.INSizes.FirstOrDefault(x => x.SizeID == i.SizeID).Name : "",
-                        UOM = db.INUnitOfMeasurements.FirstOrDefault(x => x.UOMID == i.UOMID).Name,
-                        ProjectName = db.INProjects.FirstOrDefault(x => x.ProjectID == ProjectID).ProjectName,
-                        CompanyName = db.Companies.FirstOrDefault(x => x.CompanyID == i.CompanyID).Name,
-                        FromDate = FromDate.GetValueOrDefault(),
-                        ToDate = ToDate.GetValueOrDefault(),
-                        Rate = pi?.LastRate ?? 0,
-                        OpeningQty = (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
-                                     + (pi?.OpeningQty ?? 0),
-                        ReceivedQty = (grn?.TotalReceivedQty ?? 0),// + (srn?.TotalReturnQty ?? 0) + (stnIn?.TotalReceivedQty ?? 0),
-                        IssuedQty = (sin?.TotalIssuedQty ?? 0), // + (stnOut?.TotalIssuedQty ?? 0),
-                        TransferQty = (stnIn?.TotalReceivedQty ?? 0) - (stnOut?.TotalIssuedQty ?? 0),
-                        ReturnQty = (srn?.TotalReturnQty ?? 0), // - (srn?.TotalReturnQty ?? 0),
-                        ClosingQty =
-                            (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
-                            + (pi?.OpeningQty ?? 0)
-                            + (grn?.TotalReceivedQty ?? 0)
-                            + (srn?.TotalReturnQty ?? 0)
-                            + (stnIn?.TotalReceivedQty ?? 0)
-                            - (sin?.TotalIssuedQty ?? 0)
-                            - (stnOut?.TotalIssuedQty ?? 0),
-                        ClosingAmount =
-                            (
-                                (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
-                                + (pi?.OpeningQty ?? 0)
-                                + (grn?.TotalReceivedQty ?? 0)
-                                + (srn?.TotalReturnQty ?? 0)
-                                + (stnIn?.TotalReceivedQty ?? 0)
-                                - (sin?.TotalIssuedQty ?? 0)
-                                - (stnOut?.TotalIssuedQty ?? 0)
-                            ) * (pi?.LastRate ?? 0)
+                        ItemID = g.Key.ItemID,
+                        Description = g.Key.Description,
+                        GroupName = g.Key.GroupName,
+                        CategoryName = g.Key.CategoryName,
+                        SizeName = g.Key.SizeName,
+                        UOM = g.Key.UOM,
+                        FromDate = FromDate.Value,
+                        ToDate = ToDate.Value,
+                        Rate = g.Key.Rate ?? 0m,
+                        OpeningQty = OpeningQty,
+                        ReceivedQty = ReceivedQty,
+                        IssuedQty = IssuedQty,
+                        TransferQty = TransferQty,
+                        ReturnQty = ReturnQty,
+                        ClosingQty = ClosingQty,
+                        ClosingAmount = ClosingQty * (g.Key.Rate ?? 0m)
                     }
-                ).ToList();
+                )
+                .Where(x =>
+                    x.OpeningQty != 0 ||
+                    x.ReceivedQty != 0 ||
+                    x.IssuedQty != 0 ||
+                    x.TransferQty != 0 ||
+                    x.ReturnQty != 0 ||
+                    x.ClosingQty != 0 ||
+                    x.Rate != 0)
+                .ToList();
 
-                var INItemStockData = spRptINItemStockModelList
-                    .Where(x => x.OpeningQty != 0 || x.ReceivedQty != 0 || x.TransferQty != 0 || x.IssuedQty != 0 || x.ReturnQty != 0 || x.ClosingQty != 0 || x.Rate != 0)
-                    .ToList();
+                //// ======================
+                //// 1. OPENING BALANCES
+                //// ======================
+
+                //var grnData =
+                //    from d in db.INGoodsReceiptNoteDetails
+                //    join m in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
+                //    where m.GoodsReceiptNotesDate < FromDate && m.ProjectID == ProjectID
+                //    group d by new { d.ItemID, m.ProjectID } into g
+                //    select new
+                //    {
+                //        g.Key.ItemID,
+                //        g.Key.ProjectID,
+                //        Qty = g.Sum(x => x.ReceivedQty ?? 0)
+                //    };
+
+                //var sinData =
+                //    from d in db.INStoreIssueNoteDetails
+                //    join m in db.INStoreIssueNotes on d.StoreIssueNoteID equals m.StoreIssueNoteID
+                //    where m.StoreIssueNoteDate < FromDate && m.ProjectID == ProjectID
+                //    group d by new { d.ItemID, m.ProjectID } into g
+                //    select new
+                //    {
+                //        g.Key.ItemID,
+                //        g.Key.ProjectID,
+                //        Qty = g.Sum(x => x.IssuedQty ?? 0)
+                //    };
+
+                //var srnData =
+                //    from d in db.INStoreReturnNoteDetails
+                //    join m in db.INStoreReturnNotes on d.StoreReturnNoteID equals m.StoreReturnNoteID
+                //    where m.StoreReturnNoteDate < FromDate && m.ProjectID == ProjectID && m.IsPosted == true
+                //    group d by new { d.ItemID, m.ProjectID } into g
+                //    select new
+                //    {
+                //        g.Key.ItemID,
+                //        g.Key.ProjectID,
+                //        Qty = g.Sum(x => x.ReturnQty ?? 0)
+                //    };
+
+                //var stnInData =
+                //    (from d in db.INStoreTransferNoteDetails
+                //    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                //    where m.StoreTransferNoteDate < FromDate
+                //          && m.ToProjectID == ProjectID
+                //          && m.ReceivedByID != null && m.ReceivedByID > 0
+                //    group d by new { d.ItemID, m.ToProjectID } into g
+                //    select new
+                //    {
+                //        g.Key.ItemID,
+                //        ProjectID = g.Key.ToProjectID,
+                //        Qty = g.Sum(x => x.TransferQty ?? 0)
+                //    });
+
+                //var stnOutData =
+                //    (from d in db.INStoreTransferNoteDetails
+                //    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                //    where m.StoreTransferNoteDate < FromDate
+                //          && m.FromProjectID == ProjectID
+                //          && m.ReceivedByID != null && m.ReceivedByID > 0
+                //    group d by new { d.ItemID, m.FromProjectID } into g
+                //    select new
+                //    {
+                //        g.Key.ItemID,
+                //        ProjectID = g.Key.FromProjectID,
+                //        Qty = g.Sum(x => x.TransferQty ?? 0)
+                //    });
+
+                //var openingQty =
+                //(
+                //    from g in grnData
+                //    join s in sinData on new { g.ItemID, g.ProjectID } equals new { s.ItemID, s.ProjectID } into sj
+                //    from s in sj.DefaultIfEmpty()
+                //    join r in srnData on new { g.ItemID, g.ProjectID } equals new { r.ItemID, r.ProjectID } into rj
+                //    from r in rj.DefaultIfEmpty()
+                //    join tin in stnInData on new { g.ItemID, g.ProjectID } equals new { tin.ItemID, tin.ProjectID } into tij
+                //    from tin in tij.DefaultIfEmpty()
+                //    join tout in stnOutData on new { g.ItemID, g.ProjectID } equals new { tout.ItemID, tout.ProjectID } into toj
+                //    from tout in toj.DefaultIfEmpty()
+                //    select new
+                //    {
+                //        g.ItemID,
+                //        g.ProjectID,
+                //        OpeningQty =
+                //            (g.Qty + (r == null ? 0 : r.Qty) + (tin == null ? 0 : tin.Qty))
+                //          - ((s == null ? 0 : s.Qty) + (tout == null ? 0 : tout.Qty))
+                //    }
+                //    //    OpeningQty =
+                //    //        (g.Qty + (r?.Qty ?? 0) + (tin?.Qty ?? 0))
+                //    //      - ((s?.Qty ?? 0) + (tout?.Qty ?? 0))
+                //    //}
+                //)
+                //.Union
+                //(
+                //    from s in sinData
+                //    join g in grnData on new { s.ItemID, s.ProjectID } equals new { g.ItemID, g.ProjectID } into gj
+                //    from g in gj.DefaultIfEmpty()
+                //    join r in srnData on new { s.ItemID, s.ProjectID } equals new { r.ItemID, r.ProjectID } into rj
+                //    from r in rj.DefaultIfEmpty()
+                //    join tin in stnInData on new { s.ItemID, s.ProjectID } equals new { tin.ItemID, tin.ProjectID } into tij
+                //    from tin in tij.DefaultIfEmpty()
+                //    join tout in stnOutData on new { s.ItemID, s.ProjectID } equals new { tout.ItemID, tout.ProjectID } into toj
+                //    from tout in toj.DefaultIfEmpty()
+                //    select new
+                //    {
+                //        s.ItemID,
+                //        s.ProjectID,
+                //        OpeningQty =
+                //            ((g == null ? 0 : g.Qty) + (r == null ? 0 : r.Qty) + (tin == null ? 0 : tin.Qty))
+                //          - (s.Qty + (tout == null ? 0 : tout.Qty))
+                //    }
+                //);
+
+
+                //// ======================
+                //// 2. PERIOD TRANSACTIONS
+                //// ======================
+
+                //var resultGRN =
+                //    (from d in db.INGoodsReceiptNoteDetails
+                //     join m in db.INGoodsReceiptNotes on d.GoodsReceiptNoteID equals m.GoodsReceiptNoteID
+                //     where m.GoodsReceiptNotesDate >= FromDate && m.GoodsReceiptNotesDate <= ToDate && m.ProjectID == ProjectID
+                //     group d by new { m.ProjectID, d.ItemID } into g
+                //     select new
+                //     {
+                //         g.Key.ProjectID,
+                //         g.Key.ItemID,
+                //         TotalReceivedQty = g.Sum(x => x.ReceivedQty ?? 0)
+                //     });
+
+                //var resultSIN =
+                //    (from d in db.INStoreIssueNoteDetails
+                //     join m in db.INStoreIssueNotes on d.StoreIssueNoteID equals m.StoreIssueNoteID
+                //     where m.StoreIssueNoteDate >= FromDate && m.StoreIssueNoteDate <= ToDate && m.ProjectID == ProjectID
+                //     group d by new { m.ProjectID, d.ItemID } into g
+                //     select new
+                //     {
+                //         g.Key.ProjectID,
+                //         g.Key.ItemID,
+                //         TotalIssuedQty = g.Sum(x => x.IssuedQty ?? 0)
+                //     });
+
+                //var resultSRN =
+                //    (from d in db.INStoreReturnNoteDetails
+                //     join m in db.INStoreReturnNotes on d.StoreReturnNoteID equals m.StoreReturnNoteID
+                //     where m.StoreReturnNoteDate >= FromDate && m.StoreReturnNoteDate <= ToDate && m.ProjectID == ProjectID && m.IsPosted == true
+                //     group d by new { m.ProjectID, d.ItemID } into g
+                //     select new
+                //     {
+                //         g.Key.ProjectID,
+                //         g.Key.ItemID,
+                //         TotalReturnQty = g.Sum(x => x.ReturnQty ?? 0)
+                //     });
+
+                //var resultSTNIn =
+                //    (from d in db.INStoreTransferNoteDetails
+                //    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                //    where m.StoreTransferNoteDate >= FromDate && m.StoreTransferNoteDate <= ToDate
+                //          && m.ToProjectID == ProjectID && m.ReceivedByID != null
+                //    group d by new { d.ItemID, m.ToProjectID } into g
+                //    select new
+                //    {
+                //        ProjectID = g.Key.ToProjectID,
+                //        ItemID = g.Key.ItemID,
+                //        TotalReceivedQty = g.Sum(x => x.TransferQty ?? 0)
+                //    }).ToList();
+
+                //var resultSTNOut =
+                //    (from d in db.INStoreTransferNoteDetails
+                //    join m in db.INStoreTransferNotes on d.StoreTransferNoteID equals m.StoreTransferNoteID
+                //    where m.StoreTransferNoteDate >= FromDate && m.StoreTransferNoteDate <= ToDate
+                //          && m.FromProjectID == ProjectID && m.ReceivedByID != null
+                //    group d by new { d.ItemID, m.FromProjectID } into g
+                //    select new
+                //    {
+                //        ProjectID = g.Key.FromProjectID,
+                //        ItemID = g.Key.ItemID,
+                //        TotalIssuedQty = g.Sum(x => x.TransferQty ?? 0)
+                //    }).ToList();
+
+                //// ======================
+                //// 3. FINAL STOCK REPORT
+                //// ======================
+
+                //var items = db.INItems.Where(x => x.CompanyID == CompanyID).ToList();
+                //var projectItems = db.INProjectItems.Where(x => x.CompanyID == CompanyID && x.ProjectID == ProjectID).ToList();
+
+                //var spRptINItemStockModelList =
+                //(
+                //    from i in items
+                //    join pi in projectItems on i.ItemID equals pi.ItemID into pij
+                //    from pi in pij.DefaultIfEmpty()
+                //    join grn in resultGRN on i.ItemID equals grn.ItemID into gj
+                //    from grn in gj.DefaultIfEmpty()
+                //    join sin in resultSIN on i.ItemID equals sin.ItemID into sj
+                //    from sin in sj.DefaultIfEmpty()
+                //    join srn in resultSRN on i.ItemID equals srn.ItemID into srj
+                //    from srn in srj.DefaultIfEmpty()
+                //    join stnIn in resultSTNIn on i.ItemID equals stnIn.ItemID into tij
+                //    from stnIn in tij.DefaultIfEmpty()
+                //    join stnOut in resultSTNOut on i.ItemID equals stnOut.ItemID into toj
+                //    from stnOut in toj.DefaultIfEmpty()
+                //    select new spRptINItemStockModel
+                //    {
+                //        ProjectID = ProjectID,
+                //        ItemID = i.ItemID,
+                //        Description = i.Description,
+                //        GroupName = i.INGroup.Name,
+                //        CategoryName = i.INCategory.Name,
+                //        SizeName = i.SizeID != null ? db.INSizes.FirstOrDefault(x => x.SizeID == i.SizeID).Name : "",
+                //        UOM = db.INUnitOfMeasurements.FirstOrDefault(x => x.UOMID == i.UOMID).Name,
+                //        ProjectName = db.INProjects.FirstOrDefault(x => x.ProjectID == ProjectID).ProjectName,
+                //        CompanyName = db.Companies.FirstOrDefault(x => x.CompanyID == i.CompanyID).Name,
+                //        FromDate = FromDate.GetValueOrDefault(),
+                //        ToDate = ToDate.GetValueOrDefault(),
+                //        Rate = pi?.LastRate ?? 0,
+                //        OpeningQty = (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
+                //                     + (pi?.OpeningQty ?? 0),
+                //        ReceivedQty = (grn?.TotalReceivedQty ?? 0),// + (srn?.TotalReturnQty ?? 0) + (stnIn?.TotalReceivedQty ?? 0),
+                //        IssuedQty = (sin?.TotalIssuedQty ?? 0), // + (stnOut?.TotalIssuedQty ?? 0),
+                //        TransferQty = (stnIn?.TotalReceivedQty ?? 0) - (stnOut?.TotalIssuedQty ?? 0),
+                //        ReturnQty = (srn?.TotalReturnQty ?? 0), // - (srn?.TotalReturnQty ?? 0),
+                //        ClosingQty =
+                //            (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
+                //            + (pi?.OpeningQty ?? 0)
+                //            + (grn?.TotalReceivedQty ?? 0)
+                //            + (srn?.TotalReturnQty ?? 0)
+                //            + (stnIn?.TotalReceivedQty ?? 0)
+                //            - (sin?.TotalIssuedQty ?? 0)
+                //            - (stnOut?.TotalIssuedQty ?? 0),
+                //        ClosingAmount =
+                //            (
+                //                (openingQty.FirstOrDefault(o => o.ItemID == i.ItemID && o.ProjectID == ProjectID)?.OpeningQty ?? 0)
+                //                + (pi?.OpeningQty ?? 0)
+                //                + (grn?.TotalReceivedQty ?? 0)
+                //                + (srn?.TotalReturnQty ?? 0)
+                //                + (stnIn?.TotalReceivedQty ?? 0)
+                //                - (sin?.TotalIssuedQty ?? 0)
+                //                - (stnOut?.TotalIssuedQty ?? 0)
+                //            ) * (pi?.LastRate ?? 0)
+                //    }
+                //);
+
+                //var INItemStockData = spRptINItemStockModelList //.ToList();
+                //    .Where(x => x.TransferQty != 0 || x.OpeningQty != 0 || x.ReceivedQty != 0 || x.TransferQty != 0 || x.IssuedQty != 0 || x.ReturnQty != 0 || x.ClosingQty != 0 || x.Rate != 0)
+                //    .ToList();
 
                 #region 
                 //////// ======================
@@ -926,7 +1380,7 @@ namespace GL.Controllers
                         rowNo++;
                         workSheet.Cells[rowNo, 1].Value = "Project";
                         workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
-                        workSheet.Cells[rowNo, 2].Value = INItemStockData.Max(x => x.ProjectName).ToString();
+                        workSheet.Cells[rowNo, 2].Value = "";// INItemStockData.Max(x => x.ProjectName).ToString();
 
                         workSheet.Cells[rowNo, 11].Value = "From Date";
                         workSheet.Cells[rowNo, 11].Style.Font.Bold = true;
@@ -1015,70 +1469,6 @@ namespace GL.Controllers
             }
         }
 
-        private ActionResult INItemStockReportDownloadExcel()
-        {
-            int CompanyID = 1;
-            int ProjectID = 1;
-            DateTime? FromDate = null;
-            DateTime? ToDate = null;
-
-            // Export as Excel file
-            var stream = new MemoryStream();
-            string fileName = "ItemStockReport.xlsx";
-            string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-
-            var INItemStockList = new GLEntities().spRptINItemStock(CompanyID, ProjectID, FromDate, ToDate);
-
-            var INItemStockData = (
-
-                from v in INItemStockList
-                select new spRptINItemStockModel
-                {
-                    CompanyName = v.CompanyName,
-                    ProjectName = v.ProjectName,
-                    GroupName = v.GroupName,
-                    CategoryName = v.CategoryName,
-                    ItemID = v.ItemID,
-                    Description = v.Description,
-                    SizeName = v.SizeName,
-                    UOM = v.UOM,
-                    OpeningQty = v.OpeningQty.GetValueOrDefault(0),
-                    ReceivedQty = v.ReceivedQty,
-                    Rate = v.Rate.GetValueOrDefault(0),
-                    ClosingQty = v.ClosingQty.GetValueOrDefault(0),
-                    ClosingAmount = v.ClosingAmount.GetValueOrDefault(0)
-                }).ToList();
-
-            ExcelPackage.License.SetNonCommercialPersonal("Imran"); //This will also set the Author property to the name provided in the argument.
-
-            using (var excelPackage = new ExcelPackage())
-            {
-                var workSheet = excelPackage.Workbook.Worksheets.Add("INItemStockReportExcel");
-                var rowNo = 1;
-
-                workSheet.Cells[rowNo, 1].Value = "General Ledger";
-                workSheet.Cells[1, 1, 2, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                workSheet.Cells[1, 1, 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                workSheet.Cells[1, 1, 2, 13].Merge = true;
-                workSheet.Cells[1, 1, 2, 13].Style.Font.Bold = true;
-
-                rowNo = 3;
-                workSheet.Cells[rowNo, 1].Value = "Project";
-                workSheet.Cells[rowNo, 2].Value = "ISA"; //DateTime.Now.ToString("dd-MMM-yyyy mm:hh");
-
-                workSheet.Cells[rowNo, 11].Value = "Printing Date";
-                workSheet.Cells[rowNo, 12].Value = DateTime.Now.ToString("dd-MMM-yyyy mm:hh");
-
-
-                //// Export as Excel file
-                //var stream = new MemoryStream();
-                excelPackage.SaveAs(stream);
-                stream.Position = 0;
-
-            }
-            return File(stream, contentType, fileName);
-        }
 
         public ActionResult ApplicationFormReport()
         {
@@ -1198,7 +1588,7 @@ namespace GL.Controllers
                     DocumentNo = v.DocumentNo ?? "",
                     ProjectName = v.ProjectName,
                     RequestDate = v.RequestDate.GetValueOrDefault(DateTime.Now),
-                    RequestID = v.RequestID,                   
+                    RequestID = v.RequestID,
 
                     RequestDetailID = v.RequestDetailID,
                     ItemID = v.ItemID.GetValueOrDefault(0),
@@ -1913,6 +2303,7 @@ namespace GL.Controllers
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
             //ViewBag.Units = new List<DVUnit>();
+            ViewBag.Items = dal.INItemsList(LoginUser.CompanyID);
             ViewBag.FromDate = DateTime.UtcNow.ToString("dd-MMM-yyyy");
             ViewBag.ToDate = DateTime.UtcNow.ToString("dd-MMM-yyyy");
             return View();
@@ -2487,7 +2878,7 @@ namespace GL.Controllers
                        Size = v.Size,
                        TotalAmount = v.TotalAmount.GetValueOrDefault(0),
                        UOM = v.UOM,
-                       
+
 
                    }).ToList();
 
@@ -3032,15 +3423,15 @@ namespace GL.Controllers
                            RequestedQty = v.RequestedQty.GetValueOrDefault(0),
                            RequestID = v.RequestID,
                            ApprovedQty = v.ApprovedQty.GetValueOrDefault(0),
-                           Category=v.Category,
-                           Group=v.Group,
-                           Item=v.Item,
-                           ItemID=v.ItemID.GetValueOrDefault(0),
-                           ReceivedQty=v.ReceivedQty.GetValueOrDefault(0),
-                           RequestDetailID=v.RequestDetailID,
-                           Size=v.Size,
-                           Status=v.Status,
-                           UOM=v.UOM
+                           Category = v.Category,
+                           Group = v.Group,
+                           Item = v.Item,
+                           ItemID = v.ItemID.GetValueOrDefault(0),
+                           ReceivedQty = v.ReceivedQty.GetValueOrDefault(0),
+                           RequestDetailID = v.RequestDetailID,
+                           Size = v.Size,
+                           Status = v.Status,
+                           UOM = v.UOM
 
                        }).ToList();
 
@@ -3084,7 +3475,7 @@ namespace GL.Controllers
 
                         workSheet.Cells[rowNo, 1].Value = "Status";
                         workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
-                        workSheet.Cells[rowNo, 2].Value = Status;                        
+                        workSheet.Cells[rowNo, 2].Value = Status;
 
                         rowNo++;
 
@@ -3112,7 +3503,7 @@ namespace GL.Controllers
                         workSheet.Cells[rowNo, 4].Value = "Date";
                         workSheet.Cells[rowNo, 5].Value = "PR ID";
                         //workSheet.CCells[rowNo, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                        
+
                         workSheet.Cells[rowNo, 6].Value = "Item Description";
                         workSheet.Cells[rowNo, 7].Value = "Size";
                         workSheet.Cells[rowNo, 8].Value = "UOM";
@@ -3219,11 +3610,11 @@ namespace GL.Controllers
                        select new spRptPendingPOModel
                        {
                            Company = v.Company,
-                           GoodsReceiptNotesDate=v.GoodsReceiptNotesDate.Value,
+                           GoodsReceiptNotesDate = v.GoodsReceiptNotesDate.Value,
                            GoodsReceiptNoteID = v.GoodsReceiptNoteID,
-                           APVendorName= v.APVendorName,
-                           Amount=v.Amount.GetValueOrDefault(0),
-                           Rate=v.Rate.GetValueOrDefault(0),
+                           APVendorName = v.APVendorName,
+                           Amount = v.Amount.GetValueOrDefault(0),
+                           Rate = v.Rate.GetValueOrDefault(0),
                            ProjectName = v.ProjectName,
                            Category = v.Category,
                            Group = v.Group,
@@ -3295,7 +3686,7 @@ namespace GL.Controllers
                         workSheet.Cells[rowNo, 1].Value = "Project";
                         workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
                         workSheet.Cells[rowNo, 2].Value = PendingCompleteDemandsData.Max(x => x.ProjectName).ToString();
-                        
+
                         rowNo++;
 
                         rowNo++;
@@ -3399,11 +3790,11 @@ namespace GL.Controllers
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
 
                 var data = db.spRptINItemRateComparisonList(LoginUser.CompanyID, ProjectID).ToList();
-                var INItemRateComparisonList = data.Where(x => x.LastRate != null ).ToList();
+                var INItemRateComparisonList = data.Where(x => x.LastRate != null).ToList();
                 // ====== Final projection ======
                 var INItemRateComparisonListData = (
                        from v in INItemRateComparisonList
-                       select new spRptINItemRateComparisonListModel 
+                       select new spRptINItemRateComparisonListModel
                        {
                            Company = v.Company,
                            ProjectName = v.ProjectName,
@@ -3415,12 +3806,12 @@ namespace GL.Controllers
                            UOM = v.UOM,
                            LastRate = v.LastRate.GetValueOrDefault(0),
                            LastRateDate = v.LastRateDate.GetValueOrDefault(DateTime.MinValue),
-                           LastRate2=v.LastRate2.GetValueOrDefault(0),
-                           LastRateDate2 = v.LastRateDate2.GetValueOrDefault(DateTime.MinValue),    
-                           LastRate3=v.LastRate3.GetValueOrDefault(0),
-                           LastRateDate3=v.LastRateDate3.GetValueOrDefault(DateTime.MinValue),
-                           LastRate4=v.LastRate4.GetValueOrDefault(0),
-                           LastRateDate4=v.LastRateDate4.GetValueOrDefault(DateTime.MinValue)
+                           LastRate2 = v.LastRate2.GetValueOrDefault(0),
+                           LastRateDate2 = v.LastRateDate2.GetValueOrDefault(DateTime.MinValue),
+                           LastRate3 = v.LastRate3.GetValueOrDefault(0),
+                           LastRateDate3 = v.LastRateDate3.GetValueOrDefault(DateTime.MinValue),
+                           LastRate4 = v.LastRate4.GetValueOrDefault(0),
+                           LastRateDate4 = v.LastRateDate4.GetValueOrDefault(DateTime.MinValue)
 
                        }).ToList();
 
@@ -3506,11 +3897,11 @@ namespace GL.Controllers
                             workSheet.Cells[rowNo, 6].Value = row.Size;
                             workSheet.Cells[rowNo, 7].Value = row.UOM;
 
-                            workSheet.Cells[rowNo, 8].Value = row.LastRate > 0 ? row.LastRate : (object)null ;
+                            workSheet.Cells[rowNo, 8].Value = row.LastRate > 0 ? row.LastRate : (object)null;
                             //workSheet.Cells[rowNo, 9].Value = row.LastRateDate != DateTime.MinValue ? row.LastRateDate.ToString("dd-MMM-yyyy") : "";
                             //workSheet.Cells[rowNo, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                            workSheet.Cells[rowNo, 9].Value = row.LastRate2 > 0 ? row.LastRate2 : (object)null; 
+                            workSheet.Cells[rowNo, 9].Value = row.LastRate2 > 0 ? row.LastRate2 : (object)null;
                             //workSheet.Cells[rowNo, 11].Value = row.LastRateDate2 != DateTime.MinValue ? row.LastRateDate2.ToString("dd-MMM-yyyy"): "";
                             //workSheet.Cells[rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 

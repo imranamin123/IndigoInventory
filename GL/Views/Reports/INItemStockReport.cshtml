@@ -36,8 +36,6 @@
                             new { @class = "form-control showError", @id = "ProjectID" })
                             <span id="spnProjectIDError" class="error" style="display:none;">Please select a project</span>
                         </div>
-
-
                     </div>
 
                     <div class="row" style="margin-top:5px;">
@@ -65,6 +63,13 @@
 
                     </div>
 
+                    <div class="row" style="margin-top:5px;">
+                        <label class="control-label col-sm-2">Item</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("ItemID", new SelectList(ViewBag.Items, "ItemID", "Description"), "-- Select --",
+                            new { @class = "form-control showError ddl", @id = "ItemID" })
+                        </div>
+                    </div>
 
                     <!-- /.box-body -->
                     <div class="box-footer">
@@ -99,7 +104,7 @@
                 format: 'dd-M-yyyy',
             });
 
-           // $("#UnitID").select2();
+            $(".ddl").select2();
 
             
 
@@ -109,15 +114,18 @@
 
         function downloadReport() {
             if (IsValid()) {
+                debugger;
                 var companyID = $('#mCompanyID').val();
                 var projectID = $('#ProjectID').val();
                 var fromDate = $('#FromDate').val();
                 var toDate = $('#ToDate').val();
+                var ItemID = $('#ItemID').val();
 
-                var url = "/Reports/DownloadExcel?CompanyID=" + companyID
+                var url = "/Reports/DownloadExcelItem?CompanyID=" + companyID
                     + "&ProjectID=" + projectID
                     + "&FromDate=" + fromDate
-                    + "&ToDate=" + toDate;
+                    + "&ToDate=" + toDate
+                    + "&ItemID=" + ItemID
 
                 window.location.href = url; // 🔽 this will download the Excel
             }

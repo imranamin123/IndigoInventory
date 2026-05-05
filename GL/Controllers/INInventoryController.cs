@@ -108,38 +108,31 @@ namespace GL.Controllers
                     {
                         try
                         {
-                            //var stndList = db.INStoreTransferNoteDetails.Where(x => x.StoreTransferNoteID == 23).ToList();
-
-                            var pr = db.INPurchaseRequisitions.Where(x => x.RequestID == 10979).FirstOrDefault();
-                           // var prds = db.INPurchaseRequisitionDetails.Where(x => x.RequestID == 10915).ToList();
-
-                            var stn = db.INStoreTransferNotes.Where(x => x.StoreTransferNoteID == 25).FirstOrDefault();
-                            
 
                             foreach (var item in itemsCSVWithOB)
                             {
 
                                 //STN
 
-                                var stnd = new INStoreTransferNoteDetail()
-                                {
-                                    CompanyID = 1,
-                                    CreatedAt = DateTime.Now,
-                                    CreatedBy = 59,
-                                    QtyInHand = 0,
-                                    ItemID = item.ItemID,
-                                    ModifiedAt = DateTime.Now,
-                                    ModifiedBy = 59,
-                                    Remarks = "STN Transfer Requested from IBA to ISA By Code 24-Mar-2026",
-                                    RequestDetailID = db.INPurchaseRequisitionDetails.Where(x => x.RequestID == 10979 && x.ItemID == item.ItemID).FirstOrDefault().RequestDetailID,
-                                    RequestedQty = item.STN,
-                                    TransferQty = item.STN,
-                                    StoreTransferNoteID = stn.StoreTransferNoteID,
-                                    StoreTransferNoteDetailID = 0
-                                };
-                                db.INStoreTransferNoteDetails.AddOrUpdate(stnd);
+                                ////var stnd = new INStoreTransferNoteDetail()
+                                ////{
+                                ////    CompanyID = 1,
+                                ////    CreatedAt = DateTime.Now,
+                                ////    CreatedBy = 59,
+                                ////    QtyInHand = 0,
+                                ////    ItemID = item.ItemID,
+                                ////    ModifiedAt = DateTime.Now,
+                                ////    ModifiedBy = 59,
+                                ////    Remarks = "STN Transfer Requested from IBA to ISA By Code 24-Mar-2026",
+                                ////    RequestDetailID = db.INPurchaseRequisitionDetails.Where(x => x.RequestID == 10979 && x.ItemID == item.ItemID).FirstOrDefault().RequestDetailID,
+                                ////    RequestedQty = item.STN,
+                                ////    TransferQty = item.STN,
+                                ////    StoreTransferNoteID = stn.StoreTransferNoteID,
+                                ////    StoreTransferNoteDetailID = 0
+                                ////};
+                                ////db.INStoreTransferNoteDetails.AddOrUpdate(stnd);
 
-                                // demand
+                                ////// demand
 
                                 ////var prd = new INPurchaseRequisitionDetail()
                                 ////{
@@ -157,35 +150,44 @@ namespace GL.Controllers
                                 ////    ModifiedBy = 59
                                 ////};
 
-                                //////prds.Add(prd);
-                                //////  prds.
+                                //prds.Add(prd);
+                                //  prds.
                                 ////db.INPurchaseRequisitionDetails.AddOrUpdate(prd);
                                 ////db.SaveChanges();
 
+                                //var purchaseRequisitionDetail = db.INPurchaseRequisitionDetails.Where(x => x.RequestDetailID == stn.RequestDetailID).FirstOrDefault();
+                                //if (purchaseRequisitionDetail != null)
+                                //{
+                                //    purchaseRequisitionDetail.Balance += item.STN;
+                                //    purchaseRequisitionDetail.ModifiedBy = 59;
+                                //    purchaseRequisitionDetail.ModifiedAt = DateTime.Now;
+                                //    db.INPurchaseRequisitionDetails.AddOrUpdate(purchaseRequisitionDetail);
+                                //    db.SaveChanges();
+                                //}
 
 
-                                ////var projectItemTo = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 1).FirstOrDefault();
-                                ////if (projectItemTo != null)
-                                ////{
-                                ////    projectItemTo.QtyInHand += item.STN;
-                                ////    db.INProjectItems.AddOrUpdate(projectItemTo);
-                                ////    db.SaveChanges();
-                                ////}
+                                    //var projectItemTo = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 1).FirstOrDefault();
+                                    //if (projectItemTo != null)
+                                    //{
+                                    //    projectItemTo.QtyInHand -= item.STN;
+                                    //    db.INProjectItems.AddOrUpdate(projectItemTo);
+                                    //    db.SaveChanges();
+                                    //}
 
-                                ////var projectItemFrom = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 2).FirstOrDefault();
-                                ////if (projectItemFrom != null)
-                                ////{
-                                ////    projectItemFrom.QtyInHand -= item.STN;
-                                ////    db.INProjectItems.AddOrUpdate(projectItemFrom);
-                                ////    db.SaveChanges();
-                                ////}
+                                    //var projectItemFrom = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 2).FirstOrDefault();
+                                    //if (projectItemFrom != null)
+                                    //{
+                                    //    projectItemFrom.QtyInHand += item.STN;
+                                    //    db.INProjectItems.AddOrUpdate(projectItemFrom);
+                                    //    db.SaveChanges();
+                                    //}
 
-                            }
+                                }
 
                             ////pr.SubmitedAtMD = DateTime.Now;
                             ////pr.SubmitedByMD = 40;
                             ////db.INPurchaseRequisitions.AddOrUpdate(pr);
-                            db.SaveChanges();
+                            ////db.SaveChanges();
 
                             transaction.Commit();
                         }
@@ -2088,7 +2090,8 @@ namespace GL.Controllers
                         PurchaseOrderDate = DateTime.Now,
                         PurchaseOrderID = 0,
                         Remarks = string.Empty,
-                        RequestID = 0
+                        RequestID = 0,
+                        FreightCharges = 0
 
                     };
 

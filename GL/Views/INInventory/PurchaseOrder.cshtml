@@ -285,10 +285,14 @@
                     <tfoot>
 
                         <tr>
+                            <td colspan="6" style="text-align:right;"><label style="font-size:20px;">Freight Charges</label></td>
+                            <td colspan="2"><input type="text" id="FreightCharges" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="@Model.INPurchaseOrder.FreightCharges" /></td>
+                         </tr>
+                        <tr>
                             <td colspan="6" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
                             <td colspan="2"><input type="text" id="TotalAmount" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
-                            <td></td>
                         </tr>
+
                     </tfoot>
 
                 </table>
@@ -723,6 +727,7 @@
                 RequestID: $("#RequestID").val(),
                 PaymentTerms: $("#PaymentTerms").val(),
                 Remarks: $("#Remarks").val(),
+                FreightCharges : $("#FreightCharges").val() == "" ? 0 : $("#FreightCharges").val(),
                 ApprovedBy: $("#mApprovedBy").val(),
                 ApprovedAt: $("#mApprovedAt").val(),
                 CreatedBy: $("#mCreatedBy").val(),
@@ -778,9 +783,8 @@
             var AmountSum = 0;
             //var creditSum = 0;
 
-
             $("#tbodyList").find('tr').each(function (index, elem) {
-
+            
                 if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
 
                     var ApprovedQty = $(this).find("#ApprovedQty").val() == '' ? 0 : $(this).find("#ApprovedQty").val();
@@ -790,10 +794,15 @@
                     var Amount = parseFloat(ApprovedQty) * parseFloat(price);
                     $(this).find("#Amount").val(Amount);
                     AmountSum += parseFloat(Amount);
-
+                    
+                    
                 }
             });
-
+            debugger;
+            var FreightCharges = $("#FreightCharges").val() == "" ? 0 : $("#FreightCharges").val();
+            $("#FreightCharges").val(FreightCharges);
+            FreightCharges = parseFloat(FreightCharges);
+            AmountSum = AmountSum + FreightCharges;
             $("#TotalAmount").val(parseFloat(AmountSum).toFixed(2));
         }
 

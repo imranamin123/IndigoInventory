@@ -720,6 +720,7 @@
           <Property Name="CancelledAt" Type="datetime" />
           <Property Name="POStatusID" Type="int" />
           <Property Name="Remarks" Type="nvarchar" MaxLength="500" />
+          <Property Name="FreightCharges" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="CreatedBy" Type="int" />
           <Property Name="ModifiedAt" Type="datetime" />
@@ -1746,6 +1747,9 @@
         </Function>
         <Function Name="spINGRNItemsForPODropdown" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="GoodsReceiptNoteID" Type="bigint" Mode="In" />
+        </Function>
+        <Function Name="spINItemsDropdown" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CompanyID" Type="int" Mode="In" />
         </Function>
         <Function Name="spINItemSearchList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ItemCode" Type="varchar" Mode="In" />
@@ -3626,12 +3630,6 @@
           <FunctionImport Name="spINStoreIssueNoteItemRow" ReturnType="Collection(GLModel.spINStoreIssueNoteItemRow_Result)">
           <Parameter Name="ItemID" Mode="In" Type="Int64" />
           </FunctionImport>
-          <FunctionImport Name="spRptINItemStock" ReturnType="Collection(GLModel.spRptINItemStock_Result)">
-            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
-            <Parameter Name="ProjectID" Mode="In" Type="Int32" />
-            <Parameter Name="FromDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ToDate" Mode="In" Type="DateTime" />
-          </FunctionImport>
           <EntitySet Name="INStoreTransferNotes" EntityType="GLModel.INStoreTransferNote" />
           <FunctionImport Name="spINStoreTransferNoteDetailRows" ReturnType="Collection(GLModel.spINStoreTransferNoteDetailRows_Result)">
           <Parameter Name="StoreTransferNoteID" Mode="In" Type="Int32" />
@@ -3686,13 +3684,6 @@
           </AssociationSet>
           <FunctionImport Name="spRptINGoodsReceiptNote" ReturnType="Collection(GLModel.spRptINGoodsReceiptNote_Result)">
           <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int64" />
-          </FunctionImport>
-          <FunctionImport Name="spINGRNItemsForPODropdown" ReturnType="Collection(GLModel.spINGRNItemsForPODropdown_Result)">
-          <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int64" />
-          </FunctionImport>
-          <FunctionImport Name="spINGRNItemsDropdown" ReturnType="Collection(GLModel.spINGRNItemsDropdown_Result)">
-            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
-            <Parameter Name="ProjectID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="spINGoodsReceiptNoteWithoutPOSearchList" ReturnType="Collection(GLModel.spINGoodsReceiptNoteWithoutPOSearchList_Result)">
             <Parameter Name="CompanyID" Mode="In" Type="Int32" />
@@ -3770,9 +3761,6 @@
           </AssociationSet>
           <FunctionImport Name="spINStoreReturnNoteDetailRows" ReturnType="Collection(GLModel.spINStoreReturnNoteDetailRows_Result)">
           <Parameter Name="StoreReturnNoteID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="spINItemsDropdown" ReturnType="Collection(GLModel.spINItemsDropdown_Result)">
-          <Parameter Name="CompanyID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="spINStoreReturnNoteItemRow" ReturnType="Collection(GLModel.spINStoreReturnNoteItemRow_Result)">
           <Parameter Name="ItemID" Mode="In" Type="Int64" />
@@ -3874,7 +3862,6 @@
             <Parameter Name="RequestDateTo" Mode="In" Type="DateTime" />
             <Parameter Name="ItemID" Mode="In" Type="Int64" />
           </FunctionImport>
-          <EntitySet Name="INPurchaseOrders" EntityType="GLModel.INPurchaseOrder" />
           <FunctionImport Name="spINPurchaseOrderSearchList" ReturnType="Collection(GLModel.spINPurchaseOrderSearchList_Result)">
             <Parameter Name="CompanyID" Mode="In" Type="Int32" />
             <Parameter Name="UserID" Mode="In" Type="Int32" />
@@ -3885,12 +3872,29 @@
           <FunctionImport Name="spRptINPurchaseRequisition" ReturnType="Collection(GLModel.spRptINPurchaseRequisition_Result)">
           <Parameter Name="RequestID" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="spRptINPurchaseOrder" ReturnType="Collection(GLModel.spRptINPurchaseOrder_Result)">
-          <Parameter Name="PurchaseOrderID" Mode="In" Type="Int64" />
-          </FunctionImport>
           <FunctionImport Name="spRptINItemRateComparisonList" ReturnType="Collection(GLModel.spRptINItemRateComparisonList_Result)">
             <Parameter Name="CompanyID" Mode="In" Type="Int32" />
             <Parameter Name="ProjectID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="spRptINItemStock" ReturnType="Collection(GLModel.spRptINItemStock_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="ProjectID" Mode="In" Type="Int32" />
+            <Parameter Name="FromDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ToDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="spINGRNItemsDropdown" ReturnType="Collection(GLModel.spINGRNItemsDropdown_Result)">
+            <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+            <Parameter Name="ProjectID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="spINGRNItemsForPODropdown" ReturnType="Collection(GLModel.spINGRNItemsForPODropdown_Result)">
+          <Parameter Name="GoodsReceiptNoteID" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <FunctionImport Name="spINItemsDropdown" ReturnType="Collection(GLModel.spINItemsDropdown_Result)">
+          <Parameter Name="CompanyID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="INPurchaseOrders" EntityType="GLModel.INPurchaseOrder" />
+          <FunctionImport Name="spRptINPurchaseOrder" ReturnType="Collection(GLModel.spRptINPurchaseOrder_Result)">
+            <Parameter Name="PurchaseOrderID" Mode="In" Type="Int64" />
           </FunctionImport>
           </EntityContainer>
         <ComplexType Name="spAPInvoiceDetailRows_Result">
@@ -4805,24 +4809,6 @@
           <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
         </ComplexType>
-        <ComplexType Name="spRptINItemStock_Result">
-          <Property Type="Int64" Name="ItemID" Nullable="false" />
-          <Property Type="String" Name="Description" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="GroupName" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="CategoryName" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="SizeName" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="FromDate" Nullable="true" />
-          <Property Type="DateTime" Name="ToDate" Nullable="true" />
-          <Property Type="Decimal" Name="Rate" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="OpeningQty" Nullable="true" Precision="38" Scale="2" />
-          <Property Type="Decimal" Name="ReceivedQty" Nullable="false" Precision="38" Scale="2" />
-          <Property Type="Decimal" Name="IssuedQty" Nullable="false" Precision="38" Scale="2" />
-          <Property Type="Decimal" Name="ClosingQty" Nullable="true" Precision="38" Scale="2" />
-          <Property Type="Decimal" Name="ClosingAmount" Nullable="true" Precision="38" Scale="4" />
-        </ComplexType>
         <EntityType Name="INStoreTransferNote">
           <Key>
             <PropertyRef Name="StoreTransferNoteID" />
@@ -5151,15 +5137,6 @@
           <Property Type="String" Name="dRemarks" Nullable="true" MaxLength="500" />
           <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
           <Property Type="String" Name="ReceivedBy" Nullable="true" MaxLength="200" />
-        </ComplexType>
-        <ComplexType Name="spINGRNItemsForPODropdown_Result">
-          <Property Type="String" Name="ItemID" Nullable="true" MaxLength="101" />
-          <Property Type="String" Name="Description" Nullable="true" MaxLength="500" />
-        </ComplexType>
-        <ComplexType Name="spINGRNItemsDropdown_Result">
-          <Property Type="String" Name="ItemID" Nullable="true" MaxLength="101" />
-          <Property Type="String" Name="Description" Nullable="true" MaxLength="1003" />
-          <Property Type="Decimal" Name="Balance" Nullable="true" Precision="18" Scale="4" />
         </ComplexType>
         <ComplexType Name="spINGoodsReceiptNoteWithoutPOSearchList_Result">
           <Property Type="Int64" Name="GoodsReceiptNoteID" Nullable="false" />
@@ -5520,10 +5497,6 @@
           <Property Type="DateTime" Name="ModifiedAt" Nullable="true" Precision="23" />
           <Property Type="Int32" Name="CompanyID" Nullable="true" />
         </ComplexType>
-        <ComplexType Name="spINItemsDropdown_Result">
-          <Property Type="Int64" Name="ItemID" Nullable="false" />
-          <Property Type="String" Name="Description" Nullable="true" MaxLength="500" />
-        </ComplexType>
         <ComplexType Name="spINStoreReturnNoteItemRow_Result">
           <Property Type="Int64" Name="ItemID" Nullable="false" />
           <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
@@ -5818,29 +5791,6 @@
           <Property Type="Int32" Name="CancelledBy" Nullable="false" />
           <Property Type="DateTime" Name="CancelledAt" Nullable="false" Precision="23" />
         </ComplexType>
-        <EntityType Name="INPurchaseOrder">
-          <Key>
-            <PropertyRef Name="PurchaseOrderID" />
-          </Key>
-          <Property Name="PurchaseOrderID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PurchaseOrderDate" Type="DateTime" Precision="3" />
-          <Property Name="RequestID" Type="Int64" />
-          <Property Name="GoodsReceiptNoteID" Type="Int64" />
-          <Property Name="ProjectID" Type="Int32" />
-          <Property Name="APVendorID" Type="Int32" />
-          <Property Name="PaymentTerms" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ApprovedAt" Type="DateTime" Precision="3" />
-          <Property Name="ApprovedBy" Type="Int32" />
-          <Property Name="CancelledAt" Type="DateTime" Precision="3" />
-          <Property Name="CancelledBy" Type="Int32" />
-          <Property Name="POStatusID" Type="Int32" />
-          <Property Name="Remarks" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedBy" Type="Int32" />
-          <Property Name="CompanyID" Type="Int32" />
-        </EntityType>
         <ComplexType Name="spINPurchaseOrderSearchList_Result">
           <Property Type="Int64" Name="PurchaseOrderID" Nullable="false" />
           <Property Type="DateTime" Name="PurchaseOrderDate" Nullable="true" Precision="23" />
@@ -5875,6 +5825,82 @@
           <Property Type="DateTime" Name="SubmitedAtMD" Nullable="true" Precision="23" />
           <Property Type="String" Name="Cancelled" Nullable="true" MaxLength="9" />
         </ComplexType>
+        <ComplexType Name="spRptINItemRateComparisonList_Result">
+          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="Group" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Category" Nullable="true" MaxLength="50" />
+          <Property Type="Int64" Name="ItemID" Nullable="true" />
+          <Property Type="String" Name="ItemName" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
+          <Property Type="Decimal" Name="LastRate" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="LastRate2" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate2" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="LastRate3" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate3" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="LastRate4" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="DateTime" Name="LastRateDate4" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="spRptINItemStock_Result">
+          <Property Type="Int32" Name="ProjectID" Nullable="true" />
+          <Property Type="Int64" Name="ItemID" Nullable="true" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="GroupName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="CategoryName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="SizeName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="200" />
+          <Property Type="DateTime" Name="FromDate" Nullable="true" />
+          <Property Type="DateTime" Name="ToDate" Nullable="true" />
+          <Property Type="Decimal" Name="Rate" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="OpeningQty" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="ReceivedQty" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="IssuedQty" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="TransferQty" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="ReturnQty" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="ClosingQty" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="ClosingAmount" Nullable="true" Precision="18" Scale="2" />
+        </ComplexType>
+        <ComplexType Name="spINGRNItemsDropdown_Result">
+          <Property Type="String" Name="ItemID" Nullable="true" MaxLength="101" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="1003" />
+          <Property Type="Decimal" Name="Balance" Nullable="true" Precision="18" Scale="4" />
+        </ComplexType>
+        <ComplexType Name="spINGRNItemsForPODropdown_Result">
+          <Property Type="String" Name="ItemID" Nullable="true" MaxLength="101" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="500" />
+        </ComplexType>
+        <ComplexType Name="spINItemsDropdown_Result">
+          <Property Type="Int64" Name="ItemID" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="553" />
+        </ComplexType>
+        <EntityType Name="INPurchaseOrder">
+          <Key>
+            <PropertyRef Name="PurchaseOrderID" />
+          </Key>
+          <Property Name="PurchaseOrderID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PurchaseOrderDate" Type="DateTime" Precision="3" />
+          <Property Name="RequestID" Type="Int64" />
+          <Property Name="GoodsReceiptNoteID" Type="Int64" />
+          <Property Name="ProjectID" Type="Int32" />
+          <Property Name="APVendorID" Type="Int32" />
+          <Property Name="PaymentTerms" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ApprovedAt" Type="DateTime" Precision="3" />
+          <Property Name="ApprovedBy" Type="Int32" />
+          <Property Name="CancelledBy" Type="Int32" />
+          <Property Name="CancelledAt" Type="DateTime" Precision="3" />
+          <Property Name="POStatusID" Type="Int32" />
+          <Property Name="Remarks" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="FreightCharges" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="ModifiedAt" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Int32" />
+          <Property Name="CompanyID" Type="Int32" />
+        </EntityType>
         <ComplexType Name="spRptINPurchaseOrder_Result">
           <Property Type="Int64" Name="PurchaseOrderID" Nullable="false" />
           <Property Type="DateTime" Name="PurchaseOrderDate" Nullable="true" Precision="23" />
@@ -5905,25 +5931,9 @@
           <Property Type="String" Name="ApprovedBy" Nullable="true" MaxLength="200" />
           <Property Type="Int32" Name="CancelledBy" Nullable="true" />
           <Property Type="DateTime" Name="CancelledAt" Nullable="true" Precision="23" />
+          <Property Type="Decimal" Name="FreightCharges" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="String" Name="GoodsReceiptNoteID" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="Cancelled" Nullable="true" MaxLength="9" />
-        </ComplexType>
-        <ComplexType Name="spRptINItemRateComparisonList_Result">
-          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="ProjectName" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="Group" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="Category" Nullable="true" MaxLength="50" />
-          <Property Type="Int64" Name="ItemID" Nullable="true" />
-          <Property Type="String" Name="ItemName" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
-          <Property Type="Decimal" Name="LastRate" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="DateTime" Name="LastRateDate" Nullable="true" Precision="23" />
-          <Property Type="Decimal" Name="LastRate2" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="DateTime" Name="LastRateDate2" Nullable="true" Precision="23" />
-          <Property Type="Decimal" Name="LastRate3" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="DateTime" Name="LastRateDate3" Nullable="true" Precision="23" />
-          <Property Type="Decimal" Name="LastRate4" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="DateTime" Name="LastRateDate4" Nullable="true" Precision="23" />
         </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
@@ -8176,23 +8186,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spINGRNItemsForPODropdown" FunctionName="GLModel.Store.spINGRNItemsForPODropdown">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spINGRNItemsForPODropdown_Result">
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spINGRNItemsDropdown" FunctionName="GLModel.Store.spINGRNItemsDropdown">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spINGRNItemsDropdown_Result">
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Balance" ColumnName="Balance" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="spINGoodsReceiptNoteWithoutPOSearchList" FunctionName="GLModel.Store.spINGoodsReceiptNoteWithoutPOSearchList">
             <ResultMapping>
               <ComplexTypeMapping TypeName="GLModel.spINGoodsReceiptNoteWithoutPOSearchList_Result">
@@ -8744,30 +8737,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="INPurchaseOrders">
-            <EntityTypeMapping TypeName="GLModel.INPurchaseOrder">
-              <MappingFragment StoreEntitySet="INPurchaseOrder">
-                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="POStatusID" ColumnName="POStatusID" />
-                <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
-                <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
-                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
-                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
-                <ScalarProperty Name="PaymentTerms" ColumnName="PaymentTerms" />
-                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
-                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
-                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
-                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
-                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
-                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="spINPurchaseOrderSearchList" FunctionName="GLModel.Store.spINPurchaseOrderSearchList">
             <ResultMapping>
               <ComplexTypeMapping TypeName="GLModel.spINPurchaseOrderSearchList_Result">
@@ -8810,6 +8779,78 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spRptINItemRateComparisonList" FunctionName="GLModel.Store.spRptINItemRateComparisonList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spRptINItemRateComparisonList_Result">
+                <ScalarProperty Name="Company" ColumnName="Company" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="Group" ColumnName="Group" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="UOM" ColumnName="UOM" />
+                <ScalarProperty Name="LastRate" ColumnName="LastRate" />
+                <ScalarProperty Name="LastRateDate" ColumnName="LastRateDate" />
+                <ScalarProperty Name="LastRate2" ColumnName="LastRate2" />
+                <ScalarProperty Name="LastRateDate2" ColumnName="LastRateDate2" />
+                <ScalarProperty Name="LastRate3" ColumnName="LastRate3" />
+                <ScalarProperty Name="LastRateDate3" ColumnName="LastRateDate3" />
+                <ScalarProperty Name="LastRate4" ColumnName="LastRate4" />
+                <ScalarProperty Name="LastRateDate4" ColumnName="LastRateDate4" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spINGRNItemsDropdown" FunctionName="GLModel.Store.spINGRNItemsDropdown">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spINGRNItemsDropdown_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spINGRNItemsForPODropdown" FunctionName="GLModel.Store.spINGRNItemsForPODropdown">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spINGRNItemsForPODropdown_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="spINItemsDropdown" FunctionName="GLModel.Store.spINItemsDropdown">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="GLModel.spINItemsDropdown_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="INPurchaseOrders">
+            <EntityTypeMapping TypeName="GLModel.INPurchaseOrder">
+              <MappingFragment StoreEntitySet="INPurchaseOrder">
+                <ScalarProperty Name="CompanyID" ColumnName="CompanyID" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedAt" ColumnName="ModifiedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="FreightCharges" ColumnName="FreightCharges" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="POStatusID" ColumnName="POStatusID" />
+                <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
+                <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
+                <ScalarProperty Name="PaymentTerms" ColumnName="PaymentTerms" />
+                <ScalarProperty Name="APVendorID" ColumnName="APVendorID" />
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="PurchaseOrderDate" ColumnName="PurchaseOrderDate" />
+                <ScalarProperty Name="PurchaseOrderID" ColumnName="PurchaseOrderID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="spRptINPurchaseOrder" FunctionName="GLModel.Store.spRptINPurchaseOrder">
             <ResultMapping>
               <ComplexTypeMapping TypeName="GLModel.spRptINPurchaseOrder_Result">
@@ -8842,29 +8883,9 @@
                 <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
                 <ScalarProperty Name="CancelledBy" ColumnName="CancelledBy" />
                 <ScalarProperty Name="CancelledAt" ColumnName="CancelledAt" />
+                <ScalarProperty Name="FreightCharges" ColumnName="FreightCharges" />
+                <ScalarProperty Name="GoodsReceiptNoteID" ColumnName="GoodsReceiptNoteID" />
                 <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spRptINItemRateComparisonList" FunctionName="GLModel.Store.spRptINItemRateComparisonList">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spRptINItemRateComparisonList_Result">
-                <ScalarProperty Name="Company" ColumnName="Company" />
-                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
-                <ScalarProperty Name="Group" ColumnName="Group" />
-                <ScalarProperty Name="Category" ColumnName="Category" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
-                <ScalarProperty Name="Size" ColumnName="Size" />
-                <ScalarProperty Name="UOM" ColumnName="UOM" />
-                <ScalarProperty Name="LastRate" ColumnName="LastRate" />
-                <ScalarProperty Name="LastRateDate" ColumnName="LastRateDate" />
-                <ScalarProperty Name="LastRate2" ColumnName="LastRate2" />
-                <ScalarProperty Name="LastRateDate2" ColumnName="LastRateDate2" />
-                <ScalarProperty Name="LastRate3" ColumnName="LastRate3" />
-                <ScalarProperty Name="LastRateDate3" ColumnName="LastRateDate3" />
-                <ScalarProperty Name="LastRate4" ColumnName="LastRate4" />
-                <ScalarProperty Name="LastRateDate4" ColumnName="LastRateDate4" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

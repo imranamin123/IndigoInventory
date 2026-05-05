@@ -863,27 +863,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINStoreIssueNoteItemRow_Result>("spINStoreIssueNoteItemRow", itemIDParameter);
         }
     
-        public virtual ObjectResult<spRptINItemStock_Result> spRptINItemStock(Nullable<int> companyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
-        {
-            var companyIDParameter = companyID.HasValue ?
-                new ObjectParameter("CompanyID", companyID) :
-                new ObjectParameter("CompanyID", typeof(int));
-    
-            var projectIDParameter = projectID.HasValue ?
-                new ObjectParameter("ProjectID", projectID) :
-                new ObjectParameter("ProjectID", typeof(int));
-    
-            var fromDateParameter = fromDate.HasValue ?
-                new ObjectParameter("FromDate", fromDate) :
-                new ObjectParameter("FromDate", typeof(System.DateTime));
-    
-            var toDateParameter = toDate.HasValue ?
-                new ObjectParameter("ToDate", toDate) :
-                new ObjectParameter("ToDate", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemStock_Result>("spRptINItemStock", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
-        }
-    
         public virtual ObjectResult<spINStoreTransferNoteDetailRows_Result> spINStoreTransferNoteDetailRows(Nullable<int> storeTransferNoteID)
         {
             var storeTransferNoteIDParameter = storeTransferNoteID.HasValue ?
@@ -957,28 +936,6 @@ namespace GL.EF
                 new ObjectParameter("GoodsReceiptNoteID", typeof(long));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINGoodsReceiptNote_Result>("spRptINGoodsReceiptNote", goodsReceiptNoteIDParameter);
-        }
-    
-        public virtual ObjectResult<spINGRNItemsForPODropdown_Result> spINGRNItemsForPODropdown(Nullable<long> goodsReceiptNoteID)
-        {
-            var goodsReceiptNoteIDParameter = goodsReceiptNoteID.HasValue ?
-                new ObjectParameter("GoodsReceiptNoteID", goodsReceiptNoteID) :
-                new ObjectParameter("GoodsReceiptNoteID", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGRNItemsForPODropdown_Result>("spINGRNItemsForPODropdown", goodsReceiptNoteIDParameter);
-        }
-    
-        public virtual ObjectResult<spINGRNItemsDropdown_Result> spINGRNItemsDropdown(Nullable<int> companyID, Nullable<int> projectID)
-        {
-            var companyIDParameter = companyID.HasValue ?
-                new ObjectParameter("CompanyID", companyID) :
-                new ObjectParameter("CompanyID", typeof(int));
-    
-            var projectIDParameter = projectID.HasValue ?
-                new ObjectParameter("ProjectID", projectID) :
-                new ObjectParameter("ProjectID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGRNItemsDropdown_Result>("spINGRNItemsDropdown", companyIDParameter, projectIDParameter);
         }
     
         public virtual ObjectResult<spINGoodsReceiptNoteWithoutPOSearchList_Result> spINGoodsReceiptNoteWithoutPOSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
@@ -1069,15 +1026,6 @@ namespace GL.EF
                 new ObjectParameter("StoreReturnNoteID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINStoreReturnNoteDetailRows_Result>("spINStoreReturnNoteDetailRows", storeReturnNoteIDParameter);
-        }
-    
-        public virtual ObjectResult<spINItemsDropdown_Result> spINItemsDropdown(Nullable<int> companyID)
-        {
-            var companyIDParameter = companyID.HasValue ?
-                new ObjectParameter("CompanyID", companyID) :
-                new ObjectParameter("CompanyID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINItemsDropdown_Result>("spINItemsDropdown", companyIDParameter);
         }
     
         public virtual ObjectResult<spINStoreReturnNoteItemRow_Result> spINStoreReturnNoteItemRow(Nullable<long> itemID)
@@ -1390,15 +1338,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPurchaseRequisition_Result>("spRptINPurchaseRequisition", requestIDParameter);
         }
     
-        public virtual ObjectResult<spRptINPurchaseOrder_Result> spRptINPurchaseOrder(Nullable<long> purchaseOrderID)
-        {
-            var purchaseOrderIDParameter = purchaseOrderID.HasValue ?
-                new ObjectParameter("PurchaseOrderID", purchaseOrderID) :
-                new ObjectParameter("PurchaseOrderID", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPurchaseOrder_Result>("spRptINPurchaseOrder", purchaseOrderIDParameter);
-        }
-    
         public virtual ObjectResult<spRptINItemRateComparisonList_Result> spRptINItemRateComparisonList(Nullable<int> companyID, Nullable<int> projectID)
         {
             var companyIDParameter = companyID.HasValue ?
@@ -1410,6 +1349,67 @@ namespace GL.EF
                 new ObjectParameter("ProjectID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemRateComparisonList_Result>("spRptINItemRateComparisonList", companyIDParameter, projectIDParameter);
+        }
+    
+        public virtual ObjectResult<spRptINItemStock_Result> spRptINItemStock(Nullable<int> companyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemStock_Result>("spRptINItemStock", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
+        }
+    
+        public virtual ObjectResult<spINGRNItemsDropdown_Result> spINGRNItemsDropdown(Nullable<int> companyID, Nullable<int> projectID)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGRNItemsDropdown_Result>("spINGRNItemsDropdown", companyIDParameter, projectIDParameter);
+        }
+    
+        public virtual ObjectResult<spINGRNItemsForPODropdown_Result> spINGRNItemsForPODropdown(Nullable<long> goodsReceiptNoteID)
+        {
+            var goodsReceiptNoteIDParameter = goodsReceiptNoteID.HasValue ?
+                new ObjectParameter("GoodsReceiptNoteID", goodsReceiptNoteID) :
+                new ObjectParameter("GoodsReceiptNoteID", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGRNItemsForPODropdown_Result>("spINGRNItemsForPODropdown", goodsReceiptNoteIDParameter);
+        }
+    
+        public virtual ObjectResult<spINItemsDropdown_Result> spINItemsDropdown(Nullable<int> companyID)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINItemsDropdown_Result>("spINItemsDropdown", companyIDParameter);
+        }
+    
+        public virtual ObjectResult<spRptINPurchaseOrder_Result> spRptINPurchaseOrder(Nullable<long> purchaseOrderID)
+        {
+            var purchaseOrderIDParameter = purchaseOrderID.HasValue ?
+                new ObjectParameter("PurchaseOrderID", purchaseOrderID) :
+                new ObjectParameter("PurchaseOrderID", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPurchaseOrder_Result>("spRptINPurchaseOrder", purchaseOrderIDParameter);
         }
     }
 }
