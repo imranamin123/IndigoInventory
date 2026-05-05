@@ -3831,9 +3831,6 @@
             <Parameter Name="FromDate" Mode="In" Type="DateTime" />
             <Parameter Name="ToDate" Mode="In" Type="DateTime" />
           </FunctionImport>
-          <FunctionImport Name="spRptINStoreTransferNote1" ReturnType="Collection(GLModel.spRptINStoreTransferNote1_Result)">
-          <Parameter Name="StoreTransferNoteID" Mode="In" Type="Int32" />
-          </FunctionImport>
           <FunctionImport Name="spRptPendingCompleteDemands" ReturnType="Collection(GLModel.spRptPendingCompleteDemands_Result)">
             <Parameter Name="ComapnyID" Mode="In" Type="Int32" />
             <Parameter Name="ProjectID" Mode="In" Type="Int32" />
@@ -5672,27 +5669,6 @@
           <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="UOM" Nullable="true" MaxLength="50" />
           <Property Type="DateTime" Name="CreatedAt" Nullable="true" Precision="23" />
-        </ComplexType>
-        <ComplexType Name="spRptINStoreTransferNote1_Result">
-          <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
-          <Property Type="Int64" Name="StoreTransferNoteID" Nullable="false" />
-          <Property Type="DateTime" Name="StoreTransferNoteDate" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ToProject" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="FromProject" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="MRemarks" Nullable="true" MaxLength="500" />
-          <Property Type="Int64" Name="StoreTransferNoteDetailID" Nullable="false" />
-          <Property Type="Int64" Name="ItemID" Nullable="true" />
-          <Property Type="String" Name="Item" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="Size" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="Unit" Nullable="true" MaxLength="50" />
-          <Property Type="Decimal" Name="TransferQty" Nullable="true" Precision="18" Scale="4" />
-          <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
-          <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="CreatedAt" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ApprovedBy" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="ApprovedByAt" Nullable="true" Precision="23" />
-          <Property Type="String" Name="ReceivedBy" Nullable="true" MaxLength="200" />
-          <Property Type="DateTime" Name="ReceivedByAt" Nullable="true" Precision="23" />
         </ComplexType>
         <ComplexType Name="spRptPendingCompleteDemands_Result">
           <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
@@ -8625,31 +8601,6 @@
                 <ScalarProperty Name="Size" ColumnName="Size" />
                 <ScalarProperty Name="UOM" ColumnName="UOM" />
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="spRptINStoreTransferNote1" FunctionName="GLModel.Store.spRptINStoreTransferNote">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="GLModel.spRptINStoreTransferNote1_Result">
-                <ScalarProperty Name="Company" ColumnName="Company" />
-                <ScalarProperty Name="StoreTransferNoteID" ColumnName="StoreTransferNoteID" />
-                <ScalarProperty Name="StoreTransferNoteDate" ColumnName="StoreTransferNoteDate" />
-                <ScalarProperty Name="ToProject" ColumnName="ToProject" />
-                <ScalarProperty Name="FromProject" ColumnName="FromProject" />
-                <ScalarProperty Name="MRemarks" ColumnName="MRemarks" />
-                <ScalarProperty Name="StoreTransferNoteDetailID" ColumnName="StoreTransferNoteDetailID" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="Item" ColumnName="Item" />
-                <ScalarProperty Name="Size" ColumnName="Size" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="TransferQty" ColumnName="TransferQty" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
-                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
-                <ScalarProperty Name="ApprovedByAt" ColumnName="ApprovedByAt" />
-                <ScalarProperty Name="ReceivedBy" ColumnName="ReceivedBy" />
-                <ScalarProperty Name="ReceivedByAt" ColumnName="ReceivedByAt" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

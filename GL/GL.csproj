@@ -859,9 +859,6 @@
     <Compile Include="EF\spRptINStoreReturnNote_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\spRptINStoreTransferNote1_Result.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\spRptINStoreTransferNote_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

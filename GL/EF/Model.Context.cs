@@ -1228,15 +1228,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemList_Result>("spRptINItemList", comapnyIDParameter, fromDateParameter, toDateParameter);
         }
     
-        public virtual ObjectResult<spRptINStoreTransferNote1_Result> spRptINStoreTransferNote1(Nullable<int> storeTransferNoteID)
-        {
-            var storeTransferNoteIDParameter = storeTransferNoteID.HasValue ?
-                new ObjectParameter("StoreTransferNoteID", storeTransferNoteID) :
-                new ObjectParameter("StoreTransferNoteID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINStoreTransferNote1_Result>("spRptINStoreTransferNote1", storeTransferNoteIDParameter);
-        }
-    
         public virtual ObjectResult<spRptPendingCompleteDemands_Result> spRptPendingCompleteDemands(Nullable<int> comapnyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
         {
             var comapnyIDParameter = comapnyID.HasValue ?
