@@ -1,17 +1,22 @@
+
+
 IF EXISTS (SELECT * FROM sysObjects o WHERE o.name = 'spRptINItemStock')
 	DROP PROC spRptINItemStock
 go
 
 -- ==========================================================================================
 -- Created By:	Imran Amin
--- Create date: 1-Apr-2026
+-- Create date: 30-Jul-2026
 -- Description:	
 -- ==========================================================================================
 
-CREATE PROCEDURE dbo.spRptINItemStock
+--exec spRptINItemStock 1,2,null,'2026-01-01', '2026-07-01'
+
+CREATE OR ALTER PROCEDURE dbo.spRptINItemStock
 (
     @CompanyID INT,
     @ProjectID INT,
+    @ItemID INT = NULL,
     @FromDate DATE,
     @ToDate DATE
 )
@@ -19,233 +24,501 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-	IF 1 = 0
-	BEGIN
-		SELECT
-			CAST(0 AS INT) AS ProjectID,
-			CAST(0 AS bigint) AS ItemID,
-			CAST('' AS VARCHAR(200)) AS Description,
-			CAST('' AS VARCHAR(100)) AS GroupName,
-			CAST('' AS VARCHAR(100)) AS CategoryName,
-			CAST('' AS VARCHAR(100)) AS SizeName,
-			CAST('' AS VARCHAR(50)) AS UOM,
-			CAST('' AS VARCHAR(200)) AS ProjectName,
-			CAST('' AS VARCHAR(200)) AS CompanyName,
-			CAST(GETDATE() AS DATE) AS FromDate,
-			CAST(GETDATE() AS DATE) AS ToDate,
-			CAST(0 AS DECIMAL(18,2)) AS Rate,
-			CAST(0 AS DECIMAL(18,2)) AS OpeningQty,
-			CAST(0 AS DECIMAL(18,2)) AS ReceivedQty,
-			CAST(0 AS DECIMAL(18,2)) AS IssuedQty,
-			CAST(0 AS DECIMAL(18,2)) AS TransferQty,
-			CAST(0 AS DECIMAL(18,2)) AS ReturnQty,
-			CAST(0 AS DECIMAL(18,2)) AS ClosingQty,
-			CAST(0 AS DECIMAL(18,2)) AS ClosingAmount
-	END
+    /*
+        ============================================================
+        1. Get only the items that belong to the requested project
+        ============================================================
+    */
 
-
-    -- Safety cleanup
-    IF OBJECT_ID('tempdb..#StockMovements') IS NOT NULL DROP TABLE #StockMovements;
-    IF OBJECT_ID('tempdb..#FinalMovement') IS NOT NULL DROP TABLE #FinalMovement;
-
-    -- ==================================================
-    -- 1. CREATE TEMP TABLE FOR ALL STOCK MOVEMENTS
-    -- ==================================================
-    CREATE TABLE #StockMovements
+    ;WITH ProjectItems AS
     (
-        ItemID INT NOT NULL,
-        ProjectID INT NOT NULL,
-        TranDate DATE NOT NULL,
-        Qty DECIMAL(18, 2) NOT NULL
-    );
+        SELECT
+            pi.ItemID,
+            MAX(ISNULL(pi.LastRate, 0)) AS Rate,
+            MAX(ISNULL(pi.OpeningQty, 0)) AS OpeningQty
+        FROM INProjectItem pi
+        WHERE pi.ProjectID = @ProjectID
+          AND (@ItemID IS NULL OR pi.ItemID = @ItemID)
+        GROUP BY
+            pi.ItemID
+    ),
 
-    -- ==================================================
-    -- 2. INSERT ALL TRANSACTIONS (ONLY ONCE)
-    -- ==================================================
+    /*
+        ============================================================
+        2. GRN - Aggregate BEFORE joining to Items
+        ============================================================
+    */
 
-    -- GRN (+)
-    INSERT INTO #StockMovements (ItemID, ProjectID, TranDate, Qty)
+    GRN AS
+    (
+        SELECT
+            d.ItemID,
+
+            OpeningQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.GoodsReceiptNotesDate < @FromDate
+                        THEN ISNULL(d.ReceivedQty, 0)
+                        ELSE 0
+                    END
+                ),
+
+            ReceivedQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.GoodsReceiptNotesDate >= @FromDate
+                         AND m.GoodsReceiptNotesDate <= @ToDate
+                        THEN ISNULL(d.ReceivedQty, 0)
+                        ELSE 0
+                    END
+                )
+
+        FROM INGoodsReceiptNoteDetail d
+        INNER JOIN INGoodsReceiptNote m
+            ON m.GoodsReceiptNoteID = d.GoodsReceiptNoteID
+
+        WHERE m.ProjectID = @ProjectID
+          AND m.GoodsReceiptNotesDate <= @ToDate
+          AND (@ItemID IS NULL OR d.ItemID = @ItemID)
+
+        GROUP BY
+            d.ItemID
+    ),
+
+    /*
+        ============================================================
+        3. SIN - Aggregate BEFORE joining to Items
+        ============================================================
+    */
+
+    SIN AS
+    (
+        SELECT
+            d.ItemID,
+
+            OpeningQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreIssueNoteDate < @FromDate
+                        THEN ISNULL(d.IssuedQty, 0)
+                        ELSE 0
+                    END
+                ),
+
+            IssuedQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreIssueNoteDate >= @FromDate
+                         AND m.StoreIssueNoteDate <= @ToDate
+                        THEN ISNULL(d.IssuedQty, 0)
+                        ELSE 0
+                    END
+                )
+
+        FROM INStoreIssueNoteDetail d
+        INNER JOIN INStoreIssueNote m
+            ON m.StoreIssueNoteID = d.StoreIssueNoteID
+
+        WHERE m.ProjectID = @ProjectID
+          AND m.StoreIssueNoteDate <= @ToDate
+          AND (@ItemID IS NULL OR d.ItemID = @ItemID)
+
+        GROUP BY
+            d.ItemID
+    ),
+
+    /*
+        ============================================================
+        4. SRN - Aggregate BEFORE joining to Items
+        ============================================================
+    */
+
+    SRN AS
+    (
+        SELECT
+            d.ItemID,
+
+            OpeningQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreReturnNoteDate < @FromDate
+                        THEN ISNULL(d.ReturnQty, 0)
+                        ELSE 0
+                    END
+                ),
+
+            ReturnQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreReturnNoteDate >= @FromDate
+                         AND m.StoreReturnNoteDate <= @ToDate
+                        THEN ISNULL(d.ReturnQty, 0)
+                        ELSE 0
+                    END
+                )
+
+        FROM INStoreReturnNoteDetail d
+        INNER JOIN INStoreReturnNote m
+            ON m.StoreReturnNoteID = d.StoreReturnNoteID
+
+        WHERE m.ProjectID = @ProjectID
+          AND m.IsPosted = 1
+          AND m.StoreReturnNoteDate <= @ToDate
+          AND (@ItemID IS NULL OR d.ItemID = @ItemID)
+
+        GROUP BY
+            d.ItemID
+    ),
+
+    /*
+        ============================================================
+        5. Transfer IN
+        ============================================================
+    */
+
+    TransferIn AS
+    (
+        SELECT
+            d.ItemID,
+
+            OpeningQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreTransferNoteDate < @FromDate
+                        THEN ISNULL(d.TransferQty, 0)
+                        ELSE 0
+                    END
+                ),
+
+            TransferQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreTransferNoteDate >= @FromDate
+                         AND m.StoreTransferNoteDate <= @ToDate
+                        THEN ISNULL(d.TransferQty, 0)
+                        ELSE 0
+                    END
+                )
+
+        FROM INStoreTransferNoteDetail d
+        INNER JOIN INStoreTransferNote m
+            ON m.StoreTransferNoteID = d.StoreTransferNoteID
+
+        WHERE m.ToProjectID = @ProjectID
+          AND m.ReceivedByID IS NOT NULL
+          AND m.StoreTransferNoteDate <= @ToDate
+          AND (@ItemID IS NULL OR d.ItemID = @ItemID)
+
+        GROUP BY
+            d.ItemID
+    ),
+
+    /*
+        ============================================================
+        6. Transfer OUT
+        ============================================================
+    */
+
+    TransferOut AS
+    (
+        SELECT
+            d.ItemID,
+
+            OpeningQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreTransferNoteDate < @FromDate
+                        THEN ISNULL(d.TransferQty, 0)
+                        ELSE 0
+                    END
+                ),
+
+            TransferQty =
+                SUM
+                (
+                    CASE
+                        WHEN m.StoreTransferNoteDate >= @FromDate
+                         AND m.StoreTransferNoteDate <= @ToDate
+                        THEN ISNULL(d.TransferQty, 0)
+                        ELSE 0
+                    END
+                )
+
+        FROM INStoreTransferNoteDetail d
+        INNER JOIN INStoreTransferNote m
+            ON m.StoreTransferNoteID = d.StoreTransferNoteID
+
+        WHERE m.FromProjectID = @ProjectID
+          AND m.ReceivedByID IS NOT NULL
+          AND m.StoreTransferNoteDate <= @ToDate
+          AND (@ItemID IS NULL OR d.ItemID = @ItemID)
+
+        GROUP BY
+            d.ItemID
+    )
+
+    /*
+        ============================================================
+        7. Final Result
+        ============================================================
+    */
+
     SELECT
-        d.ItemID,
-        m.ProjectID,
-        m.GoodsReceiptNotesDate,
-        SUM(ISNULL(d.ReceivedQty, 0))
-    FROM INGoodsReceiptNoteDetail d
-    INNER JOIN INGoodsReceiptNote m
-        ON d.GoodsReceiptNoteID = m.GoodsReceiptNoteID
-    WHERE m.ProjectID = @ProjectID
-    GROUP BY d.ItemID, m.ProjectID, m.GoodsReceiptNotesDate;
 
-    -- SIN (-)
-    INSERT INTO #StockMovements (ItemID, ProjectID, TranDate, Qty)
-    SELECT
-        d.ItemID,
-        m.ProjectID,
-        m.StoreIssueNoteDate,
-        -SUM(ISNULL(d.IssuedQty, 0))
-    FROM INStoreIssueNoteDetail d
-    INNER JOIN INStoreIssueNote m
-        ON d.StoreIssueNoteID = m.StoreIssueNoteID
-    WHERE m.ProjectID = @ProjectID
-    GROUP BY d.ItemID, m.ProjectID, m.StoreIssueNoteDate;
-
-    -- SRN (+)
-    INSERT INTO #StockMovements (ItemID, ProjectID, TranDate, Qty)
-    SELECT
-        d.ItemID,
-        m.ProjectID,
-        m.StoreReturnNoteDate,
-        SUM(ISNULL(d.ReturnQty, 0))
-    FROM INStoreReturnNoteDetail d
-    INNER JOIN INStoreReturnNote m
-        ON d.StoreReturnNoteID = m.StoreReturnNoteID
-    WHERE m.ProjectID = @ProjectID
-      AND m.IsPosted = 1
-    GROUP BY d.ItemID, m.ProjectID, m.StoreReturnNoteDate;
-
-    -- STN IN (+)
-    INSERT INTO #StockMovements (ItemID, ProjectID, TranDate, Qty)
-    SELECT
-        d.ItemID,
-        m.ToProjectID,
-        m.StoreTransferNoteDate,
-        SUM(ISNULL(d.TransferQty, 0))
-    FROM INStoreTransferNoteDetail d
-    INNER JOIN INStoreTransferNote m
-        ON d.StoreTransferNoteID = m.StoreTransferNoteID
-    WHERE m.ToProjectID = @ProjectID
-      AND ISNULL(m.ReceivedByID, 0) > 0
-    GROUP BY d.ItemID, m.ToProjectID, m.StoreTransferNoteDate;
-
-    -- STN OUT (-)
-    INSERT INTO #StockMovements (ItemID, ProjectID, TranDate, Qty)
-    SELECT
-        d.ItemID,
-        m.FromProjectID,
-        m.StoreTransferNoteDate,
-        -SUM(ISNULL(d.TransferQty, 0))
-    FROM INStoreTransferNoteDetail d
-    INNER JOIN INStoreTransferNote m
-        ON d.StoreTransferNoteID = m.StoreTransferNoteID
-    WHERE m.FromProjectID = @ProjectID
-      AND ISNULL(m.ReceivedByID, 0) > 0
-    GROUP BY d.ItemID, m.FromProjectID, m.StoreTransferNoteDate;
-
-    -- ==================================================
-    -- 3. INDEX TEMP TABLE (VERY IMPORTANT)
-    -- ==================================================
-    CREATE CLUSTERED INDEX IX_StockMovements
-        ON #StockMovements (ItemID, TranDate);
-
-    -- ==================================================
-    -- 4. FINAL AGGREGATION TEMP TABLE
-    -- ==================================================
-    SELECT
-        ItemID,
-
-        SUM(CASE
-                WHEN TranDate < @FromDate
-                THEN Qty
-                ELSE 0
-            END) AS OpeningQty,
-
-        SUM(CASE
-                WHEN TranDate BETWEEN @FromDate AND @ToDate
-                     AND Qty > 0
-                THEN Qty
-                ELSE 0
-            END) AS ReceivedQty,
-
-        SUM(CASE
-                WHEN TranDate BETWEEN @FromDate AND @ToDate
-                     AND Qty < 0
-                THEN ABS(Qty)
-                ELSE 0
-            END) AS IssuedQty,
-
-        SUM(CASE
-                WHEN TranDate BETWEEN @FromDate AND @ToDate
-                     AND Qty > 0
-                THEN Qty
-                ELSE 0
-            END)
-        -
-        SUM(CASE
-                WHEN TranDate BETWEEN @FromDate AND @ToDate
-                     AND Qty < 0
-                THEN ABS(Qty)
-                ELSE 0
-            END) AS NetPeriodQty,
-
-        SUM(CASE
-                WHEN TranDate <= @ToDate
-                THEN Qty
-                ELSE 0
-            END) AS ClosingQty
-
-    INTO #FinalMovement
-    FROM #StockMovements
-    GROUP BY ItemID;
-
-    CREATE CLUSTERED INDEX IX_FinalMovement
-        ON #FinalMovement (ItemID);
-
-    -- ==================================================
-    -- 5. FINAL STOCK REPORT
-    -- ==================================================
-    SELECT
         @ProjectID AS ProjectID,
-        CAST(i.ItemID as decimal) ItemID,
+
+        i.ItemID,
+
         i.Description,
-        g.Name AS GroupName,
-        c.Name AS CategoryName,
+
+        ISNULL(ig.Name, '') AS GroupName,
+
+        ISNULL(ic.Name, '') AS CategoryName,
+
         ISNULL(sz.Name, '') AS SizeName,
-        u.Name AS UOM,
-        p.ProjectName,
-        comp.Name AS CompanyName,
+
+        ISNULL(uom.Name, '') AS UOM,
+
+        ISNULL(pi.Rate, 0) AS Rate,
+
         @FromDate AS FromDate,
+
         @ToDate AS ToDate,
 
-        ISNULL(pi.LastRate, 0) AS Rate,
 
-        ISNULL(fm.OpeningQty, 0) + ISNULL(pi.OpeningQty, 0) AS OpeningQty,
+        /*
+            ========================================================
+            Opening Quantity
 
-        ISNULL(fm.ReceivedQty, 0) AS ReceivedQty,
+            Project Opening
+            + GRN
+            - SIN
+            + SRN
+            + Transfer IN
+            - Transfer OUT
+            ========================================================
+        */
 
-        ISNULL(fm.IssuedQty, 0) AS IssuedQty,
+        ISNULL(pi.OpeningQty, 0)
 
-        ISNULL(fm.NetPeriodQty, 0) AS TransferQty,
+        + ISNULL(grn.OpeningQty, 0)
 
-        CAST(0 as decimal) AS ReturnQty,
+        - ISNULL(sin.OpeningQty, 0)
 
-        ISNULL(fm.ClosingQty, 0) + ISNULL(pi.OpeningQty, 0) AS ClosingQty,
+        + ISNULL(srn.OpeningQty, 0)
 
-        (ISNULL(fm.ClosingQty, 0) + ISNULL(pi.OpeningQty, 0))
-            * ISNULL(pi.LastRate, 0) AS ClosingAmount
+        + ISNULL(ti.OpeningQty, 0)
+
+        - ISNULL(to1.OpeningQty, 0)
+
+        AS OpeningQty,
+
+
+        /*
+            ========================================================
+            Received
+            ========================================================
+        */
+
+        ISNULL(grn.ReceivedQty, 0) AS ReceivedQty,
+
+
+        /*
+            ========================================================
+            Issued
+            ========================================================
+        */
+
+        ISNULL(sin.IssuedQty, 0) AS IssuedQty,
+
+
+        /*
+            ========================================================
+            Return
+            ========================================================
+        */
+
+        ISNULL(srn.ReturnQty, 0) AS ReturnQty,
+
+
+        /*
+            ========================================================
+            Transfer
+            ========================================================
+        */
+
+        ISNULL(ti.TransferQty, 0)
+
+        - ISNULL(to1.TransferQty, 0)
+
+        AS TransferQty,
+
+
+        /*
+            ========================================================
+            Closing Quantity
+            ========================================================
+        */
+
+        (
+            ISNULL(pi.OpeningQty, 0)
+
+            + ISNULL(grn.OpeningQty, 0)
+
+            - ISNULL(sin.OpeningQty, 0)
+
+            + ISNULL(srn.OpeningQty, 0)
+
+            + ISNULL(ti.OpeningQty, 0)
+
+            - ISNULL(to1.OpeningQty, 0)
+
+            + ISNULL(grn.ReceivedQty, 0)
+
+            + ISNULL(srn.ReturnQty, 0)
+
+            + ISNULL(ti.TransferQty, 0)
+
+            - ISNULL(to1.TransferQty, 0)
+
+            - ISNULL(sin.IssuedQty, 0)
+        )
+
+        AS ClosingQty,
+
+
+        /*
+            ========================================================
+            Closing Amount
+            ========================================================
+        */
+
+        (
+            ISNULL(pi.OpeningQty, 0)
+
+            + ISNULL(grn.OpeningQty, 0)
+
+            - ISNULL(sin.OpeningQty, 0)
+
+            + ISNULL(srn.OpeningQty, 0)
+
+            + ISNULL(ti.OpeningQty, 0)
+
+            - ISNULL(to1.OpeningQty, 0)
+
+            + ISNULL(grn.ReceivedQty, 0)
+
+            + ISNULL(srn.ReturnQty, 0)
+
+            + ISNULL(ti.TransferQty, 0)
+
+            - ISNULL(to1.TransferQty, 0)
+
+            - ISNULL(sin.IssuedQty, 0)
+        )
+
+        * ISNULL(pi.Rate, 0)
+
+        AS ClosingAmount
+
 
     FROM INItem i
-    LEFT JOIN #FinalMovement fm
-        ON i.ItemID = fm.ItemID
-    LEFT JOIN INProjectItem pi
-        ON i.ItemID = pi.ItemID
-       AND pi.ProjectID = @ProjectID
-       AND pi.CompanyID = @CompanyID
-    LEFT JOIN INGroup g
-        ON i.GroupID = g.GroupID
-    LEFT JOIN INCategory c
-        ON i.CategoryID = c.CategoryID
+
+    /*
+        IMPORTANT:
+        INNER JOIN because your LINQ uses INNER JOIN
+        ============================================================
+    */
+
+    INNER JOIN ProjectItems pi
+        ON pi.ItemID = i.ItemID
+
+
+    LEFT JOIN INGroup ig
+        ON ig.GroupID = i.GroupID
+
+
+    LEFT JOIN INCategory ic
+        ON ic.CategoryID = i.CategoryID
+
+
     LEFT JOIN INSize sz
-        ON i.SizeID = sz.SizeID
-    LEFT JOIN INUnitOfMeasurement u
-        ON i.UOMID = u.UOMID
-    LEFT JOIN INProject p
-        ON p.ProjectID = @ProjectID
-    LEFT JOIN Company comp
-        ON comp.CompanyID = i.CompanyID
+        ON sz.SizeID = i.SizeID
+
+
+    LEFT JOIN INUnitOfMeasurement uom
+        ON uom.UOMID = i.UOMID
+
+
+    LEFT JOIN GRN grn
+        ON grn.ItemID = i.ItemID
+
+
+    LEFT JOIN SIN sin
+        ON sin.ItemID = i.ItemID
+
+
+    LEFT JOIN SRN srn
+        ON srn.ItemID = i.ItemID
+
+
+    LEFT JOIN TransferIn ti
+        ON ti.ItemID = i.ItemID
+
+
+    LEFT JOIN TransferOut to1
+        ON to1.ItemID = i.ItemID
+
+
     WHERE i.CompanyID = @CompanyID
-    ORDER BY i.Description;
+
+      AND (@ItemID IS NULL OR i.ItemID = @ItemID)
+
+
+    /*
+        ============================================================
+        Remove completely zero-stock records
+        ============================================================
+    */
+
+    AND NOT
+    (
+        (
+            ISNULL(pi.OpeningQty, 0)
+
+            + ISNULL(grn.OpeningQty, 0)
+
+            - ISNULL(sin.OpeningQty, 0)
+
+            + ISNULL(srn.OpeningQty, 0)
+
+            + ISNULL(ti.OpeningQty, 0)
+
+            - ISNULL(to1.OpeningQty, 0)
+        ) = 0
+
+        AND ISNULL(grn.ReceivedQty, 0) = 0
+
+        AND ISNULL(sin.IssuedQty, 0) = 0
+
+        AND ISNULL(srn.ReturnQty, 0) = 0
+
+        AND
+        (
+            ISNULL(ti.TransferQty, 0)
+            - ISNULL(to1.TransferQty, 0)
+        ) = 0
+
+    );
 
 END
 GO
-
-exec spRptINItemStock 1,1,'2026-03-01', '2026-03-31'

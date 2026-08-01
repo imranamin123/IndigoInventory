@@ -38,7 +38,12 @@ END
 
 go
 
-exec spINGetItemRow 1,2937
+exec spINGetItemRow 1,775
+
+
+
+select * from INProjectItem where ItemID = 775 
+select * from INItem where ItemID = 775
 
 select * from INPurchaseRequisition where RequestID = 269
 select * from INPurchaseRequisitionDetail where RequestID = 269

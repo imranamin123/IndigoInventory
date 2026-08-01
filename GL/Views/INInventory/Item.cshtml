@@ -136,7 +136,7 @@
                                 <br /><br />
                                 @if (ViewBag.username == "super" || ViewBag.username == "1")
                                 {
-                                    using (Html.BeginForm("STN", "INInventory", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                    using (Html.BeginForm("Upload", "INInventory", FormMethod.Post, new { enctype = "multipart/form-data" }))
                                     {
                                         <input type="file" name="file" accept=".csv" />
                                         <input type="submit" value="Upload" class="btn btn-primary" />

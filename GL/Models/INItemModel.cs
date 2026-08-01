@@ -9,7 +9,7 @@ namespace GL.Models
     {
         public long ItemID { get; set; }
 
-        public Nullable<decimal> STN { get; set; }
+        public Nullable<decimal> LastRate { get; set; }
         //public string From { get; set; }
         //public string To { get; set; }
 

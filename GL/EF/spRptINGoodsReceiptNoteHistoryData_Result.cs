@@ -19,6 +19,7 @@ namespace GL.EF
         public string Category { get; set; }
         public long GoodsReceiptNoteID { get; set; }
         public Nullable<System.DateTime> GoodsReceiptNotesDate { get; set; }
+        public string APVendorName { get; set; }
         public Nullable<long> ItemID { get; set; }
         public string Item { get; set; }
         public string Size { get; set; }
@@ -28,7 +29,6 @@ namespace GL.EF
         public Nullable<decimal> ReceivedQty { get; set; }
         public Nullable<decimal> Rate { get; set; }
         public Nullable<decimal> Amount { get; set; }
-        public string APVendorName { get; set; }
         public string Status { get; set; }
     }
 }

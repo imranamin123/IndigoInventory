@@ -11,6 +11,7 @@ go
 
 CREATE procedure [dbo].[spRptINGoodsReceiptNoteHistoryData]
 	@ProjectID int,
+	@ItemID bigint = NULL,
 	@FromDate date = NULL,
 	@ToDate date = NULL
 AS
@@ -35,7 +36,7 @@ SELECT
 	grnd.ReceivedQty, 
 	grnd.Rate, 
 	grnd.Amount, 
-    v.APVendorName,
+    
 	CASE 
 		WHEN grn.PurchaseOrderID IS NULL THEN
 			'Pending Approval'
@@ -58,7 +59,8 @@ FROM INGoodsReceiptNote grn  INNER JOIN
 WHERE 
 	grn.ProjectID = @ProjectID AND
 	(CAST(grn.GoodsReceiptNotesDate as date) >= @FromDate OR @FromDate IS NULL) AND
-	(CAST(grn.GoodsReceiptNotesDate as date) <= @ToDate OR @ToDate IS NULL)
+	(CAST(grn.GoodsReceiptNotesDate as date) <= @ToDate OR @ToDate IS NULL) AND
+	(grnd.ItemID = @ItemID OR @ItemID is null)
 ORDER BY p.ProjectName, [Group], Category, grn.GoodsReceiptNotesDate, Item, Size, UOM
 
 
@@ -69,6 +71,6 @@ go
 
 
 
-exec spRptINGoodsReceiptNoteHistoryData 2, '2025-11-25', '2025-11-26'
+exec spRptINGoodsReceiptNoteHistoryData 1,2191,null,null
 
-select * from INGoodsReceiptNote where ProjectID = 1
+--select * from INGoodsReceiptNote where ProjectID = 1

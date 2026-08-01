@@ -239,7 +239,7 @@ namespace GL.Controllers
                                 var inItem = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == 1).FirstOrDefault();
                                 if (inItem != null)
                                 {
-                                    inItem.LastRate = 0;// item.Rate;
+                                    inItem.LastRate = item.LastRate;
                                     db.INProjectItems.AddOrUpdate(inItem);
                                     db.SaveChanges();
                                 }

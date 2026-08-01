@@ -835,6 +835,24 @@
     <Compile Include="EF\spRptINItemStock_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\spRptINDashboardKPI_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptINDashboardStockByCategory_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptINDashboardTopItemsByValue_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptINDashboardItemMovement_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptINDashboardMonthlyTrend_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\spRptINDashboardRecentActivity_Result.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\spRptINPendingPOList_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

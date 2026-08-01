@@ -64,7 +64,14 @@
                         </div>
 
                     </div>
-
+                    
+                    <div class="row" style="margin-top:5px;">
+                        <label class="control-label col-sm-2">Item</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("ItemID", new SelectList(ViewBag.Items, "ItemID", "Description"), "-- Select --",
+                            new { @class = "form-control showError ddl", @id = "ItemID" })
+                        </div>
+                    </div>
 
                     <!-- /.box-body -->
                     <div class="box-footer">
@@ -99,9 +106,7 @@
                 format: 'dd-M-yyyy',
             });
 
-           // $("#UnitID").select2();
-
-
+            $(".ddl").select2();
 
         });
 
@@ -109,17 +114,20 @@
 
         function downloadReport() {
             if (IsValid()) {
-                var companyID = $('#mCompanyID').val();
+
+                //var companyID = $('#mCompanyID').val();
                 var projectID = $('#ProjectID').val();
                 var fromDate = $('#FromDate').val();
                 var toDate = $('#ToDate').val();
+                var ItemID = $('#ItemID').val();
 
                 debugger;
 
-                var url = "/Reports/DownloadINGoodsReceiptNoteHistoryReportExcel?CompanyID=" + companyID
-                    + "&ProjectID=" + projectID
-                    + "&FromDate=" + fromDate
-                    + "&ToDate=" + toDate;
+                var url = "/Reports/DownloadINGoodsReceiptNoteHistoryReportExcel?ProjectID=" + projectID
+                    + "&ItemID=" + ItemID 
+                    + "&FromDate=" + fromDate 
+                    + "&ToDate=" + toDate 
+                    
 
                 window.location.href = url; // 🔽 this will download the Excel
             }

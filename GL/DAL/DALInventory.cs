@@ -1,6 +1,7 @@
 ﻿using GL.Common;
 using GL.EF;
 using GL.Models;
+using GL.Reports;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -366,6 +367,97 @@ namespace GL.DAL
                 throw ex;
             }
         }
+
+
+        public List<spRptINItemStock_Result> GetRptINItemStock(int CompanyID, int ProjectID, int? ItemID, DateTime? FromDate, DateTime? ToDate)
+        {
+            try
+            {
+                var RptINItemStock = db.spRptINItemStock(CompanyID, ProjectID, ItemID, FromDate, ToDate).ToList();
+
+                return RptINItemStock;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #region "Dashboard"
+
+        public spRptINDashboardKPI_Result GetDashboardKPI(int CompanyID, int ProjectID, DateTime FromDate, DateTime ToDate)
+        {
+            try
+            {
+                return db.spRptINDashboardKPI(CompanyID, ProjectID, FromDate, ToDate).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<spRptINDashboardStockByCategory_Result> GetDashboardStockByCategory(int CompanyID, int ProjectID)
+        {
+            try
+            {
+                return db.spRptINDashboardStockByCategory(CompanyID, ProjectID).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<spRptINDashboardTopItemsByValue_Result> GetDashboardTopItemsByValue(int CompanyID, int ProjectID, int TopN)
+        {
+            try
+            {
+                return db.spRptINDashboardTopItemsByValue(CompanyID, ProjectID, TopN).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<spRptINDashboardItemMovement_Result> GetDashboardItemMovement(int CompanyID, int ProjectID, DateTime FromDate, DateTime ToDate)
+        {
+            try
+            {
+                return db.spRptINDashboardItemMovement(CompanyID, ProjectID, FromDate, ToDate).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<spRptINDashboardMonthlyTrend_Result> GetDashboardMonthlyTrend(int CompanyID, int ProjectID, DateTime FromDate, DateTime ToDate)
+        {
+            try
+            {
+                return db.spRptINDashboardMonthlyTrend(CompanyID, ProjectID, FromDate, ToDate).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<spRptINDashboardRecentActivity_Result> GetDashboardRecentActivity(int CompanyID, int ProjectID, int TopN)
+        {
+            try
+            {
+                return db.spRptINDashboardRecentActivity(CompanyID, ProjectID, TopN).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
 
         public spINGetPRItemRowForPO_Result GetPRItemRowForPO(Int64 ItemID, Int64 RequestDetailID)
         {
