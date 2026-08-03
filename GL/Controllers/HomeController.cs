@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,6 +9,8 @@ using GL.DAL;
 using GL.EF;
 using GL.Models;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace GL.Controllers
 {
@@ -193,6 +196,90 @@ namespace GL.Controllers
             }
             return Json(pieChart,JsonRequestBehavior.AllowGet);
 
+        }
+
+        public ActionResult DownloadUnitStatusDataExcel(int ProjectID)
+        {
+            var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
+
+            ExcelPackage.License.SetNonCommercialPersonal("Indigo");
+
+            using (var package = new ExcelPackage())
+            {
+                var workSheet = package.Workbook.Worksheets.Add("UnitStatusData");
+                var dal = new DALCommon();
+                var result = dal.GetDashboardUnitStatusProjectWise(LoginUser.CompanyID, ProjectID);
+                var projectName = new DALDropdowns().INProjectsList(LoginUser.CompanyID)
+                    .FirstOrDefault(x => x.ProjectID == ProjectID)?.ProjectName ?? string.Empty;
+
+                var now = DateTime.Now;
+                var rowNo = 1;
+
+                workSheet.Cells[rowNo, 1].Value = "Unit Status Data";
+                workSheet.Cells[rowNo, 1, rowNo, 6].Merge = true;
+                workSheet.Cells[rowNo, 1, rowNo, 6].Style.Font.Bold = true;
+                workSheet.Cells[rowNo, 1, rowNo, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                workSheet.Cells[rowNo, 10].Value = "Print Date Time";
+                workSheet.Cells[rowNo, 10].Style.Font.Bold = true;
+                workSheet.Cells[rowNo, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[rowNo, 11].Value = now.ToString("dd-MMM-yyyy HH:mm:ss");
+                workSheet.Cells[rowNo, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                rowNo++;
+                workSheet.Cells[rowNo, 1].Value = "Selection Criteria";
+                workSheet.Cells[rowNo, 1, rowNo, 6].Merge = true;
+                workSheet.Cells[rowNo, 1, rowNo, 6].Style.Font.Bold = true;
+                workSheet.Cells[rowNo, 1, rowNo, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                rowNo++;
+                workSheet.Cells[rowNo, 1].Value = "Project";
+                workSheet.Cells[rowNo, 1].Style.Font.Bold = true;
+                workSheet.Cells[rowNo, 2].Value = projectName;
+                workSheet.Cells[rowNo, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                rowNo += 2;
+                workSheet.Cells[rowNo, 1].Value = "Status";
+                workSheet.Cells[rowNo, 2].Value = "Units";
+                workSheet.Cells[rowNo, 3].Value = "Amount";
+                workSheet.Cells[rowNo, 4].Value = "SQFT";
+                workSheet.Cells[rowNo, 1, rowNo, 4].Style.Font.Bold = true;
+                workSheet.Cells[rowNo, 1, rowNo, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                if (result != null && result.Count > 0)
+                {
+                    foreach (var item in result)
+                    {
+                        rowNo++;
+                        workSheet.Cells[rowNo, 1].Value = item.Status;
+                        workSheet.Cells[rowNo, 2].Value = item.Units;
+                        workSheet.Cells[rowNo, 3].Value = item.Amount;
+                        workSheet.Cells[rowNo, 4].Value = item.SQFT;
+                    }
+                }
+                else
+                {
+                    rowNo++;
+                    workSheet.Cells[rowNo, 1].Value = "No data found.";
+                    workSheet.Cells[rowNo, 1, rowNo, 4].Merge = true;
+                    workSheet.Cells[rowNo, 1, rowNo, 4].Style.Font.Italic = true;
+                }
+
+                workSheet.Cells[1, 1, rowNo, 4].AutoFitColumns();
+                workSheet.Column(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Column(3).Style.Numberformat.Format = "#,##0.00";
+                workSheet.Column(4).Style.Numberformat.Format = "#,##0";
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                string fileName = $"UnitStatusData_{now:yyyyMMdd_HHmmss}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
         }
 
         [HttpPost]

@@ -17,6 +17,9 @@
                     <div class="col-sm-3">
                         @Html.DropDownList("ProjectID", new SelectList(ViewBag.Projects, "ProjectID", "ProjectName"), new { @class = "form-control showError project", @id = "ProjectID" })
                     </div>
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 5px;">
+                        <button type="button" class="btn btn-success" id="btnDownloadUnitStatusExcel"><i class="fa fa-file-excel-o"></i> Download Excel</button>
+                    </div>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
                             <i class="fa fa-minus"></i>
@@ -140,6 +143,17 @@
 
 
 
+                });
+
+                $(document).on("click", "#btnDownloadUnitStatusExcel", function () {
+                    var projectID = $(".project").val();
+                    if (!projectID) {
+                        alert("Please select a project before downloading.");
+                        return;
+                    }
+
+                    var url = "/Home/DownloadUnitStatusDataExcel?ProjectID=" + projectID;
+                    window.location.href = url;
                 });
             });
 

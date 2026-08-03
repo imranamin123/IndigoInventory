@@ -51,7 +51,12 @@
 
                     @if (Model.INStoreIssueNote.IsPosted.GetValueOrDefault(false) == true)
                     {
-                        <h4 style="color:red; font:200;" class="box-title"> <b>Posted</b> </h4>
+                        <h4 style="color:red; font:200;" class="box-title"> <b>Posted</b>
+                            @if (Model.RoleID == 5)
+                            {
+                                <a href="/INInventory/INStoreIssueNoteUnPost/@Model.INStoreIssueNote.StoreIssueNoteID" onclick="return confirm('Are you sure you want to revert posting');" title="Revert posting" class="btn btn-danger btn-xs"><i class="fa fa-undo"></i> Revert</a>
+                            }
+                        </h4>
                     }
 
                     <br />

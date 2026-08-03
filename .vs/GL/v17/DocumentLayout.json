@@ -3,19 +3,23 @@
   "WorkspaceRootPath": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\views\\ininventory\\_storeissuenotesearchlistrows.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\ininventory\\_storeissuenotesearchlistrows.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\views\\home\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\home\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\ef\\sploginuser_result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\gl\\ef\\sploginuser_result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\ef\\sploginuser_result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -31,6 +35,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "_StoreIssueNoteSearchListRows.cshtml",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\_StoreIssueNoteSearchListRows.cshtml",
+              "RelativeDocumentMoniker": "GL\\Views\\INInventory\\_StoreIssueNoteSearchListRows.cshtml",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\INInventory\\_StoreIssueNoteSearchListRows.cshtml",
+              "RelativeToolTip": "GL\\Views\\INInventory\\_StoreIssueNoteSearchListRows.cshtml",
+              "ViewState": "AgIAADAAAAAAAAAAAAAAADsAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-03T11:04:45.58Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "INInventoryController.cs",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\INInventoryController.cs",
               "RelativeDocumentMoniker": "GL\\Controllers\\INInventoryController.cs",
@@ -43,7 +60,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "spLoginUser_Result.cs",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\EF\\spLoginUser_Result.cs",
               "RelativeDocumentMoniker": "GL\\EF\\spLoginUser_Result.cs",
@@ -51,8 +68,7 @@
               "RelativeToolTip": "GL\\EF\\spLoginUser_Result.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-01T06:59:18.275Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-01T06:59:18.275Z"
             },
             {
               "$type": "Document",
@@ -62,14 +78,14 @@
               "RelativeDocumentMoniker": "GL\\Views\\Home\\Dashboard.cshtml",
               "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\Home\\Dashboard.cshtml",
               "RelativeToolTip": "GL\\Views\\Home\\Dashboard.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-08-01T06:56:28.744Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "ReportsController.cs",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\ReportsController.cs",
               "RelativeDocumentMoniker": "GL\\Controllers\\ReportsController.cs",

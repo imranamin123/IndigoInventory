@@ -1245,21 +1245,22 @@ namespace GL.Controllers
 
                     INItems = dalDropdowns.StoreIssueNoteItemsDropdownItemsDropdown(model.INStoreIssueNote.ProjectID.GetValueOrDefault(0), LoginUser.CompanyID);
 
-                    foreach (var item in INItems)
+                    // spINStoreIssueNoteItemsDropdown only returns items with remaining balance > 0,
+                    // so an item this note already issued down to zero balance would be missing from
+                    // INItems and its name would fail to show in the dropdown. Add it back in using
+                    // the name already stored on the detail row.
+                    remainingINItems = INItems.ToList();
+                    var dropdownItemIds = new HashSet<long>(remainingINItems.Select(x => x.ItemID));
+                    foreach (var issue in model.INStoreIssueNoteDetailRows)
                     {
-                        var itemId = item.ItemID;
-
-                        foreach (var issue in model.INStoreIssueNoteDetailRows)
+                        if (issue.ItemID.HasValue && dropdownItemIds.Add(issue.ItemID.Value))
                         {
-                            if (issue.ItemID == Convert.ToInt64(itemId))
+                            remainingINItems.Add(new spINStoreIssueNoteItemsDropdown_Result
                             {
-                                remainingINItems.Add(item);
-
-                            }
-                            if (issue.ItemID != Convert.ToInt64(itemId) && item.Balance > 0)
-                            {
-                                remainingINItems.Add(item);
-                            }
+                                ItemID = issue.ItemID.Value,
+                                Description = issue.Item,
+                                Balance = 0
+                            });
                         }
                     }
                 }
@@ -1282,7 +1283,7 @@ namespace GL.Controllers
 
                     model.INStoreIssueNoteDetailRows = new List<spINStoreIssueNoteDetailRows_Result>();
                 }
-                ViewBag.INItems = remainingINItems.Count == 0 ? INItems.Where(x => x.Balance > 0).ToList() : remainingINItems;
+                ViewBag.INItems = remainingINItems;
                 model.RoleID = LoginUser.RoleID;
 
                 return View(model);
@@ -1497,6 +1498,10 @@ namespace GL.Controllers
                 if (LoginUser == null)
                 {
                     return RedirectToAction("Login", "Security");
+                }
+                if (LoginUser.RoleID != 5)
+                {
+                    return new HttpStatusCodeResult(403, "Only GM can revert posting.");
                 }
 
                 GL.Models.response res = new GL.Models.response();
