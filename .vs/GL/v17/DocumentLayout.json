@@ -3,20 +3,20 @@
   "WorkspaceRootPath": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\ininventorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\views\\home\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\views\\home\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\ef\\sploginuser_result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\ef\\sploginuser_result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|d:\\inventory\\indigoinventory\\indigoinventory\\indigoinventory\\gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292D6B95-D47F-4945-8CDA-7D4CF00FF39C}|GL\\GL.csproj|solutionrelative:gl\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,24 +26,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 244,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Web.config",
-              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Web.config",
-              "RelativeDocumentMoniker": "GL\\Web.config",
-              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Web.config",
-              "RelativeToolTip": "GL\\Web.config",
-              "ViewState": "AgIAALoAAAAAAAAAAAAAAMoAAAATAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2026-08-01T07:11:09.128Z",
+              "DocumentIndex": 0,
+              "Title": "INInventoryController.cs",
+              "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\INInventoryController.cs",
+              "RelativeDocumentMoniker": "GL\\Controllers\\INInventoryController.cs",
+              "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\INInventoryController.cs",
+              "RelativeToolTip": "GL\\Controllers\\INInventoryController.cs",
+              "ViewState": "AgIAAEAEAAAAAAAAAAAowFwEAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-01T07:06:25.947Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "spLoginUser_Result.cs",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\EF\\spLoginUser_Result.cs",
               "RelativeDocumentMoniker": "GL\\EF\\spLoginUser_Result.cs",
@@ -56,26 +56,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Dashboard.cshtml",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\Home\\Dashboard.cshtml",
               "RelativeDocumentMoniker": "GL\\Views\\Home\\Dashboard.cshtml",
               "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Views\\Home\\Dashboard.cshtml",
               "RelativeToolTip": "GL\\Views\\Home\\Dashboard.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAmAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-08-01T06:56:28.744Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "ReportsController.cs",
               "DocumentMoniker": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\ReportsController.cs",
               "RelativeDocumentMoniker": "GL\\Controllers\\ReportsController.cs",
               "ToolTip": "D:\\Inventory\\IndigoInventory\\IndigoInventory\\IndigoInventory\\GL\\Controllers\\ReportsController.cs",
               "RelativeToolTip": "GL\\Controllers\\ReportsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAF8IAAAAAAAAAAAowHMIAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-30T06:12:45.207Z",
               "EditorCaption": ""

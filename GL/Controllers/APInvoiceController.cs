@@ -22,6 +22,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new APInvoiceViewModel();
 
                 return View(model);
@@ -37,6 +41,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new APInvoiceViewModel();
 
                 search.CompanyID = LoginUser.CompanyID;
@@ -55,6 +63,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 APInvoiceViewModel model = new APInvoiceViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -116,6 +128,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 if (APInvoice.APInvoiceID == 0)
                 {

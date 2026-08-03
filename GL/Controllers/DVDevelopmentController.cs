@@ -27,6 +27,10 @@ namespace GL.DAL
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var ApplicationForm = new ApplicationFormViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
@@ -113,6 +117,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 var dal = new DALDevelopment();
                 var IsDuplicate = dal.IsA4Duplicate(LoginUser.CompanyID, ProjectID, ApplicationFormID, A4);
 
@@ -265,6 +273,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 if (DVApplicationForm.ApplicationFormID == 0)
                 {
@@ -329,6 +341,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new ApplicationFormViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -348,6 +364,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new ApplicationFormViewModel();
 
                 search.CompanyID = LoginUser.CompanyID;
@@ -369,6 +389,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DVReceiptViewModel model = new DVReceiptViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -438,6 +462,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
 
@@ -535,6 +563,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DVReceiptViewModel model = new DVReceiptViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -603,6 +635,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVReceiptViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 ViewBag.Projects = dalDropdowns.DVProjectsList(LoginUser.CompanyID);
@@ -623,6 +659,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVReceiptViewModel();
 
 
@@ -647,6 +687,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVReceiptViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 ViewBag.Projects = dalDropdowns.DVProjectsList(1);
@@ -666,6 +710,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVReceiptViewModel();
 
 
@@ -686,6 +734,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DVReceiptViewModel model = new DVReceiptViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -754,6 +806,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DVReceiptViewModel model = new DVReceiptViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -824,6 +880,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVDocumentViewModel();
                 ViewBag.DVDocumentTypes = new DALDropdowns().DVDocumentTypeList(LoginUser.CompanyID).Select(x => new { DocumentTypeID = x.DocumentTypeID, DocumentTypeName=x.DocumentTypeName ?? "" } ).ToList();
                 
@@ -856,6 +916,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVDocumentViewModel();
                 var dal = new DALDevelopment();
                 model.DocumentListRows = dal.GetDocumentsByApplication(ApplicationFormID);
@@ -969,6 +1033,10 @@ namespace GL.DAL
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 if (DVDocument.DocumentID == 0)
                 {

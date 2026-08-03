@@ -22,6 +22,10 @@ namespace GL.Controllers
         public JsonResult IntDVReceiptVoucher(int DVReceiptID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
 
             GL.Models.response res = new GL.Models.response();
             bool result = false;
@@ -48,6 +52,10 @@ namespace GL.Controllers
         public JsonResult IntBankTransactionVoucher(int bkBankTransID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
 
             GL.Models.response res = new GL.Models.response();
             bool result = false;
@@ -73,6 +81,10 @@ namespace GL.Controllers
         public JsonResult IntAPInvoice(Int64 APInvoiceID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
 
             GL.Models.response res = new GL.Models.response();
             bool result = false;
@@ -102,6 +114,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -170,6 +186,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;

@@ -22,6 +22,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new GLVoucherViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -40,6 +44,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new GLVoucherViewModel();
 
                 search.CompanyID = LoginUser.CompanyID;
@@ -58,6 +66,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 GLVoucherViewModel model = new GLVoucherViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 
@@ -125,6 +137,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 if (glVoucher.GLVoucherID == 0)
                 {
@@ -206,8 +222,12 @@ namespace GL.Controllers
 
         public string GetFiscalYearSetup(DateTime VoucherDate)
         {
-            string FiscalPeriod = string.Empty; 
+            string FiscalPeriod = string.Empty;
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                throw new InvalidOperationException("Session expired. Please login again.");
+            }
             var FiscalYearSetup = new DALCommon().GetFiscalYearSetup(LoginUser.CompanyID, VoucherDate.Year, VoucherDate.Month);
             if (FiscalYearSetup != null)
             {

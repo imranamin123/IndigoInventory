@@ -20,6 +20,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DVPaymentPlanViewModel model = new DVPaymentPlanViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -63,6 +67,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
 
@@ -128,6 +136,10 @@ namespace GL.Controllers
             {
                 GL.Models.response res = new GL.Models.response();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 var result = new DALCommon().GetDVPaymentPackage(LoginUser.CompanyID, PaymentPlanID);
 
                 if (result != null)

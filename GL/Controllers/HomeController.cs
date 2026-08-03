@@ -35,6 +35,10 @@ namespace GL.Controllers
         public JsonResult GetDashboardKPIJson(int ProjectID, DateTime FromDate, DateTime ToDate)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
             try
             {
                 DALInventory dal = new DALInventory();
@@ -51,6 +55,10 @@ namespace GL.Controllers
         public JsonResult GetDashboardStockByCategoryJson(int ProjectID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
             try
             {
                 DALInventory dal = new DALInventory();
@@ -67,6 +75,10 @@ namespace GL.Controllers
         public JsonResult GetDashboardTopItemsJson(int ProjectID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
             try
             {
                 DALInventory dal = new DALInventory();
@@ -83,6 +95,10 @@ namespace GL.Controllers
         public JsonResult GetDashboardItemMovementJson(int ProjectID, DateTime FromDate, DateTime ToDate)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
             try
             {
                 DALInventory dal = new DALInventory();
@@ -113,6 +129,10 @@ namespace GL.Controllers
         public ActionResult GetDashboardMonthlyTrendJson(int ProjectID, DateTime FromDate, DateTime ToDate)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             try
             {
                 DALInventory dal = new DALInventory();
@@ -129,6 +149,10 @@ namespace GL.Controllers
         public ActionResult GetDashboardRecentActivityJson(int ProjectID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             try
             {
                 DALInventory dal = new DALInventory();
@@ -145,6 +169,10 @@ namespace GL.Controllers
         public JsonResult GetUnitSaleDataJson(int ProjectID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+            }
             var pieChart = new PieChart { };
             DALCommon dal = new DALCommon();
             //List<PieChart> pieCharts = new List<PieChart>();

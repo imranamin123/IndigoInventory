@@ -737,6 +737,7 @@ namespace GL.DAL
                     INPurchaseRequisitionDetail.Balance = INPurchaseRequisitionDetail.Balance - grnDetailItem.ReceivedQty;
 
                     var INGoodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == grnDetailItem.GoodsReceiptNoteID).FirstOrDefault();
+                    bool alreadyPosted = INGoodsReceiptNote.IsPosted == true;
                     INGoodsReceiptNote.IsPosted = true;
 
                     db.SaveChanges();
@@ -746,13 +747,26 @@ namespace GL.DAL
                     var goodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == grnDetailItem.GoodsReceiptNoteID).FirstOrDefault();
 
                     var projectItem = db.INProjectItems.Where(x => x.ItemID == grnDetailItem.ItemID && x.ProjectID == goodsReceiptNote.ProjectID).FirstOrDefault();
-                    if (projectItem != null)
+                    if (projectItem == null)
                     {
-                        projectItem.QtyInHand += grnDetailItem.ReceivedQty;
-                        projectItem.LastRate = grnDetailItem.Rate;
-                        db.INProjectItems.AddOrUpdate(projectItem);
-                        db.SaveChanges();
+                        projectItem = new INProjectItem
+                        {
+                            ItemID = grnDetailItem.ItemID,
+                            ProjectID = goodsReceiptNote.ProjectID,
+                            CompanyID = goodsReceiptNote.CompanyID,
+                            OpeningQty = 0,
+                            QtyInHand = 0
+                        };
+                        db.INProjectItems.Add(projectItem);
                     }
+
+                    // Guard against double-posting (e.g. duplicate submit) applying the receipt twice
+                    if (!alreadyPosted)
+                    {
+                        projectItem.QtyInHand = projectItem.QtyInHand.GetValueOrDefault(0) + grnDetailItem.ReceivedQty;
+                    }
+                    projectItem.LastRate = grnDetailItem.Rate;
+                    db.SaveChanges();
 
                 }
                 return true;
@@ -791,6 +805,7 @@ namespace GL.DAL
                     INPurchaseRequisitionDetail.Balance = INPurchaseRequisitionDetail.Balance + grnDetailItem.ReceivedQty;
 
                     var INGoodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == grnDetailItem.GoodsReceiptNoteID).FirstOrDefault();
+                    bool wasPosted = INGoodsReceiptNote.IsPosted == true;
                     INGoodsReceiptNote.IsPosted = false;
 
                     db.SaveChanges();
@@ -799,7 +814,8 @@ namespace GL.DAL
                     var goodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == grnDetailItem.GoodsReceiptNoteID).FirstOrDefault();
 
                     var projectItem = db.INProjectItems.Where(x => x.ItemID == grnDetailItem.ItemID && x.ProjectID == goodsReceiptNote.ProjectID).FirstOrDefault();
-                    if (projectItem != null)
+                    // Guard against double-unposting applying the reversal twice
+                    if (projectItem != null && wasPosted)
                     {
                         projectItem.QtyInHand -= grnDetailItem.ReceivedQty;
                         db.INProjectItems.AddOrUpdate(projectItem);
@@ -895,23 +911,36 @@ namespace GL.DAL
             {
                 if (INGoodsReceiptNoteDetail != null)
                 {
+                    // Capture the previously-saved quantity (if any) before it gets overwritten,
+                    // so a quantity edit after posting can be reflected in QtyInHand as a delta.
+                    decimal oldReceivedQty = 0;
+                    if (INGoodsReceiptNoteDetail.GoodsReceiptNoteDetailID > 0)
+                    {
+                        var existing = db.INGoodsReceiptNoteDetails.AsNoTracking()
+                            .Where(x => x.GoodsReceiptNoteDetailID == INGoodsReceiptNoteDetail.GoodsReceiptNoteDetailID)
+                            .FirstOrDefault();
+                        if (existing != null) oldReceivedQty = existing.ReceivedQty.GetValueOrDefault(0);
+                    }
+
                     db.INGoodsReceiptNoteDetails.AddOrUpdate(INGoodsReceiptNoteDetail);
                     db.SaveChanges();
 
-                    ////// StoreItem
-                    ////if (StoreItemEntryAllowed)
-                    ////{
-                    ////    var goodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == INGoodsReceiptNoteDetail.GoodsReceiptNoteID).FirstOrDefault();
-
-                    ////    var projectItem = db.INProjectItems.Where(x => x.ItemID == INGoodsReceiptNoteDetail.ItemID && x.ProjectID == goodsReceiptNote.ProjectID).FirstOrDefault();
-                    ////    if (projectItem != null)
-                    ////    {
-                    ////        projectItem.QtyInHand += INGoodsReceiptNoteDetail.ReceivedQty;
-                    ////        db.INProjectItems.AddOrUpdate(projectItem);
-                    ////        db.SaveChanges();
-                    ////    }
-
-                    ////}
+                    // StoreItem
+                    var goodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == INGoodsReceiptNoteDetail.GoodsReceiptNoteID).FirstOrDefault();
+                    if (goodsReceiptNote != null && goodsReceiptNote.IsPosted == true)
+                    {
+                        decimal delta = INGoodsReceiptNoteDetail.ReceivedQty.GetValueOrDefault(0) - oldReceivedQty;
+                        if (delta != 0)
+                        {
+                            var projectItem = db.INProjectItems.Where(x => x.ItemID == INGoodsReceiptNoteDetail.ItemID && x.ProjectID == goodsReceiptNote.ProjectID).FirstOrDefault();
+                            if (projectItem != null)
+                            {
+                                projectItem.QtyInHand = projectItem.QtyInHand.GetValueOrDefault(0) + delta;
+                                db.INProjectItems.AddOrUpdate(projectItem);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -1007,6 +1036,20 @@ namespace GL.DAL
             try
             {
                 var INGoodsReceiptNoteDetail = db.INGoodsReceiptNoteDetails.Where(x => x.GoodsReceiptNoteDetailID == GoodsReceiptNoteDetailID).FirstOrDefault();
+
+                // If this row's quantity was already applied to QtyInHand (parent note is posted),
+                // reverse it here -- otherwise deleting a posted line permanently over-counts stock.
+                var goodsReceiptNote = db.INGoodsReceiptNotes.Where(x => x.GoodsReceiptNoteID == INGoodsReceiptNoteDetail.GoodsReceiptNoteID).FirstOrDefault();
+                if (goodsReceiptNote != null && goodsReceiptNote.IsPosted == true)
+                {
+                    var projectItem = db.INProjectItems.Where(x => x.ItemID == INGoodsReceiptNoteDetail.ItemID && x.ProjectID == goodsReceiptNote.ProjectID).FirstOrDefault();
+                    if (projectItem != null)
+                    {
+                        projectItem.QtyInHand -= INGoodsReceiptNoteDetail.ReceivedQty;
+                        db.INProjectItems.AddOrUpdate(projectItem);
+                    }
+                }
+
                 db.INGoodsReceiptNoteDetails.Remove(INGoodsReceiptNoteDetail);
                 db.SaveChanges();
                 return true;
@@ -1073,10 +1116,28 @@ namespace GL.DAL
             {
 
                 var StoreIssueNote = db.INStoreIssueNotes.Where(x => x.StoreIssueNoteID == id).FirstOrDefault();
+                // Guard against double-posting (e.g. duplicate submit) applying the issue twice
+                if (StoreIssueNote.IsPosted == true) return true;
+
+                var INStoreIssueNoteDetails = db.INStoreIssueNoteDetails.Where(x => x.StoreIssueNoteID == id).ToList();
+
+                // Validate every line has enough stock BEFORE applying any changes,
+                // so posting never drives QtyInHand (and the Stock Report) negative.
+                foreach (var item in INStoreIssueNoteDetails)
+                {
+                    var projectItem = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == StoreIssueNote.ProjectID).FirstOrDefault();
+                    decimal available = projectItem != null ? projectItem.QtyInHand.GetValueOrDefault(0) : 0;
+                    decimal issuing = item.IssuedQty.GetValueOrDefault(0);
+                    if (issuing > available)
+                    {
+                        var itemInfo = db.INItems.Where(x => x.ItemID == item.ItemID).FirstOrDefault();
+                        string itemName = itemInfo != null ? itemInfo.Description : ("Item #" + item.ItemID);
+                        throw new InvalidOperationException($"Cannot post: '{itemName}' has only {available} in stock, but {issuing} is being issued.");
+                    }
+                }
+
                 StoreIssueNote.IsPosted = true;
                 db.INStoreIssueNotes.AddOrUpdate(StoreIssueNote);
-                
-                var INStoreIssueNoteDetails = db.INStoreIssueNoteDetails.Where(x => x.StoreIssueNoteID == id).ToList();
 
                 foreach (var item in INStoreIssueNoteDetails)
                 {
@@ -1106,6 +1167,8 @@ namespace GL.DAL
             {
 
                 var StoreIssueNote = db.INStoreIssueNotes.Where(x => x.StoreIssueNoteID == id).FirstOrDefault();
+                // Guard against double-unposting applying the reversal twice
+                if (StoreIssueNote.IsPosted != true) return true;
                 StoreIssueNote.IsPosted = false;
                 db.INStoreIssueNotes.AddOrUpdate(StoreIssueNote);
 
@@ -1171,23 +1234,49 @@ namespace GL.DAL
             {
                 if (INStoreIssueNoteDetail != null)
                 {
+                    // Capture the previously-saved quantity (if any) before it gets overwritten,
+                    // so a quantity edit after posting can be reflected in QtyInHand as a delta.
+                    decimal oldIssuedQty = 0;
+                    if (INStoreIssueNoteDetail.StoreIssueNoteDetailID > 0)
+                    {
+                        var existing = db.INStoreIssueNoteDetails.AsNoTracking()
+                            .Where(x => x.StoreIssueNoteDetailID == INStoreIssueNoteDetail.StoreIssueNoteDetailID)
+                            .FirstOrDefault();
+                        if (existing != null) oldIssuedQty = existing.IssuedQty.GetValueOrDefault(0);
+                    }
+
+                    // StoreItem
+                    var storeIssueNote = db.INStoreIssueNotes.Where(x => x.StoreIssueNoteID == INStoreIssueNoteDetail.StoreIssueNoteID).FirstOrDefault();
+                    decimal delta = INStoreIssueNoteDetail.IssuedQty.GetValueOrDefault(0) - oldIssuedQty;
+
+                    // If this edit increases the issued quantity on an already-posted note,
+                    // make sure there's enough stock left before allowing it -- otherwise
+                    // QtyInHand (and the Stock Report) can go negative.
+                    if (storeIssueNote != null && storeIssueNote.IsPosted == true && delta > 0)
+                    {
+                        var projectItemCheck = db.INProjectItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID && x.ProjectID == storeIssueNote.ProjectID).FirstOrDefault();
+                        decimal available = projectItemCheck != null ? projectItemCheck.QtyInHand.GetValueOrDefault(0) : 0;
+                        if (delta > available)
+                        {
+                            var itemInfo = db.INItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID).FirstOrDefault();
+                            string itemName = itemInfo != null ? itemInfo.Description : ("Item #" + INStoreIssueNoteDetail.ItemID);
+                            throw new InvalidOperationException($"Cannot increase issued qty: '{itemName}' has only {available} in stock.");
+                        }
+                    }
+
                     db.INStoreIssueNoteDetails.AddOrUpdate(INStoreIssueNoteDetail);
                     db.SaveChanges();
 
-                    ////// StoreItem
-                    ////if (StoreItemEntryAllowed)
-                    ////{
-                    ////    var storeIssueNote = db.INStoreIssueNotes.Where(x => x.StoreIssueNoteID == INStoreIssueNoteDetail.StoreIssueNoteID).FirstOrDefault();
-
-                    ////    var projectItem = db.INProjectItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID && x.ProjectID == storeIssueNote.ProjectID).FirstOrDefault();
-                    ////    if (projectItem != null)
-                    ////    {
-                    ////        projectItem.QtyInHand -= INStoreIssueNoteDetail.IssuedQty;
-                    ////        db.INProjectItems.AddOrUpdate(projectItem);
-                    ////        db.SaveChanges();
-                    ////    }
-
-                    ////}
+                    if (storeIssueNote != null && storeIssueNote.IsPosted == true && delta != 0)
+                    {
+                        var projectItem = db.INProjectItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID && x.ProjectID == storeIssueNote.ProjectID).FirstOrDefault();
+                        if (projectItem != null)
+                        {
+                            projectItem.QtyInHand = projectItem.QtyInHand.GetValueOrDefault(0) - delta;
+                            db.INProjectItems.AddOrUpdate(projectItem);
+                            db.SaveChanges();
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -1203,6 +1292,20 @@ namespace GL.DAL
             try
             {
                 var INStoreIssueNoteDetail = db.INStoreIssueNoteDetails.Where(x => x.StoreIssueNoteDetailID == StoreIssueNoteDetailID).FirstOrDefault();
+
+                // If this row's quantity was already applied to QtyInHand (parent note is posted),
+                // reverse it here -- otherwise deleting a posted line permanently under-counts stock.
+                var storeIssueNote = db.INStoreIssueNotes.Where(x => x.StoreIssueNoteID == INStoreIssueNoteDetail.StoreIssueNoteID).FirstOrDefault();
+                if (storeIssueNote != null && storeIssueNote.IsPosted == true)
+                {
+                    var projectItem = db.INProjectItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID && x.ProjectID == storeIssueNote.ProjectID).FirstOrDefault();
+                    if (projectItem != null)
+                    {
+                        projectItem.QtyInHand += INStoreIssueNoteDetail.IssuedQty;
+                        db.INProjectItems.AddOrUpdate(projectItem);
+                    }
+                }
+
                 db.INStoreIssueNoteDetails.Remove(INStoreIssueNoteDetail);
                 db.SaveChanges();
                 return true;

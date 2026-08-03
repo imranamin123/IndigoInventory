@@ -21,25 +21,15 @@ BEGIN
     (
         SELECT
             i.ItemID,
-		
+
             -- Description column
-            CASE 
-                WHEN @ProjectID = 5 THEN
-                    i.Description + ' = ' + CAST(ISNULL(p.QtyInHand, 0) AS VARCHAR(50))
-                ELSE
-                    i.Description + ' = ' + CAST(
-                        ISNULL(p.QtyInHand, 0) + ISNULL(p.OpeningQty, 0)
-                        AS VARCHAR(50)
-                    )
-            END AS Description,
+            -- QtyInHand is already the item's full current balance (see spRptINItemStock,
+            -- which folds OpeningQty into the running ClosingQty it computes). Adding
+            -- OpeningQty again here double-counts it and can show stock that isn't really there.
+            i.Description + ' = ' + CAST(ISNULL(p.QtyInHand, 0) AS VARCHAR(50)) AS Description,
 
             -- Balance column
-            CASE 
-                WHEN @ProjectID = 5 THEN
-                    ISNULL(p.QtyInHand, 0)
-                ELSE
-                    ISNULL(p.QtyInHand, 0) + ISNULL(p.OpeningQty, 0)
-            END AS Balance
+            ISNULL(p.QtyInHand, 0) AS Balance
 
         FROM INItem i
         LEFT JOIN INProjectItem p 

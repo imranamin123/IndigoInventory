@@ -273,6 +273,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INItemViewModel model = new INItemViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -290,6 +294,10 @@ namespace GL.Controllers
         public ActionResult ItemSearchList(string ItemCode, string Name, int? GroupID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             INItemViewModel model = new INItemViewModel();
 
 
@@ -306,6 +314,10 @@ namespace GL.Controllers
                 INItemViewModel model = new INItemViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 ViewBag.RollID = LoginUser.RoleID;
                 ViewBag.username = LoginUser.username;
@@ -354,6 +366,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
                 DALInventory dal = new DALInventory();
 
@@ -442,6 +458,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INPurchaseRequisitionViewModel model = new INPurchaseRequisitionViewModel();
 
                 ViewBag.roleid = LoginUser.RoleID;
@@ -459,6 +479,10 @@ namespace GL.Controllers
         public ActionResult PurchaseRequisitionSearchList(DateTime? RequestDateFrom, DateTime? RequestDateTo, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             INPurchaseRequisitionViewModel model = new INPurchaseRequisitionViewModel();
 
             if (LoginUser.username == "ind.umer" || LoginUser.username == "ind.shafeeq")
@@ -480,6 +504,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INPurchaseRequisitionViewModel model = new INPurchaseRequisitionViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -599,6 +627,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
 
                 bool result = false;
@@ -646,6 +678,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 if (INPurchaseRequisition.RequestID == 0)
@@ -764,6 +800,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INGoodsReceiptNoteViewModel model = new INGoodsReceiptNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -857,6 +897,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INGoodsReceiptNoteViewModel model = new INGoodsReceiptNoteViewModel();
 
                 ViewBag.roleid = LoginUser.RoleID;
@@ -876,6 +920,10 @@ namespace GL.Controllers
         public ActionResult GoodsReceiptNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, int? Pending=0)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             INGoodsReceiptNoteViewModel model = new INGoodsReceiptNoteViewModel();
             
             if (LoginUser.username == "ind.umer" || LoginUser.username == "ind.shafeeq")
@@ -907,6 +955,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var modelGRN = new INGoodsReceiptNoteViewModel();
                 var PO = new INPurchaseOrderViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
@@ -1047,6 +1099,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 bool result = false;
@@ -1127,6 +1183,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INStoreIssueNoteViewModel model = new INStoreIssueNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -1145,6 +1205,10 @@ namespace GL.Controllers
         public ActionResult StoreIssueNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             INStoreIssueNoteViewModel model = new INStoreIssueNoteViewModel();
 
             model.INStoreIssueNoteSearchList = new DALInventory().GetINStoreIssueNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
@@ -1159,6 +1223,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INStoreIssueNoteViewModel model = new INStoreIssueNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -1261,6 +1329,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
 
                 bool result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
@@ -1285,6 +1357,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 bool result = false;
@@ -1379,6 +1455,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -1414,6 +1494,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -1442,6 +1526,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INStoreReturnNoteViewModel model = new INStoreReturnNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -1460,6 +1548,10 @@ namespace GL.Controllers
         public ActionResult StoreReturnNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             INStoreReturnNoteViewModel model = new INStoreReturnNoteViewModel();
 
             model.INStoreReturnNoteSearchList = new DALInventory().GetINStoreReturnNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID );
@@ -1474,6 +1566,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INStoreReturnNoteViewModel model = new INStoreReturnNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -1537,6 +1633,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
 
                 bool result = new DALInventory().INPurchaseRequisitionSubmit(RequestID, LoginUser.UsersID, LoginUser.RoleID);
@@ -1561,6 +1661,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 bool result = false;
@@ -1655,6 +1759,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -1690,6 +1798,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -1717,6 +1829,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
 
                 bool result = new DALInventory().INStoreTransferNoteApprove(StoreTransferNoteID, LoginUser.UsersID, LoginUser.RoleID);
@@ -1741,6 +1857,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
 
                 bool result = new DALInventory().INStoreTransferNoteReceive(StoreTransferNoteID, LoginUser.UsersID);
@@ -1782,6 +1902,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INStoreTransferNoteViewModel model = new INStoreTransferNoteViewModel();
                 ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
                 // DALDropdowns dalDropdowns = new DALDropdowns();
@@ -1800,6 +1924,10 @@ namespace GL.Controllers
         public ActionResult StoreTransferNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             INStoreTransferNoteViewModel model = new INStoreTransferNoteViewModel();
 
             //model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
@@ -1815,6 +1943,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INStoreTransferNoteViewModel model = new INStoreTransferNoteViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -1894,6 +2026,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 bool result = false;
@@ -1988,6 +2124,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 INPurchaseOrderViewModel model = new INPurchaseOrderViewModel();
                 // DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -2006,6 +2146,10 @@ namespace GL.Controllers
         public ActionResult PurchaseOrderSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             var model = new INPurchaseOrderViewModel();
 
             if(LoginUser.username == "ind.umer" || LoginUser.username == "ind.shafeeq")
@@ -2030,6 +2174,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new INPurchaseOrderViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -2218,6 +2366,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 bool result = false;
@@ -2291,6 +2443,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -2358,6 +2514,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;
@@ -2394,6 +2554,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();
                 bool result = false;

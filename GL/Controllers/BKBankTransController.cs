@@ -23,6 +23,10 @@ namespace GL.Controllers
             try
             {
                 var loginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (loginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new BKBankTransViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -40,6 +44,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new BKBankTransViewModel();
                 //DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -60,6 +68,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 BKBankTransViewModel model = new BKBankTransViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -185,6 +197,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 GL.Models.response res = new GL.Models.response();
                 if (BKBankTrans.BankTransID == 0)
                 {

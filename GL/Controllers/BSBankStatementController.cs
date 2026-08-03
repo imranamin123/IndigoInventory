@@ -20,6 +20,10 @@ namespace GL.Controllers
         public ActionResult BSClassification()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.BKBanks = dal.BKBankList(LoginUser.CompanyID);
             return View();
@@ -33,6 +37,10 @@ namespace GL.Controllers
             try
             {
                 var loginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (loginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new BSClassificationViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -66,6 +74,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new BSClassificationViewModel();
 
                 model.BSBankStatementPendingUnpendingList = new DALBSClassification().GetBSBankStatementPendingUnpendingList(LoginUser.CompanyID, BKBankID, IsPending, ValueDateFrom, ValueDateTo);
@@ -84,6 +96,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new BSClassificationViewModel();
                 //DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -104,6 +120,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 BSClassificationViewModel model = new BSClassificationViewModel();
 
                 DALDropdowns dalDropdowns = new DALDropdowns();
@@ -158,6 +178,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 DALBSClassification dal = new DALBSClassification();
 
                 GL.Models.response res = new GL.Models.response();

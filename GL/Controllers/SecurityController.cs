@@ -83,6 +83,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    throw new InvalidOperationException("Session expired. Please login again.");
+                }
                 return PartialView("_headerView", LoginUser);
             }
             catch (Exception ex)
@@ -97,6 +101,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 MenuViewModel model = new MenuViewModel();
                 DALDropdowns dal = new DALDropdowns();
                 model.MenuPagesRightsList = new List<spMenuPagesRightsList_Result>();
@@ -126,6 +134,10 @@ namespace GL.Controllers
         public ActionResult MenuRightsRowsView(SearchModel searchModel)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             MenuViewModel model = new MenuViewModel();
 
             model.CompanyID = searchModel.CompanyID.Value;
@@ -139,6 +151,10 @@ namespace GL.Controllers
         public ActionResult CreateUserPageRights(SearchModel searchModel)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             MenuViewModel model = new MenuViewModel();
             DALDropdowns dal = new DALDropdowns();
             ViewBag.CompanyName = dal.CompanyList().Where(x => x.CompanyID == searchModel.CompanyID).FirstOrDefault().Name;

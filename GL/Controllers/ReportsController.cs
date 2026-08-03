@@ -24,6 +24,10 @@ namespace GL.Controllers
         public ActionResult TrialBalance()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.fiscalYears = dal.FiscalYearGetForDropdown(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -1303,6 +1307,10 @@ namespace GL.Controllers
         public ActionResult DVUnitLedgerReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.Units = new List<DVUnit>();
@@ -1313,6 +1321,10 @@ namespace GL.Controllers
         public ActionResult APPartyLedgerReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             //ViewBag.APVendors = dal.GLAPVendorsListWithCode(LoginUser.CompanyID);
             var APVendors = dal.GLAPVendorsListWithCode(LoginUser.CompanyID);
@@ -1472,6 +1484,10 @@ namespace GL.Controllers
         {
             var report = new rptAPPartyLedger();
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             var RptAPPartyLedgerList = new GLEntities().spRptAPPartyLedger(LoginUser.CompanyID, ToDate, APVendorID).ToList(); // spRptAPPartyLedger(APVendorID, ToDate).ToList();
 
             var APPartyLedgerReporData = (
@@ -1523,6 +1539,10 @@ namespace GL.Controllers
         public ActionResult GeneralLedgerReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.GLAccounts = dal.GLAccountGetForDropdown(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -1533,6 +1553,10 @@ namespace GL.Controllers
         public ActionResult DVGeneralLedgerReportDownload(DateTime? StartDate, DateTime? EndDate, string GLAccountNoFrom, string GLAccountNoTo)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             var report = new rptGeneralLedger();
             Nullable<int> CompanyID = LoginUser.CompanyID;
             string GLAccountNoStart = GLAccountNoFrom == "" ? null : GLAccountNoFrom;
@@ -1591,6 +1615,10 @@ namespace GL.Controllers
         public ActionResult DVGeneralLedgerReportDownloadOB(DateTime? StartDate, DateTime? EndDate, string GLAccountNoFrom, string GLAccountNoTo)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             var report = new rptGeneralLedgerOB();
             Nullable<int> CompanyID = LoginUser.CompanyID;
             string GLAccountNoStart = GLAccountNoFrom == "" ? null : GLAccountNoFrom;
@@ -1804,6 +1832,10 @@ namespace GL.Controllers
         public ActionResult DVMemberPaymentPlanStatusReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.DVProjectsList(LoginUser.CompanyID);
             ViewBag.Units = new List<DVUnit>();
@@ -1815,6 +1847,10 @@ namespace GL.Controllers
         {
 
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.DVProjectsList(LoginUser.CompanyID);
             ViewBag.Units = new List<DVUnit>();
@@ -2120,6 +2156,10 @@ namespace GL.Controllers
         public ActionResult INItemStockReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -2133,6 +2173,10 @@ namespace GL.Controllers
         public ActionResult INGoodsReceiptNoteHistoryDataReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.Items = dal.INItemsList(LoginUser.CompanyID);
@@ -2304,6 +2348,10 @@ namespace GL.Controllers
         public ActionResult INStoreIssueNoteHistoryDataReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -2327,6 +2375,10 @@ namespace GL.Controllers
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var spRptINStoreIssueNoteHistoryDataList = db.spRptINStoreIssueNoteHistoryData(LoginUser.CompanyID, ProjectID, FromDate, ToDate).ToList();
                 // ====== Final projection ======
@@ -2483,6 +2535,10 @@ namespace GL.Controllers
         public ActionResult INPurchaseRequisitionHistoryDataReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -2648,6 +2704,10 @@ namespace GL.Controllers
         public ActionResult INPORevertHistoryDataReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -2887,6 +2947,10 @@ namespace GL.Controllers
         public ActionResult APVendorListReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.CompanyID = LoginUser.CompanyID;
@@ -2909,6 +2973,10 @@ namespace GL.Controllers
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var spRptVendorList = db.spRptVendorList(LoginUser.CompanyID, FromDate, ToDate).ToList();
                 // ====== Final projection ======
@@ -3052,6 +3120,10 @@ namespace GL.Controllers
         public ActionResult INItemListReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.FromDate = null;
             ViewBag.ToDate = null;
@@ -3072,6 +3144,10 @@ namespace GL.Controllers
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var spRptINItemList = db.spRptINItemList(LoginUser.CompanyID, FromDate, ToDate).ToList();
                 // ====== Final projection ======
@@ -3210,6 +3286,10 @@ namespace GL.Controllers
         public ActionResult INPendingCompleteDemandsReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.FromDate = null;
@@ -3231,6 +3311,10 @@ namespace GL.Controllers
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var data = db.spRptPendingCompleteDemands(LoginUser.CompanyID, ProjectID, FromDate, ToDate).ToList();
                 var spRptPendingCompleteDemandsList = data.Where(x => x.Status == Status).ToList();
@@ -3401,6 +3485,10 @@ namespace GL.Controllers
         public ActionResult INPendingPOReport()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             ViewBag.FromDate = null;
@@ -3423,6 +3511,10 @@ namespace GL.Controllers
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var data = db.spRptINPendingPOList(LoginUser.CompanyID, ProjectID, FromDate, ToDate).ToList();
                 var spRptPendingPOList = data.Where(x => x.Status == Status).ToList();
@@ -3590,6 +3682,10 @@ namespace GL.Controllers
         public ActionResult INItemRateComparison()
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             DALDropdowns dal = new DALDropdowns();
             ViewBag.Projects = dal.INProjectsList(LoginUser.CompanyID);
             return View();
@@ -3610,6 +3706,10 @@ namespace GL.Controllers
                 var db = new GLEntities();
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 var data = db.spRptINItemRateComparisonList(LoginUser.CompanyID, ProjectID).ToList();
                 var INItemRateComparisonList = data.Where(x => x.LastRate != null).ToList();
@@ -3794,5 +3894,4 @@ namespace GL.Controllers
 
     }
 }
-
 

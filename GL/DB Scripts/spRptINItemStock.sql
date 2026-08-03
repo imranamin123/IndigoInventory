@@ -35,7 +35,8 @@ BEGIN
         SELECT
             pi.ItemID,
             MAX(ISNULL(pi.LastRate, 0)) AS Rate,
-            MAX(ISNULL(pi.OpeningQty, 0)) AS OpeningQty
+            MAX(ISNULL(pi.OpeningQty, 0)) AS OpeningQty,
+            MAX(ISNULL(pi.QtyInHand, 0)) AS QtyInHand
         FROM INProjectItem pi
         WHERE pi.ProjectID = @ProjectID
           AND (@ItemID IS NULL OR pi.ItemID = @ItemID)
@@ -369,28 +370,67 @@ BEGIN
             ========================================================
         */
 
+        /*
+            If this item has no recorded movement at all in GRN/SIN/
+            SRN/Transfer (the recomputed closing qty is 0) but the
+            maintained INProjectItem.QtyInHand balance is non-zero,
+            fall back to that balance -- there is no transaction
+            history for this report to derive a quantity from.
+        */
+
         (
-            ISNULL(pi.OpeningQty, 0)
+            CASE
+                WHEN
+                (
+                    ISNULL(pi.OpeningQty, 0)
 
-            + ISNULL(grn.OpeningQty, 0)
+                    + ISNULL(grn.OpeningQty, 0)
 
-            - ISNULL(sin.OpeningQty, 0)
+                    - ISNULL(sin.OpeningQty, 0)
 
-            + ISNULL(srn.OpeningQty, 0)
+                    + ISNULL(srn.OpeningQty, 0)
 
-            + ISNULL(ti.OpeningQty, 0)
+                    + ISNULL(ti.OpeningQty, 0)
 
-            - ISNULL(to1.OpeningQty, 0)
+                    - ISNULL(to1.OpeningQty, 0)
 
-            + ISNULL(grn.ReceivedQty, 0)
+                    + ISNULL(grn.ReceivedQty, 0)
 
-            + ISNULL(srn.ReturnQty, 0)
+                    + ISNULL(srn.ReturnQty, 0)
 
-            + ISNULL(ti.TransferQty, 0)
+                    + ISNULL(ti.TransferQty, 0)
 
-            - ISNULL(to1.TransferQty, 0)
+                    - ISNULL(to1.TransferQty, 0)
 
-            - ISNULL(sin.IssuedQty, 0)
+                    - ISNULL(sin.IssuedQty, 0)
+                ) = 0
+                AND ISNULL(pi.QtyInHand, 0) <> 0
+                THEN ISNULL(pi.QtyInHand, 0)
+                ELSE
+                (
+                    ISNULL(pi.OpeningQty, 0)
+
+                    + ISNULL(grn.OpeningQty, 0)
+
+                    - ISNULL(sin.OpeningQty, 0)
+
+                    + ISNULL(srn.OpeningQty, 0)
+
+                    + ISNULL(ti.OpeningQty, 0)
+
+                    - ISNULL(to1.OpeningQty, 0)
+
+                    + ISNULL(grn.ReceivedQty, 0)
+
+                    + ISNULL(srn.ReturnQty, 0)
+
+                    + ISNULL(ti.TransferQty, 0)
+
+                    - ISNULL(to1.TransferQty, 0)
+
+                    - ISNULL(sin.IssuedQty, 0)
+                )
+            END
         )
 
         AS ClosingQty,
@@ -403,27 +443,58 @@ BEGIN
         */
 
         (
-            ISNULL(pi.OpeningQty, 0)
+            CASE
+                WHEN
+                (
+                    ISNULL(pi.OpeningQty, 0)
 
-            + ISNULL(grn.OpeningQty, 0)
+                    + ISNULL(grn.OpeningQty, 0)
 
-            - ISNULL(sin.OpeningQty, 0)
+                    - ISNULL(sin.OpeningQty, 0)
 
-            + ISNULL(srn.OpeningQty, 0)
+                    + ISNULL(srn.OpeningQty, 0)
 
-            + ISNULL(ti.OpeningQty, 0)
+                    + ISNULL(ti.OpeningQty, 0)
 
-            - ISNULL(to1.OpeningQty, 0)
+                    - ISNULL(to1.OpeningQty, 0)
 
-            + ISNULL(grn.ReceivedQty, 0)
+                    + ISNULL(grn.ReceivedQty, 0)
 
-            + ISNULL(srn.ReturnQty, 0)
+                    + ISNULL(srn.ReturnQty, 0)
 
-            + ISNULL(ti.TransferQty, 0)
+                    + ISNULL(ti.TransferQty, 0)
 
-            - ISNULL(to1.TransferQty, 0)
+                    - ISNULL(to1.TransferQty, 0)
 
-            - ISNULL(sin.IssuedQty, 0)
+                    - ISNULL(sin.IssuedQty, 0)
+                ) = 0
+                AND ISNULL(pi.QtyInHand, 0) <> 0
+                THEN ISNULL(pi.QtyInHand, 0)
+                ELSE
+                (
+                    ISNULL(pi.OpeningQty, 0)
+
+                    + ISNULL(grn.OpeningQty, 0)
+
+                    - ISNULL(sin.OpeningQty, 0)
+
+                    + ISNULL(srn.OpeningQty, 0)
+
+                    + ISNULL(ti.OpeningQty, 0)
+
+                    - ISNULL(to1.OpeningQty, 0)
+
+                    + ISNULL(grn.ReceivedQty, 0)
+
+                    + ISNULL(srn.ReturnQty, 0)
+
+                    + ISNULL(ti.TransferQty, 0)
+
+                    - ISNULL(to1.TransferQty, 0)
+
+                    - ISNULL(sin.IssuedQty, 0)
+                )
+            END
         )
 
         * ISNULL(pi.Rate, 0)
@@ -487,6 +558,13 @@ BEGIN
     /*
         ============================================================
         Remove completely zero-stock records
+
+        NOTE: also keep the row if the maintained INProjectItem
+        balance (pi.QtyInHand) is non-zero, even when this report's
+        own recomputed movement for the selected date range nets to
+        zero -- otherwise items with real on-hand stock disappear
+        from the report purely because none of their movement fell
+        inside @FromDate/@ToDate.
         ============================================================
     */
 
@@ -517,6 +595,8 @@ BEGIN
             ISNULL(ti.TransferQty, 0)
             - ISNULL(to1.TransferQty, 0)
         ) = 0
+
+        AND ISNULL(pi.QtyInHand, 0) = 0
 
     );
 

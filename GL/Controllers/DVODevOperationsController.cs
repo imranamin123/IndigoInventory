@@ -23,6 +23,10 @@ namespace GL.Controllers
             {
                 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 ViewBag.Projects = new DALDropdowns().DVProjectsList(1);
                 ViewBag.Units = new List<DVUnit>();
@@ -45,6 +49,10 @@ namespace GL.Controllers
             {
                 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new DVOBillingViewModel();
 
 
@@ -65,6 +73,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DVOBillingViewModel model = new DVOBillingViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
  
@@ -106,6 +118,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
 
                 GL.Models.response res = new GL.Models.response();  
 

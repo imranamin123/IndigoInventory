@@ -23,6 +23,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new APVendorViewModel();
                 model.APVendorList = new DALAPAccountsPayable().APVendorList(LoginUser.CompanyID);
 
@@ -43,6 +47,10 @@ namespace GL.Controllers
             {
                 APVendorViewModel model = new APVendorViewModel();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 ViewBag.APVendorCategories = dalDropdowns.GetAPVendorCategoryDropdown(LoginUser.CompanyID).OrderBy(x => x.APVendorCategoryName).ToList();
                 if (id != null || id > 0)
@@ -79,6 +87,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
 
                 DALAPAccountsPayable dal = new DALAPAccountsPayable();

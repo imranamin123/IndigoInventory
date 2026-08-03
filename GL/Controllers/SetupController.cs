@@ -30,6 +30,10 @@ namespace GL.Controllers
             {               
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new APCompanyViewModel();
                 model.CompanyList = new DALSetup().CompanyList();
 
@@ -53,6 +57,10 @@ namespace GL.Controllers
             {
                 var model = new APCompanyViewModel();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 if (id != null || id > 0)
                 {
                     model.Company = new DALSetup().CompanyGet(id.Value);
@@ -86,6 +94,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
                 //if (Company.CompanyID == 0)
                 //{
@@ -117,6 +129,10 @@ namespace GL.Controllers
             {
                 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 int companyID = 0;
                 FiscalYearSetupViewModel model = new FiscalYearSetupViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
@@ -170,6 +186,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 FiscalYearSetupViewModel model = new FiscalYearSetupViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 DALSetup dalSetup = new DALSetup();
@@ -238,6 +258,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
                 DALSetup dal = new DALSetup();
 
@@ -284,6 +308,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 SecUserViewModel model = new SecUserViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
 
@@ -309,6 +337,10 @@ namespace GL.Controllers
         public ActionResult SecUserSearchList(SearchModel search)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+            if (LoginUser == null)
+            {
+                return RedirectToAction("Login", "Security");
+            }
             SecUserViewModel model = new SecUserViewModel();
             if (LoginUser.RoleID == 1 && search.CompanyID == null)
             {
@@ -333,6 +365,10 @@ namespace GL.Controllers
                 SecUserViewModel model = new SecUserViewModel();
                 DALDropdowns dalDropdowns = new DALDropdowns();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
 
                 if (id != null || id > 0)
                 {
@@ -385,6 +421,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
                 DALSetup dal = new DALSetup();
 
@@ -427,6 +467,10 @@ namespace GL.Controllers
                 DALDropdowns dal = new DALDropdowns();
                 response res = new response();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 if (LoginUser.RoleID != 1)
                     CompanyID = LoginUser.CompanyID;
 
@@ -483,6 +527,10 @@ namespace GL.Controllers
             {
 
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new INProjectViewModel();
                 model.INProjectList = new DALSetup().INProjectList();
 
@@ -500,6 +548,10 @@ namespace GL.Controllers
             {
                 var model = new INProjectViewModel();
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 if (id != null || id > 0)
                 {
                     model.INProject = new DALSetup().INProjectGet(id.Value);
@@ -542,6 +594,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
                 //if (INProject.INProjectID == 0)
                 //{

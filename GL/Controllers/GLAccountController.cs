@@ -20,6 +20,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new GLAccountViewModel();
                 model.GLAccountList = new DALGLAccount().GLAccountList(LoginUser.CompanyID);
                 return View(model);
@@ -68,6 +72,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 response res = new response();
                 if (GLAccount.GLAccountID == 0)
                 {

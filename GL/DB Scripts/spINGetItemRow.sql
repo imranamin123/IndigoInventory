@@ -19,21 +19,20 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	SELECT 
-		i.ItemID, 
+	SELECT
+		i.ItemID,
 		p.LastRate,
-		p.QtyInHand,
+		ISNULL(p.QtyInHand, 0) AS QtyInHand,
 
 		u.Name 'Unit',
 		s.Name 'Size'
 
-	FROM INItem i 
-	INNER JOIN INProjectItem p ON i.ItemID = p.ItemID 
+	FROM INItem i
+	LEFT JOIN INProjectItem p ON i.ItemID = p.ItemID AND p.ProjectID = @ProjectID
 	INNER JOIN INUnitOfMeasurement u ON i.UOMID = u.UOMID
 	LEFT JOIN INSize s ON i.SizeID = s.SizeID
 	WHERE
-		i.ItemID = @ItemID AND
-		p.ProjectID = @ProjectID
+		i.ItemID = @ItemID
 END
 
 go

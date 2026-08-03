@@ -18,6 +18,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return RedirectToAction("Login", "Security");
+                }
                 var model = new VoucherTypeViewModel();
                 model.VoucherTypeList = new DALVoucherType().VoucherTypeList();
                 return View(model);
@@ -66,6 +70,10 @@ namespace GL.Controllers
             try
             {
                 var LoginUser = (spLoginUser_Result)Session["LoginUser"];
+                if (LoginUser == null)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Session expired. Please login again." }, JsonRequestBehavior.AllowGet);
+                }
                 Response res = new Response();
                 if (VoucherType.VoucherTypeID == 0)
                 {

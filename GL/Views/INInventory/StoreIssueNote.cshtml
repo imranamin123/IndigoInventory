@@ -684,10 +684,12 @@
                 debugger;
                 $.post("/INInventory/INStoreIssueNotePost", { id: StoreIssueNoteID }).done(function (res) {
 
-                    if (res = true) {
+                    if (res.status) {
                         alert('Record Posted');
                         $('#btnPost').css("visibility", 'hidden');
                         window.location.reload();
+                    } else {
+                        alert(res.resMessage);
                     }
 
                 }).fail(function (ex) {
