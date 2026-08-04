@@ -701,9 +701,8 @@
                 $(currentRow).find("#ApprovedQty").val("");
 
                 $.get("/INInventory/GetINGRNItemRow", { ItemID: itemID, RequestDetailID: requestDetailID }).done(function (res) {
-                    if (res != "") {
 
-                        debugger;
+                    if (res != null && res.Unit != undefined) {
 
                         $(currentRow).find("#Unit").val(res.Unit);
                         $(currentRow).find("#Size").val(res.Size);
@@ -721,9 +720,12 @@
 
                         }
                     }
+                    else {
+                        alert("This item is not set up for this project. Please ask an admin to add it under Project Items before receiving it.");
+                    }
 
                 }).fail(function (ex) {
-                    alert(ex.responseText);
+                    alert(ex.responseText != "" ? ex.responseText : "Failed to load item details. Please try again.");
 
                 }).always(function () {
 
@@ -865,6 +867,11 @@
 
             if ($("#ProjectID").val() == "") {
                 $("#spnProjectIDError").show();
+                valid = false;
+            }
+
+            if ($("#APVendorID").val() == "" || $("#APVendorID").val() == "0") {
+                $("#spnAPVendorIDError").show();
                 valid = false;
             }
 

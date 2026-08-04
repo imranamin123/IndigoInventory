@@ -1068,6 +1068,13 @@ namespace GL.Controllers
             try
             {
                 var ItemGRNRow = new DALInventory().GetINGRNItemRow(ItemID, RequestDetailID);
+                if (ItemGRNRow == null)
+                {
+                    // JsonResult writes zero bytes to the response body when Data is null, which
+                    // makes jQuery's JSON parsing fail client-side with an empty error message.
+                    // Returning an explicit empty object keeps the body non-empty either way.
+                    return Json(new { }, JsonRequestBehavior.AllowGet);
+                }
                 return Json(ItemGRNRow, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -1106,6 +1113,12 @@ namespace GL.Controllers
                 GL.Models.response res = new GL.Models.response();
                 var dal = new DALInventory();
                 bool result = false;
+
+                if (INGoodsReceiptNote.APVendorID == null || INGoodsReceiptNote.APVendorID == 0)
+                {
+                    return Json(new GL.Models.response { status = false, resMessage = "Please select vendor." }, JsonRequestBehavior.AllowGet);
+                }
+
                 if (INGoodsReceiptNote.GoodsReceiptNoteID == 0)
                 {
                     INGoodsReceiptNote.CompanyID = LoginUser.CompanyID;
