@@ -1165,7 +1165,7 @@ namespace GL.DAL
                     {
                         var itemInfo = db.INItems.Where(x => x.ItemID == item.ItemID).FirstOrDefault();
                         string itemName = itemInfo != null ? itemInfo.Description : ("Item #" + item.ItemID);
-                        throw new InvalidOperationException($"Cannot post: '{itemName}' has only {available} in stock, but {issuing} is being issued.");
+                        throw new InvalidOperationException($"[DIAG server={Environment.MachineName} db={db.Database.Connection.DataSource}/{db.Database.Connection.Database} proj={StoreIssueNote.ProjectID} item={item.ItemID} at={DateTime.Now:HH:mm:ss}] Cannot post: '{itemName}' has only {available} in stock, but {issuing} is being issued.");
                     }
                 }
 
