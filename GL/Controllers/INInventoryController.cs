@@ -1475,10 +1475,9 @@ namespace GL.Controllers
                 }
 
                 GL.Models.response res = new GL.Models.response();
-                bool result = false;
                 DALInventory dal = new DALInventory();
 
-                dal.StoreIssueNotePost(id);
+                bool result = dal.StoreIssueNotePost(id);
 
                 if (result == true)
                 {

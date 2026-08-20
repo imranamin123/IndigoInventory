@@ -31,7 +31,7 @@ BEGIN
               INNER JOIN INItem i ON pd.ItemID = i.ItemID
               INNER JOIN INUnitOfMeasurement u ON i.UOMID = u.UOMID
               LEFT JOIN INSize s ON i.SizeID = s.SizeID
-              LEFT JOIN INProjectItem p ON p.ItemID = i.ItemID AND p.ProjectID = pr.ProjectID
+              LEFT JOIN  INProjectItem p ON p.ItemID = i.ItemID AND p.ProjectID = pr.ProjectID
     WHERE
         pd.RequestDetailID = @RequestDetailID
         AND i.ItemID = @ItemID

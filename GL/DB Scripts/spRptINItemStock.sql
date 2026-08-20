@@ -491,14 +491,13 @@ BEGIN
 
     /*
         ============================================================
-        Remove completely zero-stock records
+        Remove rows with no positive activity
 
-        NOTE: also keep the row if the maintained INProjectItem
-        balance (pi.QtyInHand) is non-zero, even when this report's
-        own recomputed movement for the selected date range nets to
-        zero -- otherwise items with real on-hand stock disappear
-        from the report purely because none of their movement fell
-        inside @FromDate/@ToDate.
+        Excludes the row only when Opening, GRN (received), SIN
+        (issued), SRN (returned), Transfer (net), and Closing are
+        ALL zero or negative -- i.e. nothing positive happened and
+        there's nothing positive on hand. A row is kept as soon as
+        any one of those is > 0.
         ============================================================
     */
 
@@ -516,23 +515,96 @@ BEGIN
             + ISNULL(ti.OpeningQty, 0)
 
             - ISNULL(to1.OpeningQty, 0)
-        ) = 0
+        ) <= 0
 
-        AND ISNULL(grn.ReceivedQty, 0) = 0
+        AND ISNULL(grn.ReceivedQty, 0) <= 0
 
-        AND ISNULL(sin.IssuedQty, 0) = 0
+        AND ISNULL(sin.IssuedQty, 0) <= 0
 
-        AND ISNULL(srn.ReturnQty, 0) = 0
+        AND ISNULL(srn.ReturnQty, 0) <= 0
 
         AND
         (
             ISNULL(ti.TransferQty, 0)
             - ISNULL(to1.TransferQty, 0)
-        ) = 0
+        ) <= 0
 
-        AND ISNULL(pi.QtyInHand, 0) = 0
+        AND
+        (
+            ISNULL(pi.OpeningQty, 0)
 
-    );
+            + ISNULL(grn.OpeningQty, 0)
+
+            - ISNULL(sin.OpeningQty, 0)
+
+            + ISNULL(srn.OpeningQty, 0)
+
+            + ISNULL(ti.OpeningQty, 0)
+
+            - ISNULL(to1.OpeningQty, 0)
+
+            + ISNULL(grn.ReceivedQty, 0)
+
+            + ISNULL(srn.ReturnQty, 0)
+
+            + ISNULL(ti.TransferQty, 0)
+
+            - ISNULL(to1.TransferQty, 0)
+
+            - ISNULL(sin.IssuedQty, 0)
+        ) <= 0
+
+    )
+
+    /*
+        ============================================================
+        Exclude rows with a negative Opening or Closing quantity
+        entirely -- these represent posted issues/transfers that
+        exceed posted receipts (over-consumption or a receiving
+        document stuck unposted), not something this report can
+        meaningfully display as a quantity.
+        ============================================================
+    */
+
+    AND
+    (
+        ISNULL(pi.OpeningQty, 0)
+
+        + ISNULL(grn.OpeningQty, 0)
+
+        - ISNULL(sin.OpeningQty, 0)
+
+        + ISNULL(srn.OpeningQty, 0)
+
+        + ISNULL(ti.OpeningQty, 0)
+
+        - ISNULL(to1.OpeningQty, 0)
+    ) >= 0
+
+    AND
+    (
+        ISNULL(pi.OpeningQty, 0)
+
+        + ISNULL(grn.OpeningQty, 0)
+
+        - ISNULL(sin.OpeningQty, 0)
+
+        + ISNULL(srn.OpeningQty, 0)
+
+        + ISNULL(ti.OpeningQty, 0)
+
+        - ISNULL(to1.OpeningQty, 0)
+
+        + ISNULL(grn.ReceivedQty, 0)
+
+        + ISNULL(srn.ReturnQty, 0)
+
+        + ISNULL(ti.TransferQty, 0)
+
+        - ISNULL(to1.TransferQty, 0)
+
+        - ISNULL(sin.IssuedQty, 0)
+    ) >= 0;
 
 END
 GO

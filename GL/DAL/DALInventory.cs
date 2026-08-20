@@ -1110,6 +1110,40 @@ namespace GL.DAL
             }
         }
 
+        // Computes real stock on hand from posted transaction history (Opening + GRN - SIN + SRN + TransferIn - TransferOut),
+        // the same formula the Stock Report and the SIN item dropdown use. INProjectItem.QtyInHand is a cached running
+        // total that only started being maintained by GRN/SIN/SRN/Transfer posting on 1-Jul-2026, so it reads 0 (or drifts)
+        // for items whose stock came from postings before that date; the cached field must not be used to gate posting.
+        private decimal GetAvailableQty(int? projectID, long? itemID)
+        {
+            decimal opening = db.INProjectItems
+                .Where(x => x.ProjectID == projectID && x.ItemID == itemID)
+                .Select(x => (decimal?)x.OpeningQty)
+                .FirstOrDefault().GetValueOrDefault(0);
+
+            decimal received = db.INGoodsReceiptNoteDetails
+                .Where(d => d.ItemID == itemID && d.INGoodsReceiptNote.ProjectID == projectID && d.INGoodsReceiptNote.IsPosted == true)
+                .Sum(d => (decimal?)d.ReceivedQty).GetValueOrDefault(0);
+
+            decimal issued = db.INStoreIssueNoteDetails
+                .Where(d => d.ItemID == itemID && d.INStoreIssueNote.ProjectID == projectID && d.INStoreIssueNote.IsPosted == true)
+                .Sum(d => (decimal?)d.IssuedQty).GetValueOrDefault(0);
+
+            decimal returned = db.INStoreReturnNoteDetails
+                .Where(d => d.ItemID == itemID && d.INStoreReturnNote.ProjectID == projectID && d.INStoreReturnNote.IsPosted == true)
+                .Sum(d => (decimal?)d.ReturnQty).GetValueOrDefault(0);
+
+            decimal transferIn = db.INStoreTransferNoteDetails
+                .Where(d => d.ItemID == itemID && d.INStoreTransferNote.ToProjectID == projectID && d.INStoreTransferNote.ReceivedByID != null)
+                .Sum(d => (decimal?)d.TransferQty).GetValueOrDefault(0);
+
+            decimal transferOut = db.INStoreTransferNoteDetails
+                .Where(d => d.ItemID == itemID && d.INStoreTransferNote.FromProjectID == projectID && d.INStoreTransferNote.ReceivedByID != null)
+                .Sum(d => (decimal?)d.TransferQty).GetValueOrDefault(0);
+
+            return opening + received - issued + returned + transferIn - transferOut;
+        }
+
         public bool StoreIssueNotePost(long id)
         {
             try
@@ -1125,8 +1159,7 @@ namespace GL.DAL
                 // so posting never drives QtyInHand (and the Stock Report) negative.
                 foreach (var item in INStoreIssueNoteDetails)
                 {
-                    var projectItem = db.INProjectItems.Where(x => x.ItemID == item.ItemID && x.ProjectID == StoreIssueNote.ProjectID).FirstOrDefault();
-                    decimal available = projectItem != null ? projectItem.QtyInHand.GetValueOrDefault(0) : 0;
+                    decimal available = GetAvailableQty(StoreIssueNote.ProjectID, item.ItemID);
                     decimal issuing = item.IssuedQty.GetValueOrDefault(0);
                     if (issuing > available)
                     {
@@ -1254,8 +1287,7 @@ namespace GL.DAL
                     // QtyInHand (and the Stock Report) can go negative.
                     if (storeIssueNote != null && storeIssueNote.IsPosted == true && delta > 0)
                     {
-                        var projectItemCheck = db.INProjectItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID && x.ProjectID == storeIssueNote.ProjectID).FirstOrDefault();
-                        decimal available = projectItemCheck != null ? projectItemCheck.QtyInHand.GetValueOrDefault(0) : 0;
+                        decimal available = GetAvailableQty(storeIssueNote.ProjectID, INStoreIssueNoteDetail.ItemID);
                         if (delta > available)
                         {
                             var itemInfo = db.INItems.Where(x => x.ItemID == INStoreIssueNoteDetail.ItemID).FirstOrDefault();
