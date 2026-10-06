@@ -23,6 +23,9 @@ namespace GL.EF
         public int APVendorID { get; set; }
         public string APVendorCode { get; set; }
         public string APVendorName { get; set; }
+        public Nullable<System.DateTime> CreatedAt { get; set; }
+        public Nullable<int> CreatedBy { get; set; }
+        public Nullable<int> CompanyID { get; set; }
         public Nullable<int> APVendorCategoryID { get; set; }
         public string ContactPerson { get; set; }
         public string ContactNumber { get; set; }
@@ -30,11 +33,8 @@ namespace GL.EF
         public string Address { get; set; }
         public string BankDetails { get; set; }
         public Nullable<bool> OnHold { get; set; }
-        public Nullable<System.DateTime> CreatedAt { get; set; }
-        public Nullable<int> CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedAt { get; set; }
         public Nullable<int> ModifiedBy { get; set; }
-        public Nullable<int> CompanyID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<APInvoice> APInvoices { get; set; }

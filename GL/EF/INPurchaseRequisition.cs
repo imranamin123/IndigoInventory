@@ -31,9 +31,9 @@ namespace GL.EF
         public Nullable<System.DateTime> SubmitedAtKPO { get; set; }
         public Nullable<int> SubmitedByMD { get; set; }
         public Nullable<System.DateTime> SubmitedAtMD { get; set; }
+        public Nullable<int> RequestTypeID { get; set; }
         public Nullable<int> CancelledBy { get; set; }
         public Nullable<System.DateTime> CancelledAt { get; set; }
-        public Nullable<int> RequestTypeID { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public Nullable<int> CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedAt { get; set; }

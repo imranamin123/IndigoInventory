@@ -36,7 +36,6 @@
         <EntityTypeShape EntityType="GLModel.DVUnitType" Width="1.5" PointX="10.75" PointY="8.375" IsExpanded="true" />
         <EntityTypeShape EntityType="GLModel.FiscalYearSetup" Width="1.5" PointX="11" PointY="19" IsExpanded="true" />
         <EntityTypeShape EntityType="GLModel.Gender" Width="1.5" PointX="15.25" PointY="7.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="GLModel.GLAccount" Width="1.5" PointX="11" PointY="22.375" IsExpanded="true" />
         <EntityTypeShape EntityType="GLModel.GLCostCenterDetail" Width="1.5" PointX="23.75" PointY="6.25" IsExpanded="true" />
         <EntityTypeShape EntityType="GLModel.GLCostCenterMaster" Width="1.5" PointX="4.75" PointY="25.25" IsExpanded="true" />
         <EntityTypeShape EntityType="GLModel.GLGroup" Width="1.5" PointX="23.75" PointY="20.25" IsExpanded="true" />
@@ -60,7 +59,6 @@
         <EntityTypeShape EntityType="GLModel.VoucherType" Width="1.5" PointX="11" PointY="30.5" IsExpanded="true" />
         <AssociationConnector Association="GLModel.FK_APInvoiceDetail_APInvoice" ManuallyRouted="false" />
         <AssociationConnector Association="GLModel.FK_FiscalYearSetup_Company" ManuallyRouted="false" />
-        <AssociationConnector Association="GLModel.FK_GLAccount_Company" ManuallyRouted="false" />
         <AssociationConnector Association="GLModel.FK_GLVoucher_Company" ManuallyRouted="false" />
         <AssociationConnector Association="GLModel.FK_VoucherType_Company" ManuallyRouted="false" />
         <AssociationConnector Association="GLModel.FK_DVApplicant_DVApplicationForm" ManuallyRouted="false" />
@@ -90,34 +88,34 @@
         <AssociationConnector Association="GLModel.FK_INStoreTransferNoteDetail_INStoreTransferNote" />
         <EntityTypeShape EntityType="GLModel.APVendorCategory" Width="1.5" PointX="5.5" PointY="29.5" />
         <EntityTypeShape EntityType="GLModel.INPOStatu" Width="1.5" PointX="5.375" PointY="0.75" />
-        <EntityTypeShape EntityType="GLModel.INGoodsReceiptNoteDetail" Width="1.5" PointX="5.25" PointY="8.375" />
-        <EntityTypeShape EntityType="GLModel.INGoodsReceiptNote" Width="1.5" PointX="0.75" PointY="12" />
-        <AssociationConnector Association="GLModel.FK_INGoodsReceiptNoteDetail_INGoodsReceiptNote" />
-        <EntityTypeShape EntityType="GLModel.APVendor" Width="1.5" PointX="7.75" PointY="4.25" />
-        <AssociationConnector Association="GLModel.FK_APInvoice_APVendor" />
         <EntityTypeShape EntityType="GLModel.INPurchaseOrderDetail" Width="1.5" PointX="27.375" PointY="8.75" />
-        <EntityTypeShape EntityType="GLModel.INItem" Width="1.5" PointX="3" PointY="5.625" />
+        <EntityTypeShape EntityType="GLModel.INPORevertHistory" Width="1.5" PointX="28.375" PointY="0.75" />
+        <EntityTypeShape EntityType="GLModel.INStoreReturnNote" Width="1.5" PointX="19.625" PointY="29.5" />
+        <EntityTypeShape EntityType="GLModel.INStoreReturnNoteDetail" Width="1.5" PointX="27.875" PointY="13.625" />
+        <AssociationConnector Association="GLModel.FK_INStoreReturnNote_INProject" />
+        <AssociationConnector Association="GLModel.FK_INStoreReturnNoteDetail_INStoreReturnNote" />
+        <EntityTypeShape EntityType="GLModel.INSize" Width="1.5" PointX="1.125" PointY="29.5" />
+        <EntityTypeShape EntityType="GLModel.INUnitOfMeasurement" Width="1.5" PointX="0.75" PointY="25.875" />
+        <EntityTypeShape EntityType="GLModel.INPurchaseOrder" Width="1.5" PointX="26.375" PointY="25.75" />
+        <EntityTypeShape EntityType="GLModel.APVendor" Width="1.5" PointX="7.75" PointY="5.125" />
+        <AssociationConnector Association="GLModel.FK_APInvoice_APVendor" />
+        <EntityTypeShape EntityType="GLModel.INGoodsReceiptNoteDetail" Width="1.5" PointX="5.25" PointY="8.875" />
+        <EntityTypeShape EntityType="GLModel.GLAccount" Width="1.5" PointX="11" PointY="34.25" />
+        <AssociationConnector Association="GLModel.FK_GLAccount_Company" />
+        <EntityTypeShape EntityType="GLModel.INGoodsReceiptNote" Width="1.5" PointX="28.375" PointY="18" />
+        <AssociationConnector Association="GLModel.FK_INGoodsReceiptNoteDetail_INGoodsReceiptNote" />
+        <EntityTypeShape EntityType="GLModel.INItem" Width="1.5" PointX="3" PointY="5.5" />
         <AssociationConnector Association="GLModel.FK_INItem_INCategory" />
         <AssociationConnector Association="GLModel.FK_INGoodsReceiptNoteDetail_INItem" />
         <AssociationConnector Association="GLModel.FK_INItem_INGroup" />
         <AssociationConnector Association="GLModel.FK_INProjectItem_INItem" />
         <AssociationConnector Association="GLModel.FK_INPurchaseReauisitionDetail_INItem" />
         <AssociationConnector Association="GLModel.FK_INStoreIssueNoteDetail_INItem" />
-        <AssociationConnector Association="GLModel.FK_INStoreTransferNoteDetail_INItem" />
-        <EntityTypeShape EntityType="GLModel.INPORevertHistory" Width="1.5" PointX="28.375" PointY="0.75" />
-        <EntityTypeShape EntityType="GLModel.INStoreReturnNote" Width="1.5" PointX="19.625" PointY="29.5" />
-        <EntityTypeShape EntityType="GLModel.INStoreReturnNoteDetail" Width="1.5" PointX="27.875" PointY="13.625" />
         <AssociationConnector Association="GLModel.FK_INStoreReturnNoteDetail_INItem" />
-        <AssociationConnector Association="GLModel.FK_INStoreReturnNote_INProject" />
-        <AssociationConnector Association="GLModel.FK_INStoreReturnNoteDetail_INStoreReturnNote" />
-        <EntityTypeShape EntityType="GLModel.INSize" Width="1.5" PointX="1.125" PointY="29.5" />
-        <EntityTypeShape EntityType="GLModel.INUnitOfMeasurement" Width="1.5" PointX="0.75" PointY="25.875" />
-        <AssociationConnector Association="GLModel.FK_INItem_INSize" />
-        <AssociationConnector Association="GLModel.FK_INItem_INUnitOfMeasurement" />
+        <AssociationConnector Association="GLModel.FK_INStoreTransferNoteDetail_INItem" />
         <EntityTypeShape EntityType="GLModel.INPurchaseRequisition" Width="1.5" PointX="6" PointY="19" />
         <AssociationConnector Association="GLModel.FK_INPurchaseReauisitionDetail_INPurchaseRequisition" />
         <AssociationConnector Association="GLModel.FK_INPurchaseRequisition_INRequestType" />
-        <EntityTypeShape EntityType="GLModel.INPurchaseOrder" Width="1.5" PointX="26.375" PointY="25.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

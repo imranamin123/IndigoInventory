@@ -14,17 +14,8 @@ namespace GL.EF
     
     public partial class INSize
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public INSize()
-        {
-            this.INItems = new HashSet<INItem>();
-        }
-    
         public int SizeID { get; set; }
         public string Name { get; set; }
         public Nullable<int> CompanyID { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<INItem> INItems { get; set; }
     }
 }

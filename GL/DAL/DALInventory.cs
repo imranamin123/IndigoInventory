@@ -271,7 +271,7 @@ namespace GL.DAL
 
                 if (user != null && user.RoleID == 5) UserID = null;
 
-                List<spINPurchaseRequisitionSearchList_Result> INPurchaseRequisitionGetSearchList = db.spINPurchaseRequisitionSearchList(CompanyID, UserID, RequestDateFrom, RequestDateTo, ItemID).ToList();
+                List<spINPurchaseRequisitionSearchList_Result> INPurchaseRequisitionGetSearchList = db.spINPurchaseRequisitionSearchList(CompanyID, UserID, RequestDateFrom, RequestDateTo,ItemID).ToList();
 
                 return INPurchaseRequisitionGetSearchList;
             }

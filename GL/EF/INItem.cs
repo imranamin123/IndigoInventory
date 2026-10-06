@@ -21,8 +21,8 @@ namespace GL.EF
             this.INProjectItems = new HashSet<INProjectItem>();
             this.INPurchaseRequisitionDetails = new HashSet<INPurchaseRequisitionDetail>();
             this.INStoreIssueNoteDetails = new HashSet<INStoreIssueNoteDetail>();
-            this.INStoreTransferNoteDetails = new HashSet<INStoreTransferNoteDetail>();
             this.INStoreReturnNoteDetails = new HashSet<INStoreReturnNoteDetail>();
+            this.INStoreTransferNoteDetails = new HashSet<INStoreTransferNoteDetail>();
         }
     
         public long ItemID { get; set; }
@@ -50,10 +50,8 @@ namespace GL.EF
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<INStoreIssueNoteDetail> INStoreIssueNoteDetails { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<INStoreTransferNoteDetail> INStoreTransferNoteDetails { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<INStoreReturnNoteDetail> INStoreReturnNoteDetails { get; set; }
-        public virtual INSize INSize { get; set; }
-        public virtual INUnitOfMeasurement INUnitOfMeasurement { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<INStoreTransferNoteDetail> INStoreTransferNoteDetails { get; set; }
     }
 }

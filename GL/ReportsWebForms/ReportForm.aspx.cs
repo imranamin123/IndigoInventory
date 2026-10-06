@@ -137,6 +137,83 @@ namespace GL.ReportsWebForms
 
         }
 
+        /// <summary>
+        /// Records this print in INDocumentPrintLog (via spINRegisterDocumentPrint), returns the
+        /// computed print status ("Original" / "Reprinted n" / "Copy n") and the printing user's name
+        /// via out parameters, and also stamps them onto every row of the report datasource so they
+        /// are available both as database fields and (via <see cref="TrySetReportParameter"/>) as
+        /// Crystal parameter fields for use in formula fields. Every call counts as one print.
+        /// </summary>
+        /// <param name="rows">The report datasource list; each item must expose string PrintStatus and PrintedBy.</param>
+        /// <param name="docType">"PR", "PO" or "GRN".</param>
+        /// <param name="docId">The document id (RequestID / PurchaseOrderID / GoodsReceiptNoteID).</param>
+        /// <param name="printStatus">Out: the computed status label.</param>
+        /// <param name="printedBy">Out: the name of the user who generated the printout.</param>
+        private void ApplyPrintTracking<T>(System.Collections.Generic.List<T> rows, string docType, long docId,
+                                           out string printStatus, out string printedBy)
+        {
+            int userId = 0;
+            var login = Session["LoginUser"] as spLoginUser_Result;
+            if (login != null)
+                userId = login.UsersID;
+            else if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                try { userId = new global::DAL.DALSecurity().GetUserID(User.Identity.Name); }
+                catch { userId = 0; }
+            }
+
+            printStatus = "Original";
+            printedBy = login != null ? login.Name : "(unknown)";
+            try
+            {
+                var info = db.spINRegisterDocumentPrint(docType, docId, userId).FirstOrDefault();
+                if (info != null)
+                {
+                    printStatus = info.PrintLabel;
+                    printedBy = info.PrintedByName;
+                }
+            }
+            catch
+            {
+                // Never block a printout because print-history logging failed.
+            }
+
+            if (rows != null)
+            {
+                var pStatus = typeof(T).GetProperty("PrintStatus");
+                var pBy = typeof(T).GetProperty("PrintedBy");
+                foreach (var r in rows)
+                {
+                    if (pStatus != null) pStatus.SetValue(r, printStatus);
+                    if (pBy != null) pBy.SetValue(r, printedBy);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pushes a value into a Crystal report parameter, but only if the report actually declares a
+        /// parameter with that name. Lets call sites supply PrintStatus / PrintedBy for formula fields
+        /// without breaking reports whose .rpt has not been updated with those parameters yet.
+        /// </summary>
+        private static void TrySetReportParameter(ReportDocument report, string name, string value)
+        {
+            try
+            {
+                foreach (CrystalDecisions.CrystalReports.Engine.ParameterFieldDefinition pf in report.DataDefinition.ParameterFields)
+                {
+                    if (string.Equals(pf.Name, name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        report.SetParameterValue(name, value ?? string.Empty);
+                        return;
+                    }
+                }
+            }
+            catch
+            {
+                // Best-effort only.
+            }
+        }
+
         private void INPurchaseRequisitionReportDownload()
         {
             var report = new rptINPurchaseRequisition();
@@ -177,8 +254,14 @@ namespace GL.ReportsWebForms
 
                 }).ToList();
 
-
+            string printStatus, printedBy;
+            ApplyPrintTracking(PurchaseRequisitionData, "PR", RequestID.Value, out printStatus, out printedBy);
             report.SetDataSource(PurchaseRequisitionData);
+
+            // Crystal resets parameter values on SetDataSource, so push them afterwards.
+            TrySetReportParameter(report, "PrintStatus", printStatus);
+            TrySetReportParameter(report, "PrintedBy", printedBy);
+
             ReportDocument reportDocument = report;
 
             // Export to a memory stream
@@ -447,8 +530,14 @@ namespace GL.ReportsWebForms
 
             reportQueue.Enqueue(report);
 
-
+            string printStatus, printedBy;
+            ApplyPrintTracking(PurchaseOrderData, "PO", PurchaseOrderID.Value, out printStatus, out printedBy);
             report.SetDataSource(PurchaseOrderData);
+
+            // Crystal resets parameter values on SetDataSource, so push them afterwards.
+            TrySetReportParameter(report, "PrintStatus", printStatus);
+            TrySetReportParameter(report, "PrintedBy", printedBy);
+
             ReportDocument reportDocument = report;
 
             // Export to a memory stream
@@ -525,8 +614,14 @@ namespace GL.ReportsWebForms
 
             reportQueue.Enqueue(report);
 
-
+            string printStatus, printedBy;
+            ApplyPrintTracking(GoodsReceiptNoteData, "GRN", GoodsReceiptNoteID.Value, out printStatus, out printedBy);
             report.SetDataSource(GoodsReceiptNoteData);
+
+            // Crystal resets parameter values on SetDataSource, so push them afterwards.
+            TrySetReportParameter(report, "PrintStatus", printStatus);
+            TrySetReportParameter(report, "PrintedBy", printedBy);
+
             ReportDocument reportDocument = report;
 
             // Export to a memory stream
@@ -600,7 +695,14 @@ namespace GL.ReportsWebForms
 
             reportQueue.Enqueue(report);
 
+            string printStatus, printedBy;
+            ApplyPrintTracking(PurchaseRequisitionData, "PR", RequestID.Value, out printStatus, out printedBy);
             report.SetDataSource(PurchaseRequisitionData);
+
+            // Crystal resets parameter values on SetDataSource, so push them afterwards.
+            TrySetReportParameter(report, "PrintStatus", printStatus);
+            TrySetReportParameter(report, "PrintedBy", printedBy);
+
             CrystalReportViewer1.ReportSource = report;
             CrystalReportViewer1.RefreshReport();
         }
@@ -649,7 +751,14 @@ namespace GL.ReportsWebForms
 
             reportQueue.Enqueue(report);
 
+            string printStatus, printedBy;
+            ApplyPrintTracking(GoodsReceiptNoteData, "GRN", GoodsReceiptNoteID.Value, out printStatus, out printedBy);
             report.SetDataSource(GoodsReceiptNoteData);
+
+            // Crystal resets parameter values on SetDataSource, so push them afterwards.
+            TrySetReportParameter(report, "PrintStatus", printStatus);
+            TrySetReportParameter(report, "PrintedBy", printedBy);
+
             CrystalReportViewer1.ReportSource = report;
             CrystalReportViewer1.RefreshReport();
         }

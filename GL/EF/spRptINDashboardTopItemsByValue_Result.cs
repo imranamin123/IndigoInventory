@@ -10,7 +10,7 @@
 namespace GL.EF
 {
     using System;
-
+    
     public partial class spRptINDashboardTopItemsByValue_Result
     {
         public long ItemID { get; set; }

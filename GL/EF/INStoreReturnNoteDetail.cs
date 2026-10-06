@@ -24,7 +24,7 @@ namespace GL.EF
         public Nullable<System.DateTime> ModifiedAt { get; set; }
         public Nullable<int> CompanyID { get; set; }
     
-        public virtual INItem INItem { get; set; }
         public virtual INStoreReturnNote INStoreReturnNote { get; set; }
+        public virtual INItem INItem { get; set; }
     }
 }

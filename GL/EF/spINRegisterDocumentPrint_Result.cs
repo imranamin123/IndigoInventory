@@ -10,12 +10,10 @@
 namespace GL.EF
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class INUnitOfMeasurement
+    public partial class spINRegisterDocumentPrint_Result
     {
-        public int UOMID { get; set; }
-        public string Name { get; set; }
-        public Nullable<int> CompanyID { get; set; }
+        public string PrintLabel { get; set; }
+        public string PrintedByName { get; set; }
     }
 }

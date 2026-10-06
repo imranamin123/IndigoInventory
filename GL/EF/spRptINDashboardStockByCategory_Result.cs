@@ -10,7 +10,7 @@
 namespace GL.EF
 {
     using System;
-
+    
     public partial class spRptINDashboardStockByCategory_Result
     {
         public int CategoryID { get; set; }

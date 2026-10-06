@@ -58,7 +58,6 @@ namespace GL.EF
         public virtual DbSet<DVUnitType> DVUnitTypes { get; set; }
         public virtual DbSet<FiscalYearSetup> FiscalYearSetups { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
-        public virtual DbSet<GLAccount> GLAccounts { get; set; }
         public virtual DbSet<GLCostCenterDetail> GLCostCenterDetails { get; set; }
         public virtual DbSet<GLCostCenterMaster> GLCostCenterMasters { get; set; }
         public virtual DbSet<GLGroup> GLGroups { get; set; }
@@ -89,18 +88,19 @@ namespace GL.EF
         public virtual DbSet<INStoreTransferNoteDetail> INStoreTransferNoteDetails { get; set; }
         public virtual DbSet<APVendorCategory> APVendorCategories { get; set; }
         public virtual DbSet<INPOStatu> INPOStatus { get; set; }
-        public virtual DbSet<INGoodsReceiptNoteDetail> INGoodsReceiptNoteDetails { get; set; }
-        public virtual DbSet<INGoodsReceiptNote> INGoodsReceiptNotes { get; set; }
-        public virtual DbSet<APVendor> APVendors { get; set; }
         public virtual DbSet<INPurchaseOrderDetail> INPurchaseOrderDetails { get; set; }
-        public virtual DbSet<INItem> INItems { get; set; }
         public virtual DbSet<INPORevertHistory> INPORevertHistories { get; set; }
         public virtual DbSet<INStoreReturnNote> INStoreReturnNotes { get; set; }
         public virtual DbSet<INStoreReturnNoteDetail> INStoreReturnNoteDetails { get; set; }
         public virtual DbSet<INSize> INSizes { get; set; }
         public virtual DbSet<INUnitOfMeasurement> INUnitOfMeasurements { get; set; }
-        public virtual DbSet<INPurchaseRequisition> INPurchaseRequisitions { get; set; }
         public virtual DbSet<INPurchaseOrder> INPurchaseOrders { get; set; }
+        public virtual DbSet<APVendor> APVendors { get; set; }
+        public virtual DbSet<INGoodsReceiptNoteDetail> INGoodsReceiptNoteDetails { get; set; }
+        public virtual DbSet<GLAccount> GLAccounts { get; set; }
+        public virtual DbSet<INGoodsReceiptNote> INGoodsReceiptNotes { get; set; }
+        public virtual DbSet<INItem> INItems { get; set; }
+        public virtual DbSet<INPurchaseRequisition> INPurchaseRequisitions { get; set; }
     
         [DbFunction("GLEntities", "fnDVFirstApplicantData")]
         public virtual IQueryable<fnDVFirstApplicantData_Result> fnDVFirstApplicantData(Nullable<int> applicationFormID)
@@ -628,23 +628,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptDVReceipt_Result>("spRptDVReceipt", dVReceiptIDParameter);
         }
     
-        public virtual ObjectResult<spRptDVUnitLedger_Result> spRptDVUnitLedger(Nullable<int> projectID, Nullable<int> unitID, Nullable<System.DateTime> toDate)
-        {
-            var projectIDParameter = projectID.HasValue ?
-                new ObjectParameter("ProjectID", projectID) :
-                new ObjectParameter("ProjectID", typeof(int));
-    
-            var unitIDParameter = unitID.HasValue ?
-                new ObjectParameter("UnitID", unitID) :
-                new ObjectParameter("UnitID", typeof(int));
-    
-            var toDateParameter = toDate.HasValue ?
-                new ObjectParameter("ToDate", toDate) :
-                new ObjectParameter("ToDate", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptDVUnitLedger_Result>("spRptDVUnitLedger", projectIDParameter, unitIDParameter, toDateParameter);
-        }
-    
         public virtual ObjectResult<spRptGeneralLedger_Result> spRptGeneralLedger(Nullable<int> companyID, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string startGLAccountNo, string endGLAccountNo)
         {
             var companyIDParameter = companyID.HasValue ?
@@ -728,23 +711,6 @@ namespace GL.EF
                 new ObjectParameter("StatusDate", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptMemberPaymentPlanStatus_AllUnits_Result>("spRptMemberPaymentPlanStatus_AllUnits", projectIDParameter, statusDateParameter);
-        }
-    
-        public virtual ObjectResult<spRptMemberPaymentPlanStatus_PaymentPlan_Result> spRptMemberPaymentPlanStatus_PaymentPlan(Nullable<int> projectID, Nullable<int> unitID, Nullable<System.DateTime> statusDate)
-        {
-            var projectIDParameter = projectID.HasValue ?
-                new ObjectParameter("ProjectID", projectID) :
-                new ObjectParameter("ProjectID", typeof(int));
-    
-            var unitIDParameter = unitID.HasValue ?
-                new ObjectParameter("UnitID", unitID) :
-                new ObjectParameter("UnitID", typeof(int));
-    
-            var statusDateParameter = statusDate.HasValue ?
-                new ObjectParameter("StatusDate", statusDate) :
-                new ObjectParameter("StatusDate", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptMemberPaymentPlanStatus_PaymentPlan_Result>("spRptMemberPaymentPlanStatus_PaymentPlan", projectIDParameter, unitIDParameter, statusDateParameter);
         }
     
         public virtual ObjectResult<spRptMemberPaymentPlanStatus_Receipt_Result> spRptMemberPaymentPlanStatus_Receipt(Nullable<int> projectID, Nullable<int> unitID)
@@ -1047,56 +1013,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spBKBankTransSearchList1_Result>("spBKBankTransSearchList1", companyIDParameter);
         }
     
-        public virtual ObjectResult<spINGoodsReceiptNoteSearchList_Result> spINGoodsReceiptNoteSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate, Nullable<long> itemID)
-        {
-            var companyIDParameter = companyID.HasValue ?
-                new ObjectParameter("CompanyID", companyID) :
-                new ObjectParameter("CompanyID", typeof(int));
-    
-            var userIDParameter = userID.HasValue ?
-                new ObjectParameter("UserID", userID) :
-                new ObjectParameter("UserID", typeof(int));
-    
-            var fromDateParameter = fromDate.HasValue ?
-                new ObjectParameter("FromDate", fromDate) :
-                new ObjectParameter("FromDate", typeof(System.DateTime));
-    
-            var toDateParameter = toDate.HasValue ?
-                new ObjectParameter("ToDate", toDate) :
-                new ObjectParameter("ToDate", typeof(System.DateTime));
-    
-            var itemIDParameter = itemID.HasValue ?
-                new ObjectParameter("ItemID", itemID) :
-                new ObjectParameter("ItemID", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGoodsReceiptNoteSearchList_Result>("spINGoodsReceiptNoteSearchList", companyIDParameter, userIDParameter, fromDateParameter, toDateParameter, itemIDParameter);
-        }
-    
-        public virtual ObjectResult<spINStoreIssueNoteSearchList_Result> spINStoreIssueNoteSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate, Nullable<long> itemID)
-        {
-            var companyIDParameter = companyID.HasValue ?
-                new ObjectParameter("CompanyID", companyID) :
-                new ObjectParameter("CompanyID", typeof(int));
-    
-            var userIDParameter = userID.HasValue ?
-                new ObjectParameter("UserID", userID) :
-                new ObjectParameter("UserID", typeof(int));
-    
-            var fromDateParameter = fromDate.HasValue ?
-                new ObjectParameter("FromDate", fromDate) :
-                new ObjectParameter("FromDate", typeof(System.DateTime));
-    
-            var toDateParameter = toDate.HasValue ?
-                new ObjectParameter("ToDate", toDate) :
-                new ObjectParameter("ToDate", typeof(System.DateTime));
-    
-            var itemIDParameter = itemID.HasValue ?
-                new ObjectParameter("ItemID", itemID) :
-                new ObjectParameter("ItemID", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINStoreIssueNoteSearchList_Result>("spINStoreIssueNoteSearchList", companyIDParameter, userIDParameter, fromDateParameter, toDateParameter, itemIDParameter);
-        }
-    
         public virtual ObjectResult<spINStoreReturnNoteSearchList_Result> spINStoreReturnNoteSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate, Nullable<long> itemID)
         {
             var companyIDParameter = companyID.HasValue ?
@@ -1253,31 +1169,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPendingPOList_Result>("spRptINPendingPOList", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
         }
     
-        public virtual ObjectResult<spINPurchaseRequisitionSearchList_Result> spINPurchaseRequisitionSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> requestDateFrom, Nullable<System.DateTime> requestDateTo, Nullable<long> itemID)
-        {
-            var companyIDParameter = companyID.HasValue ?
-                new ObjectParameter("CompanyID", companyID) :
-                new ObjectParameter("CompanyID", typeof(int));
-    
-            var userIDParameter = userID.HasValue ?
-                new ObjectParameter("UserID", userID) :
-                new ObjectParameter("UserID", typeof(int));
-    
-            var requestDateFromParameter = requestDateFrom.HasValue ?
-                new ObjectParameter("RequestDateFrom", requestDateFrom) :
-                new ObjectParameter("RequestDateFrom", typeof(System.DateTime));
-    
-            var requestDateToParameter = requestDateTo.HasValue ?
-                new ObjectParameter("RequestDateTo", requestDateTo) :
-                new ObjectParameter("RequestDateTo", typeof(System.DateTime));
-    
-            var itemIDParameter = itemID.HasValue ?
-                new ObjectParameter("ItemID", itemID) :
-                new ObjectParameter("ItemID", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINPurchaseRequisitionSearchList_Result>("spINPurchaseRequisitionSearchList", companyIDParameter, userIDParameter, requestDateFromParameter, requestDateToParameter, itemIDParameter);
-        }
-    
         public virtual ObjectResult<spINPurchaseOrderSearchList_Result> spINPurchaseOrderSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate, Nullable<long> itemID)
         {
             var companyIDParameter = companyID.HasValue ?
@@ -1365,6 +1256,23 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPurchaseOrder_Result>("spRptINPurchaseOrder", purchaseOrderIDParameter);
         }
     
+        public virtual ObjectResult<spINRegisterDocumentPrint_Result> spINRegisterDocumentPrint(string documentType, Nullable<long> documentID, Nullable<int> printedByUserID)
+        {
+            var documentTypeParameter = documentType != null ?
+                new ObjectParameter("DocumentType", documentType) :
+                new ObjectParameter("DocumentType", typeof(string));
+    
+            var documentIDParameter = documentID.HasValue ?
+                new ObjectParameter("DocumentID", documentID) :
+                new ObjectParameter("DocumentID", typeof(long));
+    
+            var printedByUserIDParameter = printedByUserID.HasValue ?
+                new ObjectParameter("PrintedByUserID", printedByUserID) :
+                new ObjectParameter("PrintedByUserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINRegisterDocumentPrint_Result>("spINRegisterDocumentPrint", documentTypeParameter, documentIDParameter, printedByUserIDParameter);
+        }
+    
         public virtual ObjectResult<spRptINGoodsReceiptNoteHistoryData_Result> spRptINGoodsReceiptNoteHistoryData(Nullable<int> projectID, Nullable<long> itemID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
         {
             var projectIDParameter = projectID.HasValue ?
@@ -1410,115 +1318,225 @@ namespace GL.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINItemStock_Result>("spRptINItemStock", companyIDParameter, projectIDParameter, itemIDParameter, fromDateParameter, toDateParameter);
         }
-
+    
         public virtual ObjectResult<spRptINDashboardKPI_Result> spRptINDashboardKPI(Nullable<int> companyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
         {
             var companyIDParameter = companyID.HasValue ?
                 new ObjectParameter("CompanyID", companyID) :
                 new ObjectParameter("CompanyID", typeof(int));
-
+    
             var projectIDParameter = projectID.HasValue ?
                 new ObjectParameter("ProjectID", projectID) :
                 new ObjectParameter("ProjectID", typeof(int));
-
+    
             var fromDateParameter = fromDate.HasValue ?
                 new ObjectParameter("FromDate", fromDate) :
                 new ObjectParameter("FromDate", typeof(System.DateTime));
-
+    
             var toDateParameter = toDate.HasValue ?
                 new ObjectParameter("ToDate", toDate) :
                 new ObjectParameter("ToDate", typeof(System.DateTime));
-
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINDashboardKPI_Result>("spRptINDashboardKPI", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
         }
-
+    
         public virtual ObjectResult<spRptINDashboardStockByCategory_Result> spRptINDashboardStockByCategory(Nullable<int> companyID, Nullable<int> projectID)
         {
             var companyIDParameter = companyID.HasValue ?
                 new ObjectParameter("CompanyID", companyID) :
                 new ObjectParameter("CompanyID", typeof(int));
-
+    
             var projectIDParameter = projectID.HasValue ?
                 new ObjectParameter("ProjectID", projectID) :
                 new ObjectParameter("ProjectID", typeof(int));
-
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINDashboardStockByCategory_Result>("spRptINDashboardStockByCategory", companyIDParameter, projectIDParameter);
         }
-
+    
         public virtual ObjectResult<spRptINDashboardTopItemsByValue_Result> spRptINDashboardTopItemsByValue(Nullable<int> companyID, Nullable<int> projectID, Nullable<int> topN)
         {
             var companyIDParameter = companyID.HasValue ?
                 new ObjectParameter("CompanyID", companyID) :
                 new ObjectParameter("CompanyID", typeof(int));
-
+    
             var projectIDParameter = projectID.HasValue ?
                 new ObjectParameter("ProjectID", projectID) :
                 new ObjectParameter("ProjectID", typeof(int));
-
+    
             var topNParameter = topN.HasValue ?
                 new ObjectParameter("TopN", topN) :
                 new ObjectParameter("TopN", typeof(int));
-
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINDashboardTopItemsByValue_Result>("spRptINDashboardTopItemsByValue", companyIDParameter, projectIDParameter, topNParameter);
         }
-
+    
         public virtual ObjectResult<spRptINDashboardItemMovement_Result> spRptINDashboardItemMovement(Nullable<int> companyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
         {
             var companyIDParameter = companyID.HasValue ?
                 new ObjectParameter("CompanyID", companyID) :
                 new ObjectParameter("CompanyID", typeof(int));
-
+    
             var projectIDParameter = projectID.HasValue ?
                 new ObjectParameter("ProjectID", projectID) :
                 new ObjectParameter("ProjectID", typeof(int));
-
+    
             var fromDateParameter = fromDate.HasValue ?
                 new ObjectParameter("FromDate", fromDate) :
                 new ObjectParameter("FromDate", typeof(System.DateTime));
-
+    
             var toDateParameter = toDate.HasValue ?
                 new ObjectParameter("ToDate", toDate) :
                 new ObjectParameter("ToDate", typeof(System.DateTime));
-
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINDashboardItemMovement_Result>("spRptINDashboardItemMovement", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
         }
-
+    
         public virtual ObjectResult<spRptINDashboardMonthlyTrend_Result> spRptINDashboardMonthlyTrend(Nullable<int> companyID, Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
         {
             var companyIDParameter = companyID.HasValue ?
                 new ObjectParameter("CompanyID", companyID) :
                 new ObjectParameter("CompanyID", typeof(int));
-
+    
             var projectIDParameter = projectID.HasValue ?
                 new ObjectParameter("ProjectID", projectID) :
                 new ObjectParameter("ProjectID", typeof(int));
-
+    
             var fromDateParameter = fromDate.HasValue ?
                 new ObjectParameter("FromDate", fromDate) :
                 new ObjectParameter("FromDate", typeof(System.DateTime));
-
+    
             var toDateParameter = toDate.HasValue ?
                 new ObjectParameter("ToDate", toDate) :
                 new ObjectParameter("ToDate", typeof(System.DateTime));
-
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINDashboardMonthlyTrend_Result>("spRptINDashboardMonthlyTrend", companyIDParameter, projectIDParameter, fromDateParameter, toDateParameter);
         }
-
+    
         public virtual ObjectResult<spRptINDashboardRecentActivity_Result> spRptINDashboardRecentActivity(Nullable<int> companyID, Nullable<int> projectID, Nullable<int> topN)
         {
             var companyIDParameter = companyID.HasValue ?
                 new ObjectParameter("CompanyID", companyID) :
                 new ObjectParameter("CompanyID", typeof(int));
-
+    
             var projectIDParameter = projectID.HasValue ?
                 new ObjectParameter("ProjectID", projectID) :
                 new ObjectParameter("ProjectID", typeof(int));
-
+    
             var topNParameter = topN.HasValue ?
                 new ObjectParameter("TopN", topN) :
                 new ObjectParameter("TopN", typeof(int));
-
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINDashboardRecentActivity_Result>("spRptINDashboardRecentActivity", companyIDParameter, projectIDParameter, topNParameter);
         }
+    
+        public virtual ObjectResult<spRptDVUnitLedger_Result> spRptDVUnitLedger(Nullable<int> projectID, Nullable<int> unitID, Nullable<System.DateTime> toDate)
+        {
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            var unitIDParameter = unitID.HasValue ?
+                new ObjectParameter("UnitID", unitID) :
+                new ObjectParameter("UnitID", typeof(int));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptDVUnitLedger_Result>("spRptDVUnitLedger", projectIDParameter, unitIDParameter, toDateParameter);
+        }
+    
+        public virtual ObjectResult<spRptMemberPaymentPlanStatus_PaymentPlan_Result> spRptMemberPaymentPlanStatus_PaymentPlan(Nullable<int> projectID, Nullable<int> unitID, Nullable<System.DateTime> statusDate)
+        {
+            var projectIDParameter = projectID.HasValue ?
+                new ObjectParameter("ProjectID", projectID) :
+                new ObjectParameter("ProjectID", typeof(int));
+    
+            var unitIDParameter = unitID.HasValue ?
+                new ObjectParameter("UnitID", unitID) :
+                new ObjectParameter("UnitID", typeof(int));
+    
+            var statusDateParameter = statusDate.HasValue ?
+                new ObjectParameter("StatusDate", statusDate) :
+                new ObjectParameter("StatusDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptMemberPaymentPlanStatus_PaymentPlan_Result>("spRptMemberPaymentPlanStatus_PaymentPlan", projectIDParameter, unitIDParameter, statusDateParameter);
+        }
+    
+        public virtual ObjectResult<spINGoodsReceiptNoteSearchList_Result> spINGoodsReceiptNoteSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate, Nullable<long> itemID)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            var itemIDParameter = itemID.HasValue ?
+                new ObjectParameter("ItemID", itemID) :
+                new ObjectParameter("ItemID", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINGoodsReceiptNoteSearchList_Result>("spINGoodsReceiptNoteSearchList", companyIDParameter, userIDParameter, fromDateParameter, toDateParameter, itemIDParameter);
+        }
+    
+        public virtual ObjectResult<spINPurchaseRequisitionSearchList_Result> spINPurchaseRequisitionSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> requestDateFrom, Nullable<System.DateTime> requestDateTo, Nullable<long> itemID)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            var requestDateFromParameter = requestDateFrom.HasValue ?
+                new ObjectParameter("RequestDateFrom", requestDateFrom) :
+                new ObjectParameter("RequestDateFrom", typeof(System.DateTime));
+    
+            var requestDateToParameter = requestDateTo.HasValue ?
+                new ObjectParameter("RequestDateTo", requestDateTo) :
+                new ObjectParameter("RequestDateTo", typeof(System.DateTime));
+    
+            var itemIDParameter = itemID.HasValue ?
+                new ObjectParameter("ItemID", itemID) :
+                new ObjectParameter("ItemID", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINPurchaseRequisitionSearchList_Result>("spINPurchaseRequisitionSearchList", companyIDParameter, userIDParameter, requestDateFromParameter, requestDateToParameter, itemIDParameter);
+        }
+    
+        public virtual ObjectResult<spINStoreIssueNoteSearchList_Result> spINStoreIssueNoteSearchList(Nullable<int> companyID, Nullable<int> userID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate, Nullable<long> itemID)
+        {
+            var companyIDParameter = companyID.HasValue ?
+                new ObjectParameter("CompanyID", companyID) :
+                new ObjectParameter("CompanyID", typeof(int));
+    
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            var fromDateParameter = fromDate.HasValue ?
+                new ObjectParameter("FromDate", fromDate) :
+                new ObjectParameter("FromDate", typeof(System.DateTime));
+    
+            var toDateParameter = toDate.HasValue ?
+                new ObjectParameter("ToDate", toDate) :
+                new ObjectParameter("ToDate", typeof(System.DateTime));
+    
+            var itemIDParameter = itemID.HasValue ?
+                new ObjectParameter("ItemID", itemID) :
+                new ObjectParameter("ItemID", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINStoreIssueNoteSearchList_Result>("spINStoreIssueNoteSearchList", companyIDParameter, userIDParameter, fromDateParameter, toDateParameter, itemIDParameter);
+        }
+    
     }
 }

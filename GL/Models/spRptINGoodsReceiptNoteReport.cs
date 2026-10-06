@@ -35,5 +35,9 @@ namespace GL.Models
         public string dRemarks { get; set; }
         public string Company { get; set; }
         public string ReceivedBy { get; set; }
+
+        // Print tracking (populated by ReportForm.aspx.cs before SetDataSource)
+        public string PrintStatus { get; set; }   // "Original" | "Reprinted 1" | "Copy 2" ...
+        public string PrintedBy { get; set; }     // name of the user who generated the printout
     }
 }

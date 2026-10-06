@@ -18,9 +18,9 @@ namespace GL.EF
         public Company()
         {
             this.FiscalYearSetups = new HashSet<FiscalYearSetup>();
-            this.GLAccounts = new HashSet<GLAccount>();
             this.GLVouchers = new HashSet<GLVoucher>();
             this.VoucherTypes = new HashSet<VoucherType>();
+            this.GLAccounts = new HashSet<GLAccount>();
         }
     
         public int CompanyID { get; set; }
@@ -29,10 +29,10 @@ namespace GL.EF
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FiscalYearSetup> FiscalYearSetups { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GLAccount> GLAccounts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GLVoucher> GLVouchers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VoucherType> VoucherTypes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GLAccount> GLAccounts { get; set; }
     }
 }

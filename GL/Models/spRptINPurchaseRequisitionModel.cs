@@ -34,7 +34,9 @@ namespace GL.Models
         public System.DateTime CancelledAt { get; set; }
         public string Cancelled { get; set; }
 
-
+        // Print tracking (populated by ReportForm.aspx.cs before SetDataSource)
+        public string PrintStatus { get; set; }   // "Original" | "Reprinted 1" | "Copy 2" ...
+        public string PrintedBy { get; set; }     // name of the user who generated the printout
 
     }
 }

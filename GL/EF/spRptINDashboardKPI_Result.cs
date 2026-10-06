@@ -10,7 +10,7 @@
 namespace GL.EF
 {
     using System;
-
+    
     public partial class spRptINDashboardKPI_Result
     {
         public int TotalItems { get; set; }

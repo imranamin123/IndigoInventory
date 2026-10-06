@@ -10,7 +10,7 @@
 namespace GL.EF
 {
     using System;
-
+    
     public partial class spRptINDashboardRecentActivity_Result
     {
         public string ActivityType { get; set; }

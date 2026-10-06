@@ -10,7 +10,7 @@
 namespace GL.EF
 {
     using System;
-
+    
     public partial class spRptINDashboardMonthlyTrend_Result
     {
         public System.DateTime PeriodMonth { get; set; }
