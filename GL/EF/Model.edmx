@@ -5523,7 +5523,7 @@
           <Property Type="Decimal" Name="ApprovedQty" Nullable="true" Precision="18" Scale="4" />
           <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Decimal" Name="DiscountedPrice" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="Tax" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="Tax" Nullable="true" Precision="18" Scale="4" />
           <Property Type="Decimal" Name="Amount" Nullable="true" Precision="18" Scale="2" />
           <Property Type="String" Name="Company" Nullable="true" MaxLength="200" />
           <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="200" />
