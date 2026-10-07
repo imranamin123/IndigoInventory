@@ -77,6 +77,9 @@ desired effect
         div:has(> table.tblDetail) { overflow-x: auto; }
         table.tblDetail input.form-control { min-width: 75px; }
         table.tblDetail input[id$="Qty"].form-control { min-width: 95px; }
+        /* the item dropdown keeps its 300px when rows are added, instead of being squeezed */
+        table.tblDetail select.ddl,
+        table.tblDetail .select2-container { min-width: 300px; }
         table.tblDetail input#Size.form-control,
         table.tblDetail input#Amount.form-control { min-width: 110px; }
     </style>
