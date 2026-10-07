@@ -1,12 +1,9 @@
 ﻿@model GL.ViewModels.Inventory.INPurchaseRequisitionViewModel
-@using GL.Common
 
 @{
 
     ViewBag.Title = "Purchase Requisition";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    // saved rows render only their own item; see GL.Common.LazyItemSelect
-    var itemIndex = LazyItemSelect.Index((System.Collections.IEnumerable)ViewBag.INItems);
 
     var RoleID = Model.RoleID;
     var RequestID = Model.INPurchaseRequisition.RequestID;
@@ -172,7 +169,7 @@
 
                                     <td style="width:300px">
                                         <input type="text" class="itemId" value="@item.ItemID" style="display:none;" />
-                                        @Html.LazyItemDropDown(itemIndex, item.ItemID, "form-control showError ddl")
+                                        @Html.DropDownListFor(x => x.INPurchaseRequisitionDetailRows[i].ItemID, new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl", @id = "ItemID" })
                                     </td>
                                     <td>
                                         <input type="text" readonly id="Size" class="form-control" placeholder="" value="@item.Size" />
