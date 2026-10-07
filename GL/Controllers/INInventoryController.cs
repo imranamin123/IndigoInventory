@@ -837,17 +837,13 @@ namespace GL.Controllers
                         string requestDetailID = parts.Length > 0 ? parts[0] : null;
                         string itemID = parts.Length > 1 ? parts[1] : null;
 
-                        foreach (var grn in model.INGoodsReceiptNoteDetailRows)
+                        // add each item once: it used to be added once per matching row, so documents with many
+                        // rows got huge item lists full of repeats (e.g. 169k entries for a 341-row transfer note)
+                        long reqDetailID = Convert.ToInt64(requestDetailID), itmID = Convert.ToInt64(itemID);
+                        if (model.INGoodsReceiptNoteDetailRows.Any(grn => (grn.RequestDetailID == reqDetailID && grn.ItemID == itmID)
+                            || (grn.RequestDetailID != reqDetailID && grn.ItemID != itmID && item.Balance > 0)))
                         {
-                            if (grn.RequestDetailID == Convert.ToInt64(requestDetailID) && grn.ItemID == Convert.ToInt64(itemID))
-                            {
-                                remainingINItems.Add(item);
-
-                            }
-                            if (grn.RequestDetailID != Convert.ToInt64(requestDetailID) && grn.ItemID != Convert.ToInt64(itemID) && item.Balance > 0)
-                            {
-                                remainingINItems.Add(item);
-                            }
+                            remainingINItems.Add(item);
                         }
                     }
                 }
@@ -2002,17 +1998,13 @@ namespace GL.Controllers
                         string requestDetailID = parts.Length > 0 ? parts[0] : null;
                         string itemID = parts.Length > 1 ? parts[1] : null;
 
-                        foreach (var grn in model.INStoreTransferNoteDetailRows)
+                        // add each item once: it used to be added once per matching row, so documents with many
+                        // rows got huge item lists full of repeats (e.g. 169k entries for a 341-row transfer note)
+                        long reqDetailID = Convert.ToInt64(requestDetailID), itmID = Convert.ToInt64(itemID);
+                        if (model.INStoreTransferNoteDetailRows.Any(grn => (grn.RequestDetailID == reqDetailID && grn.ItemID == itmID)
+                            || (grn.RequestDetailID != reqDetailID && grn.ItemID != itmID && item.Balance > 0)))
                         {
-                            if (grn.RequestDetailID == Convert.ToInt64(requestDetailID) && grn.ItemID == Convert.ToInt64(itemID))
-                            {
-                                remainingINItems.Add(item);
-
-                            }
-                            if (grn.RequestDetailID != Convert.ToInt64(requestDetailID) && grn.ItemID != Convert.ToInt64(itemID) && item.Balance > 0)
-                            {
-                                remainingINItems.Add(item);
-                            }
+                            remainingINItems.Add(item);
                         }
                     }
                 }
@@ -2239,17 +2231,13 @@ namespace GL.Controllers
                         string requestDetailID = parts.Length > 0 ? parts[0] : null;
                         string itemID = parts.Length > 1 ? parts[1] : null;
 
-                        foreach (var grn in model.INPurchaseOrderDetailRows)
+                        // add each item once: it used to be added once per matching row, so documents with many
+                        // rows got huge item lists full of repeats (e.g. 169k entries for a 341-row transfer note)
+                        long reqDetailID = Convert.ToInt64(requestDetailID), itmID = Convert.ToInt64(itemID);
+                        if (model.INPurchaseOrderDetailRows.Any(grn => (grn.RequestDetailID == reqDetailID && grn.ItemID == itmID)
+                            || (grn.RequestDetailID != reqDetailID && grn.ItemID != itmID && item.Balance > 0)))
                         {
-                            if (grn.RequestDetailID == Convert.ToInt64(requestDetailID) && grn.ItemID == Convert.ToInt64(itemID))
-                            {
-                                remainingINItems.Add(item);
-
-                            }
-                            if (grn.RequestDetailID != Convert.ToInt64(requestDetailID) && grn.ItemID != Convert.ToInt64(itemID) && item.Balance > 0)
-                            {
-                                remainingINItems.Add(item);
-                            }
+                            remainingINItems.Add(item);
                         }
                     }
                 }
