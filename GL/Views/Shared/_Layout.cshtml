@@ -59,10 +59,26 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="hold-transition skin-blue sidebar-mini">
+@{
+    // input/edit screens get the .input-page styles below: every page except lists, reports and the dashboard
+    var routeAction = Convert.ToString(ViewContext.RouteData.Values["action"]);
+    var routeController = Convert.ToString(ViewContext.RouteData.Values["controller"]);
+    var isInputPage = !routeAction.EndsWith("List") && routeController != "Home" && routeController != "Reports";
+}
+<body class="hold-transition skin-blue sidebar-mini@(isInputPage ? " input-page" : "")">
     <style>
         .menu-closed .main-sidebar { display: none; }
         .menu-closed .content-wrapper { margin: auto; }
+
+        /* Input/edit screens use the full width instead of the 94% boxes from AdminLTE.min.css.
+           Detail tables (.tblDetail) keep small inputs (Size, Unit, VAT...) wide enough to show
+           their values; a wide table scrolls sideways instead of squeezing its columns. */
+        .input-page .box { width: 100%; }
+        div:has(> table.tblDetail) { overflow-x: auto; }
+        table.tblDetail input.form-control { min-width: 75px; }
+        table.tblDetail input[id$="Qty"].form-control { min-width: 95px; }
+        table.tblDetail input#Size.form-control,
+        table.tblDetail input#Amount.form-control { min-width: 110px; }
     </style>
     <script>
         // a page opened from the sidebar menu starts with the menu closed (see common.js)
