@@ -246,3 +246,20 @@ $(document).on("select2:opening", "select.lazy-items", function (e) {
     setTimeout(function () { $select.select2("open"); }, 0);
 });
 
+// Clicking a page in the sidebar menu closes the menu: the next page opens with the sidebar in
+// the same closed state the ☰ button gives (see sidebartoggle above), so ☰ reopens it.
+// The script at the top of <body> in _Layout.cshtml marks such pages with .menu-closed.
+$(document).on("click", ".sidebar-menu .treeview-menu a[href]", function (e) {
+    var href = $(this).attr("href");
+    if (!href || href === "#" || e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2) return;
+    try { sessionStorage.setItem("collapseMenu", "1"); } catch (ex) { }
+});
+
+$(function () {
+    if (!$("body").hasClass("menu-closed")) return;
+    $(".main-sidebar").hide();
+    $(".content-wrapper").css("margin", "auto");
+    $(".main-footer").css("margin-left", "230px");
+    sidebartoggle = true;
+    $("body").removeClass("menu-closed");
+});

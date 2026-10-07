@@ -60,6 +60,19 @@ desired effect
 |---------------------------------------------------------|
 -->
 <body class="hold-transition skin-blue sidebar-mini">
+    <style>
+        .menu-closed .main-sidebar { display: none; }
+        .menu-closed .content-wrapper { margin: auto; }
+    </style>
+    <script>
+        // a page opened from the sidebar menu starts with the menu closed (see common.js)
+        try {
+            if (sessionStorage.getItem("collapseMenu")) {
+                sessionStorage.removeItem("collapseMenu");
+                document.body.classList.add("sidebar-collapse", "menu-closed");
+            }
+        } catch (e) { }
+    </script>
     <div class="loader" id="AjaxLoader" style="display:none;">
         <div class="strip-holder">
             <div class="strip-1"></div>
