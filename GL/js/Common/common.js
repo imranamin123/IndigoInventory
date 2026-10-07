@@ -243,3 +243,20 @@ $(function () {
     sidebartoggle = true;
     $("body").removeClass("menu-closed");
 });
+
+// select2 4.1.0-rc.0 keys each element's data by its id when it has no data-select2-id, so the
+// detail rows sharing id="ItemID" overwrote each other: initialising a row destroyed the previous
+// row's select2, and only the last row kept it. Give every element its own key before init.
+(function ($) {
+    if (!$ || !$.fn.select2) return;
+    var select2 = $.fn.select2, nextId = 0;
+    $.fn.select2 = function (options) {
+        if (typeof options !== "string") {
+            this.each(function () {
+                if (!this.getAttribute("data-select2-id")) this.setAttribute("data-select2-id", "select2-el-" + (++nextId));
+            });
+        }
+        return select2.apply(this, arguments);
+    };
+    $.extend($.fn.select2, select2);
+})(window.jQuery);
