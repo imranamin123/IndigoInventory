@@ -517,6 +517,7 @@ namespace GL.ReportsWebForms
                     GoodsReceiptNoteID=v.GoodsReceiptNoteID,
                     UnitPrice=v.UnitPrice.GetValueOrDefault(0),
                     DiscountedPrice = v.DiscountedPrice.GetValueOrDefault(0),
+                    Tax = v.Tax.GetValueOrDefault(0),
                     VendorAddress = v.VendorAddress,
                     CreatedBy = v.CreatedBy,
                     CreatedAt = v.CreatedAt.GetValueOrDefault(DateTime.Now),

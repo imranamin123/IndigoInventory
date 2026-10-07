@@ -30,6 +30,7 @@ namespace GL.Models
         public decimal FreightCharges { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal DiscountedPrice { get; set; }
+        public decimal Tax { get; set; }
         public decimal Amount { get; set; }
         public string Company { get; set; }
         public string CreatedBy { get; set; }

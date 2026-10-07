@@ -144,6 +144,7 @@
                             <th style="width:150px;" class="align-right"><label>Qty</label></th>
                             <th style="width:150px;" class="align-right"><label>Unit Price</label></th>
                             <th style="width:150px;" class="align-right"><label>Discount Price</label></th>
+                            <th style="width:150px;" class="align-right"><label>Tax %</label></th>
                             <th style="width:150px;" class="align-right"><label>Amount</label></th>
 
                             @if (Model.INPurchaseOrder.ApprovedBy.GetValueOrDefault(0) > 0 && Model.INPurchaseOrder.PurchaseOrderID > 0)
@@ -203,6 +204,10 @@
 
                                     <td>
                                         <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="@item.DiscountedPrice" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" style="text-align:right;" id="Tax" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="@item.Tax" />
                                     </td>
 
                                     <td>
@@ -269,6 +274,10 @@
                             </td>
 
                             <td>
+                                <input type="text" style="text-align:right;" id="Tax" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
+                            </td>
+
+                            <td>
                                 <input type="text" style="text-align:right;" id="Amount" class="form-control decimal" value="" />
                             </td>
 
@@ -285,11 +294,11 @@
                     <tfoot>
 
                         <tr>
-                            <td colspan="6" style="text-align:right;"><label style="font-size:20px;">Freight Charges</label></td>
+                            <td colspan="7" style="text-align:right;"><label style="font-size:20px;">Freight Charges</label></td>
                             <td colspan="2"><input type="text" id="FreightCharges" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="@Model.INPurchaseOrder.FreightCharges" /></td>
                          </tr>
                         <tr>
-                            <td colspan="6" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
+                            <td colspan="7" style="text-align:right;"><label style="font-size:20px;">Total Amount</label></td>
                             <td colspan="2"><input type="text" id="TotalAmount" style="font-size:large; font-weight:bold; background-color:white;" class="form-control number decimal" readonly value="0" /></td>
                         </tr>
 
@@ -386,6 +395,10 @@
             <input type="text" style="text-align:right;" id="DiscountedPrice" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
         </td>
 
+        <td>
+            <input type="text" style="text-align:right;" id="Tax" class="form-control decimal" onblur="calculateTotals();" onchange="hidSubmit();" value="" />
+        </td>
+
 
         <td>
             <input type="text" readonly style="text-align:right;" id="Amount" class="form-control decimal" value="" />
@@ -463,6 +476,7 @@
                         //$(row).find("#RequestedQty").val("");
                         $(row).find("#UnitPrice").val("");
                         $(row).find("#DiscountedPrice").val("");
+                        $(row).find("#Tax").val("");
                         $(row).find("#Amount").val("");
 
 
@@ -497,6 +511,7 @@
                             $(row).find("#Unit").val("");
                             $(row).find("#UnitPrice").val("");
                             $(row).find("#DiscountedPrice").val("");
+                            $(row).find("#Tax").val("");
 
                             //$(row).find("#RequestedQty").val("");
                             $(row).find("#ApprovedQty").val("");
@@ -560,6 +575,7 @@
                 $(currentRow).find("#Size").val("");
                 $(currentRow).find("#UnitPrice").val("");
                 $(currentRow).find("#DiscountedPrices").val("");
+                $(currentRow).find("#Tax").val("");
                 $(currentRow).find("#ApprovedQty").val("");
 
                 $.get("/INInventory/GetINGRNItemRow", { ItemID: itemID, RequestDetailID: requestDetailID }).done(function (res) {
@@ -760,6 +776,7 @@
                         //RequestedQty: $(this).find('#RequestedQty').val(),
                         UnitPrice: $(this).find('#UnitPrice').val(),
                         DiscountedPrice: $(this).find('#DiscountedPrice').val(),
+                        Tax: $(this).find('#Tax').val(),
                         Amount: $(this).find('#Amount').val(),
 
                         //hidden fields
@@ -786,12 +803,15 @@
             $("#tbodyList").find('tr').each(function (index, elem) {
             
                 if ($(this).find('.ddl').val() != null && $(this).find('.ddl').val() != "") {
-
+                    var Tax = 0;
                     var ApprovedQty = $(this).find("#ApprovedQty").val() == '' ? 0 : $(this).find("#ApprovedQty").val();
                     var UnitPrice = $(this).find("#UnitPrice").val() == '' ? 0 : $(this).find("#UnitPrice").val();
                     var DiscountedPrice = $(this).find("#DiscountedPrice").val() == '' ? 0 : $(this).find("#DiscountedPrice").val();
                     var price = (DiscountedPrice == "" || DiscountedPrice == 0) ? UnitPrice : DiscountedPrice;
+                   
+                    var Tax = $(this).find("#Tax").val() == '' ? 0 : $(this).find("#Tax").val();
                     var Amount = parseFloat(ApprovedQty) * parseFloat(price);
+                    Amount = parseFloat((Amount + (Amount * parseFloat(Tax) / 100)).toFixed(2));
                     $(this).find("#Amount").val(Amount);
                     AmountSum += parseFloat(Amount);
                     

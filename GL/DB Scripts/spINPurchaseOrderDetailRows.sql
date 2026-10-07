@@ -27,6 +27,7 @@ BEGIN
 		pod.ApprovedQty,
 		pod.UnitPrice,
 		pod.DiscountedPrice,
+		pod.Tax,
 		pod.Amount,
 		pod.CreatedBy,
 		pod.CreatedAt,

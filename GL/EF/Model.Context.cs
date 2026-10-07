@@ -942,15 +942,6 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spRptINPurchaseRequisitionHistoryData_Result>("spRptINPurchaseRequisitionHistoryData", projectIDParameter, fromDateParameter, toDateParameter);
         }
     
-        public virtual ObjectResult<spINPurchaseOrderDetailRows_Result> spINPurchaseOrderDetailRows(Nullable<int> iNPurchaseOrderID)
-        {
-            var iNPurchaseOrderIDParameter = iNPurchaseOrderID.HasValue ?
-                new ObjectParameter("INPurchaseOrderID", iNPurchaseOrderID) :
-                new ObjectParameter("INPurchaseOrderID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINPurchaseOrderDetailRows_Result>("spINPurchaseOrderDetailRows", iNPurchaseOrderIDParameter);
-        }
-    
         public virtual ObjectResult<spRptINPORevertHistoryData_Result> spRptINPORevertHistoryData(Nullable<int> projectID, Nullable<System.DateTime> fromDate, Nullable<System.DateTime> toDate)
         {
             var projectIDParameter = projectID.HasValue ?
@@ -1538,5 +1529,13 @@ namespace GL.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINStoreIssueNoteSearchList_Result>("spINStoreIssueNoteSearchList", companyIDParameter, userIDParameter, fromDateParameter, toDateParameter, itemIDParameter);
         }
     
+        public virtual ObjectResult<spINPurchaseOrderDetailRows_Result> spINPurchaseOrderDetailRows(Nullable<int> iNPurchaseOrderID)
+        {
+            var iNPurchaseOrderIDParameter = iNPurchaseOrderID.HasValue ?
+                new ObjectParameter("INPurchaseOrderID", iNPurchaseOrderID) :
+                new ObjectParameter("INPurchaseOrderID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spINPurchaseOrderDetailRows_Result>("spINPurchaseOrderDetailRows", iNPurchaseOrderIDParameter);
+        }
     }
 }

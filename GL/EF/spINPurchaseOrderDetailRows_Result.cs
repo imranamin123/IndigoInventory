@@ -24,6 +24,7 @@ namespace GL.EF
         public Nullable<decimal> ApprovedQty { get; set; }
         public Nullable<decimal> UnitPrice { get; set; }
         public Nullable<decimal> DiscountedPrice { get; set; }
+        public Nullable<decimal> Tax { get; set; }
         public Nullable<decimal> Amount { get; set; }
         public Nullable<int> CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
