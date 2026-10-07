@@ -93,15 +93,7 @@
 
 <script>
     $().ready(function () {
-        $('#tblList').DataTable({
-            'order': [[0, "desc"]],
-            'paging': true,
-            'lengthChange': true,
-            'searching': true,
-            'ordering': true,
-            'info': true,
-            'autoWidth': true
-        });
+        // paging, sorting and search are server-side: see serverPagedList() in js/Common/common.js
 
     });
 

@@ -4,6 +4,7 @@ using CrystalDecisions.CrystalReports.TSLV;
 using CrystalDecisions.Shared;
 using CsvHelper;
 using DAL;
+using GL.Common;
 using GL.DAL;
 using GL.EF;
 using GL.Models;
@@ -291,7 +292,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult ItemSearchList(string ItemCode, string Name, int? GroupID)
+        public ActionResult ItemSearchList(string ItemCode, string Name, int? GroupID, ServerPageRequest paging)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -302,6 +303,8 @@ namespace GL.Controllers
 
 
             model.INItemSearchList = new DALInventory().GetINItemSearchList(ItemCode, Name, GroupID);
+            model.INItemSearchList = ServerPaging.Apply(model.INItemSearchList, paging, Response,
+                "ItemID", "ItemCode", "Description", "Group", null);
             return View("_ItemSearchListRows", model);
 
         }
@@ -476,7 +479,7 @@ namespace GL.Controllers
             }
         }
         [HttpPost]
-        public ActionResult PurchaseRequisitionSearchList(DateTime? RequestDateFrom, DateTime? RequestDateTo, long? ItemID)
+        public ActionResult PurchaseRequisitionSearchList(DateTime? RequestDateFrom, DateTime? RequestDateTo, long? ItemID, ServerPageRequest paging)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -494,6 +497,11 @@ namespace GL.Controllers
                 model.INPurchaseRequisitionSearchList = new DALInventory().GetINPurchaseRequisitionSearchList(LoginUser.CompanyID, LoginUser.UsersID, RequestDateFrom, RequestDateTo,ItemID);
             }
             model.RoleID = LoginUser.RoleID;
+            // rows the partial used to hide must be removed before paging, or page counts are wrong
+            model.INPurchaseRequisitionSearchList = model.INPurchaseRequisitionSearchList
+                .Where(x => model.RoleID == 4 || (model.RoleID == 5 && x.SubmitedByKPO > 0)).ToList();
+            model.INPurchaseRequisitionSearchList = ServerPaging.Apply(model.INPurchaseRequisitionSearchList, paging, Response,
+                "RequestID", "ProjectDocumentNo", "Remarks", "RequestDate", "ProjectName", "SubmitedByMD", "CancelledBy", null);
             return View("_PurchaseRequisitionSearchListRows", model);
 
         }
@@ -917,7 +925,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult GoodsReceiptNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, int? Pending=0)
+        public ActionResult GoodsReceiptNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, ServerPageRequest paging, int? Pending=0)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -941,8 +949,8 @@ namespace GL.Controllers
             }
 
             model.RoleID = LoginUser.RoleID;
-
-            
+            model.INGoodsReceiptNoteSearchList = ServerPaging.Apply(model.INGoodsReceiptNoteSearchList, paging, Response,
+                "GoodsReceiptNoteID", "GoodsReceiptNotesDate", "ProjectName", "Remarks", "IsPosted", null);
 
             return View("_GoodsReceiptNoteSearchListRows", model);
 
@@ -1215,7 +1223,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreIssueNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
+        public ActionResult StoreIssueNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, ServerPageRequest paging)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -1226,6 +1234,8 @@ namespace GL.Controllers
 
             model.INStoreIssueNoteSearchList = new DALInventory().GetINStoreIssueNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
             model.RoleID = LoginUser.RoleID;
+            model.INStoreIssueNoteSearchList = ServerPaging.Apply(model.INStoreIssueNoteSearchList, paging, Response,
+                "StoreIssueNoteID", "StoreIssueNoteDate", "ProjectName", "Remarks", "IsPosted", null);
             return View("_StoreIssueNoteSearchListRows", model);
 
         }
@@ -1562,7 +1572,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreReturnNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
+        public ActionResult StoreReturnNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, ServerPageRequest paging)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -1573,6 +1583,8 @@ namespace GL.Controllers
 
             model.INStoreReturnNoteSearchList = new DALInventory().GetINStoreReturnNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID );
             model.RoleID = LoginUser.RoleID;
+            model.INStoreReturnNoteSearchList = ServerPaging.Apply(model.INStoreReturnNoteSearchList, paging, Response,
+                "StoreReturnNoteID", "StoreReturnNoteDate", "ProjectName", "Remarks", "IsPosted", null);
             return View("_StoreReturnNoteSearchListRows", model);
 
         }
@@ -1938,7 +1950,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreTransferNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
+        public ActionResult StoreTransferNoteSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, ServerPageRequest paging)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -1950,6 +1962,8 @@ namespace GL.Controllers
             //model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, LoginUser.UsersID, FromDate, ToDate, ItemID);
             model.INStoreTransferNoteSearchList = new DALInventory().GetINStoreTransferNoteSearchList(LoginUser.CompanyID, null, FromDate, ToDate, ItemID);
             model.RoleID = LoginUser.RoleID;
+            model.INStoreTransferNoteSearchList = ServerPaging.Apply(model.INStoreTransferNoteSearchList, paging, Response,
+                "StoreTransferNoteID", "StoreTransferNoteDate", "ProjectTo", "PrjectFrom", "Remarks", "Approved", "Received", null);
             return View("_StoreTransferNoteSearchListRows", model);
 
         }
@@ -2160,7 +2174,7 @@ namespace GL.Controllers
         }
 
         [HttpPost]
-        public ActionResult PurchaseOrderSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID)
+        public ActionResult PurchaseOrderSearchList(DateTime? FromDate, DateTime? ToDate, long? ItemID, ServerPageRequest paging)
         {
             var LoginUser = (spLoginUser_Result)Session["LoginUser"];
             if (LoginUser == null)
@@ -2181,6 +2195,8 @@ namespace GL.Controllers
             }
             
             model.RoleID = LoginUser.RoleID;
+            model.INPurchaseOrderSearchList = ServerPaging.Apply(model.INPurchaseOrderSearchList, paging, Response,
+                "PurchaseOrderID", "PurchaseOrderDate", "ProjectName", "Remarks", "Approved", "Cancelled", null);
             ViewBag.INItems = new DALDropdowns().INItemsList(LoginUser.CompanyID);
             return View("_PurchaseOrderListRows", model);
         }

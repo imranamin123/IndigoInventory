@@ -154,3 +154,74 @@ function PrintReport(url) {
 
     refreshSession();
 }
+
+// Loads a list partial into `container` and pages, sorts and searches it on the server.
+// The action pages its rows with GL.Common.ServerPaging.Apply and returns the same row
+// partial; later pages keep only that partial's <tr>s, so Razor row markup is reused.
+function serverPagedList(container, url, filters, options) {
+    options = options || {};
+    var order = options.order || [[0, "asc"]];
+    var pageLength = options.pageLength || 10;
+
+    function load(params) {
+        return $.post(url, $.extend({}, filters, params));
+    }
+
+    function count(xhr, header) {
+        return parseInt(xhr.getResponseHeader(header), 10) || 0;
+    }
+
+    load({ PageStart: 0, PageLength: pageLength, PageOrderColumn: order[0][0], PageOrderDir: order[0][1] }).done(function (html, status, xhr) {
+
+        $(container).empty().html(html);
+
+        $(container).find("table").first().DataTable({
+            serverSide: true,
+            processing: true,
+            deferLoading: [count(xhr, "X-Filtered-Count"), count(xhr, "X-Total-Count")],
+            searchDelay: 400,
+            order: order,
+            pageLength: pageLength,
+            paging: true,
+            lengthChange: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            autoWidth: true,
+            columnDefs: options.columnDefs || [{ orderable: false, targets: -1 }],
+            ajax: function (data, callback) {
+                load({
+                    PageDraw: data.draw,
+                    PageStart: data.start,
+                    PageLength: data.length,
+                    PageSearch: data.search.value,
+                    PageOrderColumn: data.order.length ? data.order[0].column : null,
+                    PageOrderDir: data.order.length ? data.order[0].dir : null
+                }).done(function (res, s, x) {
+                    var rows = $("<div>").append($.parseHTML(res)).find("tbody > tr").map(function () {
+                        var cells = $(this).children("td").map(function () { return this.innerHTML; }).get();
+                        cells.sourceRow = this;
+                        return [cells];
+                    }).get();
+                    callback({ draw: data.draw, recordsTotal: count(x, "X-Total-Count"), recordsFiltered: count(x, "X-Filtered-Count"), data: rows });
+                }).fail(function (ex) {
+                    alert(ex.responseText);
+                    callback({ draw: data.draw, recordsTotal: 0, recordsFiltered: 0, data: [] });
+                });
+            },
+            // keep the attributes (styles, classes) the partial put on each <tr>/<td>
+            createdRow: function (row, cells) {
+                var src = cells.sourceRow;
+                if (!src) return;
+                $.each(src.attributes, function () { row.setAttribute(this.name, this.value); });
+                $(src).children("td").each(function (i) {
+                    var td = row.cells[i];
+                    if (td) $.each(this.attributes, function () { td.setAttribute(this.name, this.value); });
+                });
+            }
+        });
+
+    }).fail(function (ex) {
+        alert(ex.responseText);
+    });
+}

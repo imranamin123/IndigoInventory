@@ -336,6 +336,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\Enumeration.cs" />
     <Compile Include="Common\PublicVariables.cs" />
+    <Compile Include="Common\ServerPaging.cs" />
     <Compile Include="Controllers\APAccountsPayableController.cs" />
     <Compile Include="Controllers\BKBankTransController.cs" />
     <Compile Include="Controllers\BSBankStatementController.cs" />
