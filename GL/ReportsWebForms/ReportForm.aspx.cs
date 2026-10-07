@@ -518,6 +518,9 @@ namespace GL.ReportsWebForms
                     UnitPrice=v.UnitPrice.GetValueOrDefault(0),
                     DiscountedPrice = v.DiscountedPrice.GetValueOrDefault(0),
                     Tax = v.Tax.GetValueOrDefault(0),
+                    TaxAmount = Math.Round(v.ApprovedQty.GetValueOrDefault(0)
+                        * (v.DiscountedPrice.GetValueOrDefault(0) != 0 ? v.DiscountedPrice.GetValueOrDefault(0) : v.UnitPrice.GetValueOrDefault(0))
+                        * v.Tax.GetValueOrDefault(0) / 100, 2),
                     VendorAddress = v.VendorAddress,
                     CreatedBy = v.CreatedBy,
                     CreatedAt = v.CreatedAt.GetValueOrDefault(DateTime.Now),

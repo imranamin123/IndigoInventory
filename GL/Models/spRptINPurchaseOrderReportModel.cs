@@ -31,6 +31,7 @@ namespace GL.Models
         public decimal UnitPrice { get; set; }
         public decimal DiscountedPrice { get; set; }
         public decimal Tax { get; set; }
+        public decimal TaxAmount { get; set; }   // Qty x price x Tax%, as on the PO screen; sum it for the footer total
         public decimal Amount { get; set; }
         public string Company { get; set; }
         public string CreatedBy { get; set; }
