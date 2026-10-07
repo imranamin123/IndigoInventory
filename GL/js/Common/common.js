@@ -225,3 +225,24 @@ function serverPagedList(container, url, filters, options) {
         alert(ex.responseText);
     });
 }
+
+// Item dropdowns rendered by Html.LazyItemDropDown (GL.Common.LazyItemSelect) hold only their
+// selected item. The first time one is opened, copy in the full list from the page's hidden
+// #lazyItemSource, or else its row template, keeping the current selection.
+$(document).on("select2:opening", "select.lazy-items", function (e) {
+    var $select = $(this);
+    var $source = $("#lazyItemSource");
+    if (!$source.length) $source = $(".trRowTemplate select.ddl").first();
+    $select.removeClass("lazy-items");
+    if (!$source.length) return;
+
+    e.preventDefault();
+    var value = $select.val();
+    var $current = $select.find("option:selected").clone();
+    $select.html($source.html());
+    if (value && !$select.find("option").filter(function () { return this.value === value; }).length)
+        $select.append($current);
+    $select.val(value);
+    setTimeout(function () { $select.select2("open"); }, 0);
+});
+

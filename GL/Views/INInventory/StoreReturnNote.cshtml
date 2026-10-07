@@ -1,9 +1,12 @@
 ﻿@model GL.ViewModels.Inventory.INStoreReturnNoteViewModel
+@using GL.Common
 
 @{
 
     ViewBag.Title = "Store Return";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    // saved rows render only their own item; see GL.Common.LazyItemSelect
+    var itemIndex = LazyItemSelect.Index((System.Collections.IEnumerable)ViewBag.INItems);
     var a = Model;
 
     //var RoleID = Model.RoleID;
@@ -154,7 +157,7 @@
 
                                     <td style="width:300px">
                                         <input type="text" class="itemId" value="@item.ItemID" style="display:none;" />
-                                        @Html.DropDownListFor(x => x.INStoreReturnNoteDetailRows[i].ItemID, new SelectList(ViewBag.INItems, "ItemID", "Description"), "-- Select --", new { @class = "form-control showError  ddl item-list", @id = "ItemID" })
+                                        @Html.LazyItemDropDown(itemIndex, item.ItemID, "form-control showError ddl item-list")
                                     </td>
 
                                     <td>

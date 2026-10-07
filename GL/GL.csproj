@@ -335,6 +335,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\Enumeration.cs" />
+    <Compile Include="Common\LazyItemSelect.cs" />
     <Compile Include="Common\PublicVariables.cs" />
     <Compile Include="Common\ServerPaging.cs" />
     <Compile Include="Controllers\APAccountsPayableController.cs" />
